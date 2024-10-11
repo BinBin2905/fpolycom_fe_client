@@ -1,0 +1,178 @@
+{
+  "SanPham": [
+    {
+      "id": "product1",
+      "createdDate": "2024-07-01",
+      "deleted": "false",
+      "deletedDate": null,
+      "updatedDate": "2024-07-20",
+      "hinhAnh": "product-img-1.jpg",
+      "moTa": "Smartphone with 8GB RAM and 128GB storage.",
+      "motaOption": "Available in black, white, and blue.",
+      "tenSanPham": "Smartphone A",
+      "cuaHangID": "store1",
+      "loaiHang": "electronics",
+      "trangThaiID": "available",
+      "danhGia": "3",
+      "SanPhamChiTiet": [
+        {
+          "id": "detail1",
+          "tenSPCT": "SPCT1",
+          "gia": "100000",
+          "hinhAnh": "product-details-2.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+
+        {
+          "id": "detail2",
+          "tenSPCT": "SPCT2",
+          "gia": "110000",
+          "hinhAnh": "product-details-3.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail3",
+          "tenSPCT": "SPCT3",
+          "gia": "120000",
+          "hinhAnh": "product-details-4.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail4",
+          "tenSPCT": "SPCT4",
+          "gia": "130000",
+          "hinhAnh": "product-details-5.png",
+          "motaOption": "option1",
+          "soLuong": "40",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        }
+      ]
+    },
+    {
+      "id": "product2",
+      "createdDate": "2024-07-01",
+      "deleted": "false",
+      "deletedDate": null,
+      "updatedDate": "2024-07-20",
+      "hinhAnh": "product-details-1.png",
+      "moTa": "Smartphone with 8GB RAM and 128GB storage.",
+      "motaOption": "Available in black, white, and blue.",
+      "tenSanPham": "Smartphone A",
+      "cuaHangID": "store1",
+      "loaiHang": "electronics",
+      "trangThaiID": "available",
+      "danhGia": "4",
+      "SanPhamChiTiet": [
+        {
+          "id": "detail1",
+          "tenSPCT": "SPCT1",
+          "gia": "100000",
+          "hinhAnh": "product-details-2.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+
+        {
+          "id": "detail2",
+          "tenSPCT": "SPCT2",
+          "gia": "110000",
+          "hinhAnh": "product-details-3.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail3",
+          "tenSPCT": "SPCT3",
+          "gia": "120000",
+          "hinhAnh": "product-details-4.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail4",
+          "tenSPCT": "SPCT4",
+          "gia": "130000",
+          "hinhAnh": "product-details-5.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        }
+      ]
+    },
+    {
+      "id": "product3",
+      "createdDate": "2024-07-01",
+      "deleted": "false",
+      "deletedDate": null,
+      "updatedDate": "2024-07-20",
+      "hinhAnh": "product-details-1.png",
+      "moTa": "Smartphone with 8GB RAM and 128GB storage.",
+      "motaOption": "Available in black, white, and blue.",
+      "tenSanPham": "Smartphone AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "cuaHangID": "store1",
+      "loaiHang": "electronics",
+      "trangThaiID": "available",
+      "danhGia": "5",
+      "SanPhamChiTiet": [
+        {
+          "id": "detail1",
+          "tenSPCT": "SPCT1",
+          "gia": "100000",
+          "hinhAnh": "product-details-2.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+
+        {
+          "id": "detail2",
+          "tenSPCT": "SPCT2",
+          "gia": "110000",
+          "hinhAnh": "product-details-3.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail3",
+          "tenSPCT": "SPCT3",
+          "gia": "120000",
+          "hinhAnh": "product-details-4.png",
+          "motaOption": "option1",
+          "soLuong": "50",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        },
+        {
+          "id": "detail4",
+          "tenSPCT": "SPCT4",
+          "gia": "130000",
+          "hinhAnh": "product-details-5.png",
+          "motaOption": "option1",
+          "soLuong": "60",
+          "binhLuan": [{}, {}, {}, {}],
+          "hoaDonChiTiet": "10"
+        }
+      ]
+    }
+  ]
+}
