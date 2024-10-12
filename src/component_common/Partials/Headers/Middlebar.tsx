@@ -3,8 +3,20 @@ import ThinBag from "../../Helpers/icons/ThinBag";
 import ThinPeople from "../../Helpers/icons/ThinPeople";
 import SearchBox from "../../Helpers/SearchBox";
 import Cart from "@/page/Cart";
+import { useUserStore } from "@/store/userStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Middlebar({ className }: { className?: string }) {
+  const { currentUser, logoutUser } = useUserStore();
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
       <div className="container-x mx-auto h-full">
@@ -43,11 +55,53 @@ export default function Middlebar({ className }: { className?: string }) {
                 <Cart className="absolute -right-[45px] top-11 z-50 hidden group-hover:block" />
               </div>
               <div>
-                <Link to="/profile">
+                {currentUser ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild className="cursor-pointer">
+                      <div className="flex gap-x-3 items-center">
+                        <Avatar className="size-9">
+                          <AvatarImage src="https://github.com/shadcn.png" />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col text-gray-600">
+                          <span className="font-medium">
+                            {currentUser?.username}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" side="bottom">
+                      <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem className="cursor-pointer">
+                          Thông tin tài khoản
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                          Đổi mật khẩu
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                          Cài đặt
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => logoutUser()}
+                      >
+                        Đăng xuất
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <ThinPeople />
+                )}
+
+                {/* <Link to="/profile">
                   <span>
-                    <ThinPeople />
+                  
                   </span>
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>

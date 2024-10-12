@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Arrow from "../../Helpers/icons/Arrow";
+import { useUserStore } from "@/store/userStore";
 
 export default function Navbar({ className }: { className?: string }) {
+  const { currentUser, logoutUser } = useUserStore();
   const isSaller = true;
   const [categoryToggle, setToggle] = useState(false);
   const [elementsSize, setSize] = useState("0px");
@@ -444,9 +446,19 @@ export default function Navbar({ className }: { className?: string }) {
               <Link to="/become-saller">
                 <div className="black-btn w-[180px] h-[40px] flex justify-center items-center cursor-pointer">
                   <div className="flex space-x-2 items-center">
-                    <span className="text-sm font-600">
-                      {!isSaller ? "Đăng kí bán hàng " : "Đi đến cửa hàng "}
-                    </span>
+                    {currentUser?.storeStatus == "active" ? (
+                      <NavLink className="font-600 text-xs" to={"/store"}>
+                        Truy cập cửa hàng
+                      </NavLink>
+                    ) : (
+                      <NavLink
+                        className="font-600 text-xs"
+                        to={"/become-saller"}
+                      >
+                        Đăng kí cửa hàng
+                      </NavLink>
+                    )}
+
                     <span>
                       <svg
                         className="fill-current"

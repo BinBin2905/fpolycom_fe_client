@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 type userObject = {
- username:string;
- userImage:string;
- token:string;
+  username: string;
+  userImage: string;
+  token: string;
+  storeStatus: string;
+  storeName: string
+  userId: string;
+  userLogin: string;
 };
 
 type storeUser = {

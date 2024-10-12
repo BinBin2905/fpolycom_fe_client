@@ -26,6 +26,8 @@ import Menu from "../sidebar/Menu";
 import { useMediaQuery } from "react-responsive";
 import IconCompany from "@/assets/img/iconcompany.png";
 import { useUserStore } from "@/store/userStore";
+import { useStoreStore } from "@/store/storeStore";
+import { useNavigate } from "react-router-dom";
 const menu = [
   {
     itemName: "Dashboard",
@@ -89,9 +91,10 @@ const menu2 = [
   },
 ];
 const Navbar = () => {
-  const { currentUser, logoutUser } = useUserStore();
+  const navigate = useNavigate();
+  const { currentStore, logoutStore } = useStoreStore();
   const isMobileScreen = useMediaQuery({ query: "(max-width:1024px)" });
-  console.log(currentUser);
+
   return (
     <div className="sticky shrink-0 top-0 z-10 bg-white shadow-lg border-b h-20 border-gray-200 px-5 py-4 flex justify-between items-center">
       <div className="flex items-center gap-x-2">
@@ -158,10 +161,7 @@ const Navbar = () => {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-gray-600">
-                <span className="font-medium">{currentUser?.USERNAME}</span>
-                <span className="text-sm line-clamp-1">
-                  {currentUser?.PSTNNAME}
-                </span>
+                <span className="font-medium">{currentStore?.storeName}</span>
               </div>
             </div>
           </DropdownMenuTrigger>
@@ -182,7 +182,10 @@ const Navbar = () => {
 
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => logoutUser()}
+              onClick={() => {
+                logoutStore();
+                navigate("/");
+              }}
             >
               Đăng xuất
             </DropdownMenuItem>

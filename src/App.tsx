@@ -1,26 +1,11 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "@/page/home/HomePage";
 import AppCommon from "./template/AppCommon";
-import ProductPage from "./page/product/ProductPage";
-import AdvertisementPage from "./page/advertisement/AdvertisementPage";
 import DashboardProductPage from "./page/dashboard_product/DashboardProductPage";
 import DashboardRevenuePage from "./page/dashboard_revenue/DashboardRevenuePage";
 import AppLogin from "./template/AppLogin";
 import LoginPage from "./page/login/LoginPage";
-import { useQuery } from "@tanstack/react-query";
-import { useUserStore } from "./store/userStore";
-import SpinnerLoading from "./component_common/loading/SpinnerLoading";
-import ProductCreatePage from "./page/create_product/ProductCreatePage";
 import { Toaster } from "sonner";
-import ProductCreatePageFormik from "./page/create_product/ProductCreatePageFormik";
-import MessagesPage from "./page/message/MessagesPage";
-import PromotionPage from "./page/promotion/PromotionPage";
-import NotifycationComponent from "./page/NotifycationComponent";
-import AdvertisementCreatePage from "./page/advertisement/AdvertisementCreatePage";
-import AdvertisementUpdatePage from "./page/advertisement/AdvertisementUpdatePage";
-import PostPage from "./page/post/PostPage";
-import PostCreatePage from "./page/post/PostCreatePage";
 import ProvincePage from "./page/province/ProvincePage";
 import Home from "./page/home";
 import AllProductPage from "./page/AllProductPage";
@@ -46,9 +31,14 @@ import PrivacyPolicy from "./page/PrivacyPolicy/index.js";
 import TermsCondition from "./page/TermsCondition/index.js";
 import FourZeroFour from "./page/FourZeroFour/index.js";
 import AppCommonUser from "./template/AppCommonUser.js";
+import AppLoginUser from "./template/AppLoginUser.js";
+import { useUserStore } from "./store/userStore.js";
+import { useStoreStore } from "./store/storeStore.js";
 
 function App() {
-  const { currentUser, tokenInitial, setTokenInitial } = useUserStore();
+  const { currentUser } = useUserStore();
+  const { currentStore } = useStoreStore();
+  console.log(currentUser?.username);
   console.log(import.meta.env.VITE_API_URL);
   return (
     <>
@@ -66,29 +56,58 @@ function App() {
           >
             <Route element={<HomePage></HomePage>} path="/store"></Route>
             <Route
-              element={<DashboardProductPage></DashboardProductPage>}
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <DashboardProductPage></DashboardProductPage>
+                )
+              }
               path="/store/dashboard_product"
             ></Route>
             <Route
-              element={<DashboardRevenuePage></DashboardRevenuePage>}
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <DashboardRevenuePage></DashboardRevenuePage>
+                )
+              }
               path="/store/dashboard_revenue"
             ></Route>
             <Route
-              element={<ProvincePage></ProvincePage>}
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <ProvincePage></ProvincePage>
+                )
+              }
               path="/store/province"
             ></Route>
           </Route>
+
+          <Route element={<AppLoginUser></AppLoginUser>}>
+            <Route
+              path="/login"
+              element={currentUser ? <Navigate to={"/"}></Navigate> : <Login />}
+            />
+            <Route
+              path="/signup"
+              element={
+                currentUser ? <Navigate to={"/"}></Navigate> : <Signup />
+              }
+            />
+          </Route>
           <Route
             element={
-              currentUser ? <Navigate to={"/"}></Navigate> : <AppLogin />
+              currentUser ? (
+                <AppCommonUser />
+              ) : (
+                <Navigate to={"/login"}></Navigate>
+              )
             }
           >
-            <Route
-              path="/store/login"
-              element={<LoginPage></LoginPage>}
-            ></Route>
-          </Route>
-          <Route element={<AppCommonUser />}>
             <Route path="/" element={<Home />} />
             <Route path="/all-products" element={<AllProductPage />} />
             <Route path="/single-product" element={<SingleProductPage />} />
@@ -106,8 +125,6 @@ function App() {
             <Route path="/tracking-order" element={<TrackingOrder />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<Faq />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/become-saller" element={<BecomeSaller />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
