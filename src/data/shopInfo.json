@@ -1,0 +1,72 @@
+{
+    "shop":[
+        {
+            "id": "shop01",
+            "account": "useracc01",
+            "tenShop": "ABC XYZ",
+            "email": "DemoEmail@gmail.com",
+            "sdt": "0123456789",
+            "diaChi": "123 đường số 456, Phường 13, Bình Thạnh, TP.Hồ Chí Minh",
+            "ngayThamGia": "01-02-2003",
+            "moTa":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the on leap into electronic typesetting, remaining essentially unchanged. It wasnt popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, andei more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum to make a type specimen book"
+        },{
+            "id": "shop02",
+            "account": "useracc02",
+            "tenShop": "ABC XYZ",
+            "email": "DemoEmail@gmail.com",
+            "sdt": "0123456789",
+            "diaChi": "123 đường số 456, Phường 13, Bình Thạnh, TP.Hồ Chí Minh",
+            "ngayThamGia": "01-02-2003",
+            "moTa":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the on leap into electronic typesetting, remaining essentially unchanged. It wasnt popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, andei more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum to make a type specimen book"
+        },{
+            "id": "shop04",
+            "account": "useracc04",
+            "tenShop": "ABC XYZ",
+            "email": "DemoEmail@gmail.com",
+            "sdt": "0123456789",
+            "diaChi": "123 đường số 456, Phường 13, Bình Thạnh, TP.Hồ Chí Minh",
+            "ngayThamGia": "01-02-2003",
+            "moTa":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries but also the on leap into electronic typesetting, remaining essentially unchanged. It wasnt popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, andei more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum to make a type specimen book"
+        }
+    ],
+
+    "sanPham":
+    [
+        {
+            "id": "sp1",
+            "tenSP": "San Pham 1",
+            "gia": "100 000",
+            "danhGia": "1",
+            "soLuotDanhgia": "11"
+        },
+        {
+            "id": "sp2",
+            "tenSP": "San Pham 2",
+            "gia": "200 000",
+            "danhGia": "2",
+            "soLuotDanhgia": "12"
+        },
+        {
+            "id": "sp3",
+            "tenSP": "San Pham 3",
+            "gia": "300 000",
+            "danhGia": "3",
+            "soLuotDanhgia": "13"
+        },
+        {
+            "id": "sp4",
+            "tenSP": "San Pham 4",
+            "gia": "400 000",
+            "danhGia": "4",
+            "soLuotDanhgia": "14"
+        },
+        {
+            "id": "sp5",
+            "tenSP": "San Pham 5",
+            "gia": "500 000",
+            "danhGia": "5",
+            "soLuotDanhgia": "15"
+        }
+    ]
+}
+  

@@ -15,12 +15,12 @@ const menu: any[] = [
           {
             itemName: "Sản phẩm",
             itemIcon: <i className="ri-instance-line"></i>,
-            link: "/dashboard_product",
+            link: "/store/dashboard_product",
           },
           {
             itemName: "Doanh thu",
             itemIcon: <i className="ri-advertisement-line"></i>,
-            link: "/dashboard_revenue",
+            link: "/store/dashboard_revenue",
           },
         ],
       },
@@ -50,18 +50,23 @@ const menu: any[] = [
     itemName: "Quản lí chung",
     itemList: [
       {
-        itemName: "Sản phẩm",
-        itemIcon: <i className="ri-instance-line"></i>,
+        itemName: "Địa điểm",
+        itemIcon: <i className="ri-map-pin-line"></i>,
         itemList: [
           {
-            itemName: "Danh sách sản phẩm",
-            itemIcon: <i className="ri-instance-line"></i>,
-            link: "/product",
+            itemName: "Tỉnh/Thành phố",
+            itemIcon: <i className="ri-building-line"></i>,
+            link: "/store/province",
           },
           {
-            itemName: "Tạo mới",
-            itemIcon: <i className="ri-file-add-line"></i>,
-            link: "/create_product",
+            itemName: "Quận/Huyện",
+            itemIcon: <i className="ri-building-2-line"></i>,
+            link: "/district",
+          },
+          {
+            itemName: "Phường/Thị xã",
+            itemIcon: <i className="ri-building-4-line"></i>,
+            link: "/ward",
           },
         ],
       },

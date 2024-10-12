@@ -9,7 +9,6 @@ import DashboardRevenuePage from "./page/dashboard_revenue/DashboardRevenuePage"
 import AppLogin from "./template/AppLogin";
 import LoginPage from "./page/login/LoginPage";
 import { useQuery } from "@tanstack/react-query";
-import { fetchInitialToken } from "./api/authApi";
 import { useUserStore } from "./store/userStore";
 import SpinnerLoading from "./component_common/loading/SpinnerLoading";
 import ProductCreatePage from "./page/create_product/ProductCreatePage";
@@ -22,85 +21,61 @@ import AdvertisementCreatePage from "./page/advertisement/AdvertisementCreatePag
 import AdvertisementUpdatePage from "./page/advertisement/AdvertisementUpdatePage";
 import PostPage from "./page/post/PostPage";
 import PostCreatePage from "./page/post/PostCreatePage";
+import ProvincePage from "./page/province/ProvincePage";
+import Home from "./page/home";
+import AllProductPage from "./page/AllProductPage";
+import SingleProductPage from "./page/SingleProductPage";
+import CardPage from "./page/CartPage";
+import Wishlist from "./component_common/Wishlist";
+import CheckoutPage from "./page/CheckoutPage";
+import FlashSale from "./page/FlashSale";
+import SallerPage from "./page/SallerPage";
+import ProbView from "./page/SallerPage/StoreManagement/ProbView";
+import Sallers from "./page/Sellers";
+import About from "./page/About";
+import Blogs from "./page/Blogs";
+import Blog from "./page/Blogs/Blog.jsx";
+import TrackingOrder from "./page/TrackingOrder/index.js";
+import Contact from "./page/Contact/index.js";
+import Faq from "./page/Faq/index.js";
+import Login from "./page/Auth/Login/index.js";
+import Signup from "./page/Auth/Signup/index.js";
+import Profile from "./page/Auth/Profile/index.js";
+import BecomeSaller from "./page/BecomeSaller/index.js";
+import PrivacyPolicy from "./page/PrivacyPolicy/index.js";
+import TermsCondition from "./page/TermsCondition/index.js";
+import FourZeroFour from "./page/FourZeroFour/index.js";
+import AppCommonUser from "./template/AppCommonUser.js";
 
 function App() {
   const { currentUser, tokenInitial, setTokenInitial } = useUserStore();
-  const { data, isError, isLoading, isFetching, isSuccess } = useQuery({
-    queryKey: ["tokenInitial"],
-    queryFn: async () => await fetchInitialToken(),
-  });
-
-  useEffect(() => {
-    if (isSuccess && data != undefined) {
-      setTokenInitial(data?.TOKEN);
-    }
-  }, [isSuccess]);
-
-  return isFetching ? (
-    <div className="h-screen w-full flex items-center justify-center gap-x-3">
-      <SpinnerLoading className="w-10 h-10 fill-primary" />
-      <span className="text-2xl text-gray-500 italic">Đang tải dữ liệu..</span>
-    </div>
-  ) : (
+  console.log(import.meta.env.VITE_API_URL);
+  return (
     <>
       <Toaster />
       <BrowserRouter>
         <Routes>
           <Route
             element={
-              !!currentUser ? (
-                <AppCommon />
-              ) : (
-                <Navigate to={"/login"}></Navigate>
-              )
+              // !!currentUser ? (
+              <AppCommon />
+              // ) : (
+              //   <Navigate to={"/login"}></Navigate>
+              // )
             }
           >
-            <Route element={<HomePage></HomePage>} path="/"></Route>
+            <Route element={<HomePage></HomePage>} path="/store"></Route>
             <Route
               element={<DashboardProductPage></DashboardProductPage>}
-              path="/dashboard_product"
+              path="/store/dashboard_product"
             ></Route>
             <Route
               element={<DashboardRevenuePage></DashboardRevenuePage>}
-              path="/dashboard_revenue"
+              path="/store/dashboard_revenue"
             ></Route>
             <Route
-              element={<ProductPage></ProductPage>}
-              path="/product"
-            ></Route>
-            <Route
-              element={<ProductCreatePageFormik></ProductCreatePageFormik>}
-              path="/create_product"
-            ></Route>
-
-            <Route
-              element={<AdvertisementPage></AdvertisementPage>}
-              path="/advertisement"
-            ></Route>
-            <Route
-              element={<AdvertisementCreatePage></AdvertisementCreatePage>}
-              path="/create_advertisement"
-            ></Route>
-            <Route
-              element={<AdvertisementUpdatePage></AdvertisementUpdatePage>}
-              path="/update_advertisement/:id"
-            ></Route>
-            <Route element={<PostPage></PostPage>} path="/post"></Route>
-            <Route
-              element={<PostCreatePage></PostCreatePage>}
-              path="/create_post"
-            ></Route>
-            <Route
-              element={<MessagesPage></MessagesPage>}
-              path="/messages"
-            ></Route>
-            <Route
-              element={<PromotionPage></PromotionPage>}
-              path="/promotion"
-            ></Route>
-            <Route
-              element={<NotifycationComponent></NotifycationComponent>}
-              path="/notify"
+              element={<ProvincePage></ProvincePage>}
+              path="/store/province"
             ></Route>
           </Route>
           <Route
@@ -108,7 +83,36 @@ function App() {
               currentUser ? <Navigate to={"/"}></Navigate> : <AppLogin />
             }
           >
-            <Route path="/login" element={<LoginPage></LoginPage>}></Route>
+            <Route
+              path="/store/login"
+              element={<LoginPage></LoginPage>}
+            ></Route>
+          </Route>
+          <Route element={<AppCommonUser />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/all-products" element={<AllProductPage />} />
+            <Route path="/single-product" element={<SingleProductPage />} />
+            <Route path="/cart" element={<CardPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/flash-sale" element={<FlashSale />} />
+            <Route path="/saller-page" element={<SallerPage />} />
+            {/* <Route path="/my-Store" element={<MyStore />} /> */}
+            <Route path="/my-Store/single-product" element={<ProbView />} />
+            <Route path="/sallers" element={<Sallers />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/blog" element={<Blog />} />
+            <Route path="/tracking-order" element={<TrackingOrder />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/become-saller" element={<BecomeSaller />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-condition" element={<TermsCondition />} />
+            <Route path="*" element={<FourZeroFour />} />.
           </Route>
         </Routes>
       </BrowserRouter>

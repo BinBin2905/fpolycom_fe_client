@@ -1,0 +1,205 @@
+{
+    "SanPhamChiTiet": [
+      {
+        "id": "detail1",
+        "sanPhamID": "product1",
+        "size": "6.5 inches",
+        "color": "Black",
+        "material": "Glass and metal",
+        "price": "699.99",
+        "quantity": "50",
+        "description": "Smartphone with 8GB RAM, 128GB storage, and a 6.5-inch display."
+      },
+      {
+        "id": "detail2",
+        "sanPhamID": "product1",
+        "size": "6.5 inches",
+        "color": "White",
+        "material": "Glass and metal",
+        "price": "699.99",
+        "quantity": "30",
+        "description": "Smartphone with 8GB RAM, 128GB storage, and a 6.5-inch display."
+      },
+      {
+        "id": "detail3",
+        "sanPhamID": "product1",
+        "size": "6.5 inches",
+        "color": "Blue",
+        "material": "Glass and metal",
+        "price": "699.99",
+        "quantity": "20",
+        "description": "Smartphone with 8GB RAM, 128GB storage, and a 6.5-inch display."
+      },
+      {
+        "id": "detail4",
+        "sanPhamID": "product2",
+        "size": "15.6 inches",
+        "color": "Silver",
+        "material": "Aluminum",
+        "price": "1299.99",
+        "quantity": "25",
+        "description": "Laptop with Intel i7 processor, 16GB RAM, and 1TB SSD."
+      },
+      {
+        "id": "detail5",
+        "sanPhamID": "product2",
+        "size": "15.6 inches",
+        "color": "Gray",
+        "material": "Aluminum",
+        "price": "1299.99",
+        "quantity": "15",
+        "description": "Laptop with Intel i7 processor, 16GB RAM, and 1TB SSD."
+      },
+      {
+        "id": "detail6",
+        "sanPhamID": "product3",
+        "size": "On-ear",
+        "color": "Black",
+        "material": "Plastic and leather",
+        "price": "199.99",
+        "quantity": "40",
+        "description": "Wireless headphones with noise-canceling feature and up to 20 hours of battery life."
+      },
+      {
+        "id": "detail7",
+        "sanPhamID": "product3",
+        "size": "On-ear",
+        "color": "Silver",
+        "material": "Plastic and leather",
+        "price": "199.99",
+        "quantity": "25",
+        "description": "Wireless headphones with noise-canceling feature and up to 20 hours of battery life."
+      },
+      {
+        "id": "detail8",
+        "sanPhamID": "product4",
+        "size": "42mm",
+        "color": "Black",
+        "material": "Aluminum and silicone",
+        "price": "299.99",
+        "quantity": "10",
+        "description": "Smartwatch with heart rate monitoring, GPS, and water resistance up to 50 meters."
+      },
+      {
+        "id": "detail9",
+        "sanPhamID": "product4",
+        "size": "42mm",
+        "color": "Silver",
+        "material": "Aluminum and silicone",
+        "price": "299.99",
+        "quantity": "8",
+        "description": "Smartwatch with heart rate monitoring, GPS, and water resistance up to 50 meters."
+      },
+      {
+        "id": "detail10",
+        "sanPhamID": "product5",
+        "size": "55 inches",
+        "color": "Black",
+        "material": "Plastic and glass",
+        "price": "799.99",
+        "quantity": "20",
+        "description": "4K Ultra HD TV with smart features and voice control."
+      },
+      {
+        "id": "detail11",
+        "sanPhamID": "product5",
+        "size": "55 inches",
+        "color": "Gray",
+        "material": "Plastic and glass",
+        "price": "799.99",
+        "quantity": "15",
+        "description": "4K Ultra HD TV with smart features and voice control."
+      },
+      {
+        "id": "detail12",
+        "sanPhamID": "product1",
+        "size": "6.5 inches",
+        "color": "Red",
+        "material": "Glass and metal",
+        "price": "699.99",
+        "quantity": "10",
+        "description": "Smartphone with 8GB RAM, 128GB storage, and a 6.5-inch display."
+      },
+      {
+        "id": "detail13",
+        "sanPhamID": "product2",
+        "size": "17.3 inches",
+        "color": "Black",
+        "material": "Aluminum",
+        "price": "1599.99",
+        "quantity": "10",
+        "description": "Laptop with Intel i7 processor, 16GB RAM, and 1TB SSD, larger screen."
+      },
+      {
+        "id": "detail14",
+        "sanPhamID": "product3",
+        "size": "Over-ear",
+        "color": "Blue",
+        "material": "Plastic and leather",
+        "price": "229.99",
+        "quantity": "30",
+        "description": "Wireless headphones with premium noise-canceling and up to 30 hours of battery life."
+      },
+      {
+        "id": "detail15",
+        "sanPhamID": "product4",
+        "size": "46mm",
+        "color": "Gold",
+        "material": "Stainless steel and silicone",
+        "price": "349.99",
+        "quantity": "5",
+        "description": "Luxury smartwatch with advanced health tracking and premium build quality."
+      },
+      {
+        "id": "detail16",
+        "sanPhamID": "product5",
+        "size": "65 inches",
+        "color": "Black",
+        "material": "Plastic and glass",
+        "price": "999.99",
+        "quantity": "12",
+        "description": "Larger 65-inch 4K Ultra HD TV with smart features and voice control."
+      },
+      {
+        "id": "detail17",
+        "sanPhamID": "product1",
+        "size": "6.5 inches",
+        "color": "Green",
+        "material": "Glass and metal",
+        "price": "699.99",
+        "quantity": "7",
+        "description": "Smartphone with 8GB RAM, 128GB storage, and a 6.5-inch display."
+      },
+      {
+        "id": "detail18",
+        "sanPhamID": "product2",
+        "size": "15.6 inches",
+        "color": "White",
+        "material": "Aluminum",
+        "price": "1399.99",
+        "quantity": "20",
+        "description": "Laptop with Intel i7 processor, 16GB RAM, and 1TB SSD, with a different color."
+      },
+      {
+        "id": "detail19",
+        "sanPhamID": "product3",
+        "size": "On-ear",
+        "color": "Purple",
+        "material": "Plastic and leather",
+        "price": "199.99",
+        "quantity": "18",
+        "description": "Wireless headphones with noise-canceling feature and stylish design."
+      },
+      {
+        "id": "detail20",
+        "sanPhamID": "product4",
+        "size": "44mm",
+        "color": "Rose Gold",
+        "material": "Aluminum and silicone",
+        "price": "319.99",
+        "quantity": "6",
+        "description": "Stylish smartwatch with health monitoring and water resistance."
+      }
+    ]
+  }
+  
