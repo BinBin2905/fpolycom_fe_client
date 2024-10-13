@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ThinBag from "../../Helpers/icons/ThinBag";
 import ThinPeople from "../../Helpers/icons/ThinPeople";
 import SearchBox from "../../Helpers/SearchBox";
-import Cart from "../../../pages/Cart";
+import { Cart } from "@/page";
 
 export default function Middlebar({ className }: { className?: string }) {
   return (

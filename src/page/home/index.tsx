@@ -7,12 +7,14 @@ import BrandSection from "./BrandSection";
 import CampaignCountDown from "./CampaignCountDown";
 import ProductsAds from "./ProductsAds";
 import datas from "../../data/products.json";
-import Layout from "@/component_common/Partials/Headers/Layout";
-import SectionStyleOne from "@/component_common/Helpers/SectionStyleOne";
-import ViewMoreTitle from "@/component_common/Helpers/ViewMoreTitle";
-import SectionStyleTwo from "@/component_common/Helpers/SectionStyleTwo";
-import SectionStyleThree from "@/component_common/Helpers/SectionStyleThree";
-import SectionStyleFour from "@/component_common/Helpers/SectionStyleFour";
+// import Layout from "@/component_common/Partials/Headers/Layout";
+import {
+  SectionStyleOne,
+  ViewMoreTitle,
+  SectionStyleTwo,
+  SectionStyleThree,
+  SectionStyleFour,
+} from "@/component_common";
 
 export default function Home() {
   const { products } = datas;
@@ -44,10 +46,13 @@ export default function Home() {
         sectionTitle="Gamer World"
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
+        categoryBackground={null}
       />
       <BrandSection
         sectionTitle="Shop by Brand"
         className="brand-section-wrapper mb-[60px]"
+        categoryTitle={null}
+        categoryBackground={null}
       />
       <CampaignCountDown className="mb-[60px]" lastDate="2023-10-04 4:00:00" />
       <ViewMoreTitle
@@ -55,7 +60,11 @@ export default function Home() {
         seeMoreUrl="/all-products"
         categoryTitle="Top Selling Products"
       >
-        <SectionStyleTwo products={products.slice(3, products.length)} />
+        <SectionStyleTwo
+          products={products.slice(3, products.length)}
+          categoryTitle={null}
+          categoryBackground={null}
+        />
       </ViewMoreTitle>
       <ViewMoreTitle
         className="best-sallers-section mb-[60px]"
@@ -87,6 +96,8 @@ export default function Home() {
         sectionTitle="New Arrivals"
         seeMoreUrl="/all-products"
         className="new-products mb-[60px]"
+        categoryTitle={null}
+        categoryBackground={null}
       />
       <ProductsAds
         sectionHeight="164"
@@ -98,6 +109,8 @@ export default function Home() {
         sectionTitle="Popular Sales"
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
+        categoryTitle={null}
+        categoryBackground={null}
       />
     </>
   );

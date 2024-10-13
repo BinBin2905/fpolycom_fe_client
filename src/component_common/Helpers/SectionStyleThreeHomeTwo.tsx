@@ -18,7 +18,7 @@ export default function SectionStyleThreeHomeTwo({
             <DataIteration
               datas={products}
               startLength={0}
-              endLength={showProducts}
+              endLength={showProducts!}
             >
               {({ datas }) => (
                 <div data-aos="fade-up" key={datas.id} className="item">

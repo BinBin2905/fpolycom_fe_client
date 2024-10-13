@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useUserStore } from "@/store/userStore";
-import moment from "moment";
-
-
+// import moment from "moment";
 
 export const fetchDataCondition = async (body: { [key: string]: any }) => {
   const response = await axios.post(
@@ -95,7 +93,6 @@ export const fetchImage = async (url: string) => {
   //   throw new Error("Failed to fetch data");
   // }
 };
-
 
 // Cập nhật dữ liệu
 export const updateData = async (body: { [key: string]: any }) => {
@@ -195,14 +192,11 @@ export const deleteImage = async (body: FormData) => {
 
 /// Code
 export const fetchData = async (enpoint: string) => {
-  const response = await axios.get(
-    import.meta.env.VITE_API_URL + enpoint,
-    {
-      headers: {
-        Authorization: "Bearer " + useUserStore.getState().currentUser?.token
-      }
-    }
-  )
+  const response = await axios.get(import.meta.env.VITE_API_URL + enpoint, {
+    headers: {
+      Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+    },
+  });
   if (response.status != 200) {
     throw new Error("Failed to fetch data");
   }
@@ -214,16 +208,19 @@ export const fetchData = async (enpoint: string) => {
 };
 
 /// Code
-export const postData = async (body: { [key: string]: any }, enpoint: string) => {
+export const postData = async (
+  body: { [key: string]: any },
+  endpoint: string
+) => {
   const response = await axios.post(
-    import.meta.env.VITE_API_URL + enpoint,
+    import.meta.env.VITE_API_URL + endpoint,
     body,
     {
       headers: {
-        Authorization: "Bearer " + useUserStore.getState().currentUser?.token
-      }
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
     }
-  )
+  );
   if (response.status != 200) {
     throw new Error("Thêm dữ liệu thất bại!");
   }

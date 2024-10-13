@@ -5,11 +5,14 @@ import {
   postImage,
   updateData,
 } from "@/api/commonApi";
-import BreadcrumbCustom from "@/component_common/breadcrumb/BreadcrumbCustom";
-import ButtonForm from "@/component_common/commonForm/ButtonForm";
-import InputFormikForm from "@/component_common/commonForm/InputFormikForm";
-import SelectFormikForm from "@/component_common/commonForm/SelectFormikForm";
-import SpinnerLoading from "@/component_common/loading/SpinnerLoading";
+import {
+  BreadcrumbCustom,
+  ButtonForm,
+  InputFormikForm,
+  SelectFormikForm,
+  SpinnerLoading,
+} from "@/component_common";
+
 import {
   Dialog,
   DialogContent,
@@ -19,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { exportExcelPattern } from "@/helper/excelHelper";
-import { useUserStore } from "@/store/userStore";
+// import { useUserStore } from "@/store/userStore";
 import {
   AdvertisementObject,
   CategoryObject,
@@ -28,7 +31,7 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form, Formik } from "formik";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
@@ -97,7 +100,7 @@ const AdvertisementCreatePage = ({
   });
 
   const handlePostBanner = useMutation({
-    mutationFn: (body: { [key: string]: any }) => postData(body),
+    mutationFn: (body: { [key: string]: any }) => postData(body, ""),
     onSuccess: (data: AdvertisementObject[]) => {
       if (queryClient.getQueryData(["advertisements"])) {
         queryClient.setQueryData(

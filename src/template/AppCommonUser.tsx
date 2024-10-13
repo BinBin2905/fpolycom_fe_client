@@ -1,5 +1,4 @@
 import Layout from "@/component_common/Partials/Headers/Layout";
-import React from "react";
 import { Outlet } from "react-router-dom";
 
 const AppCommonUser = () => {

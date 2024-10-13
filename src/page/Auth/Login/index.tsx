@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Thumbnail from "./Thumbnail";
-import InputCom from "@/component_common/Helpers/InputCom";
+// import InputCom from "@/component_common/Helpers/InputCom";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import InputFormikForm from "@/component_common/commonForm/InputFormikForm";

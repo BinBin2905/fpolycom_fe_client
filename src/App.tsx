@@ -1,39 +1,36 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "@/page/home/HomePage";
-import AppCommon from "./template/AppCommon";
-import DashboardProductPage from "./page/dashboard_product/DashboardProductPage";
-import DashboardRevenuePage from "./page/dashboard_revenue/DashboardRevenuePage";
-import AppLogin from "./template/AppLogin";
-import LoginPage from "./page/login/LoginPage";
 import { Toaster } from "sonner";
-import ProvincePage from "./page/province/ProvincePage";
-import Home from "./page/home";
-import AllProductPage from "./page/AllProductPage";
-import SingleProductPage from "./page/SingleProductPage";
-import CardPage from "./page/CartPage";
 import Wishlist from "./component_common/Wishlist";
-import CheckoutPage from "./page/CheckoutPage";
-import FlashSale from "./page/FlashSale";
-import SallerPage from "./page/SallerPage";
-import ProbView from "./page/SallerPage/StoreManagement/ProbView";
-import Sallers from "./page/Sellers";
-import About from "./page/About";
-import Blogs from "./page/Blogs";
-import Blog from "./page/Blogs/Blog.jsx";
-import TrackingOrder from "./page/TrackingOrder/index.js";
-import Contact from "./page/Contact/index.js";
-import Faq from "./page/Faq/index.js";
-import Login from "./page/Auth/Login/index.js";
-import Signup from "./page/Auth/Signup/index.js";
-import Profile from "./page/Auth/Profile/index.js";
-import BecomeSaller from "./page/BecomeSaller/index.js";
-import PrivacyPolicy from "./page/PrivacyPolicy/index.js";
-import TermsCondition from "./page/TermsCondition/index.js";
-import FourZeroFour from "./page/FourZeroFour/index.js";
-import AppCommonUser from "./template/AppCommonUser.js";
-import AppLoginUser from "./template/AppLoginUser.js";
-import { useUserStore } from "./store/userStore.js";
-import { useStoreStore } from "./store/storeStore.js";
+import { useUserStore, useStoreStore } from "./store/index.js";
+import { AppCommon, AppCommonUser, AppLoginUser } from "./template/index.js";
+import {
+  About,
+  AllProductPage,
+  BecomeSaller,
+  Blog,
+  Blogs,
+  CardPage,
+  CheckoutPage,
+  Contact,
+  DashboardProductPage,
+  DashboardRevenuePage,
+  Faq,
+  FlashSale,
+  FourZeroFour,
+  Home,
+  Login,
+  PrivacyPolicy,
+  ProbView,
+  Profile,
+  ProvincePage,
+  SallerPage,
+  Sallers,
+  Signup,
+  SingleProductPage,
+  TermsCondition,
+  TrackingOrder,
+} from "./page/index.js";
 
 function App() {
   const { currentUser } = useUserStore();

@@ -1,5 +1,5 @@
-import { FieldHookConfig, useField } from "formik";
-import React, { useState } from "react";
+import { useField } from "formik";
+import { useState } from "react";
 
 const PasswordFormikForm = ({
   label,

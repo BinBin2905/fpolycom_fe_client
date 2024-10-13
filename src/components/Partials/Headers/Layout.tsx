@@ -2,8 +2,7 @@ import { ReactNode, useState } from "react";
 
 import HeaderOne from ".";
 import Footer from "../Footers";
-import Drawer from "../../../pages/Mobile/Drawer";
-import DiscountBanner from "../../../pages/Home/DiscountBanner";
+import { DiscountBanner, Drawer } from "@/page";
 
 export default function Layout({
   children,

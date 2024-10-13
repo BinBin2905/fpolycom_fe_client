@@ -1,5 +1,5 @@
 import { loginStore } from "@/api/authApi";
-import ButtonForm from "@/component_common/commonForm/ButtonForm";
+import { ButtonForm } from "@/component_common";
 import {
   Dialog,
   DialogContent,

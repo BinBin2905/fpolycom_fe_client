@@ -24,7 +24,7 @@ export default function SectionStyleOneHmFour({
             <DataIteration
               datas={products}
               startLength={0}
-              endLength={products.length}
+              endLength={products!.length}
             >
               {({ datas }) => (
                 <div key={datas.id} className="item">

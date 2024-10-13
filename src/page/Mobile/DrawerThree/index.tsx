@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Compair from "../../../components/Helpers/icons/Compair";
-import ThinLove from "../../../components/Helpers/icons/ThinLove";
+import { Compair, ThinLove } from "@/component_common";
 
 type DrawerThreeProps = {
   className?: string;

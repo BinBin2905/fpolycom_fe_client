@@ -6,6 +6,9 @@ import PageTitle from "@/component_common/Helpers/PageTitle";
 import Layout from "@/component_common/Partials/Headers/Layout";
 import SimpleSlider from "@/component_common/Helpers/SliderCom";
 import Star from "@/component_common/Helpers/icons/Star";
+import Slider from "react-slick";
+import DataIteration from "@/component_common/Helpers/DataIteration";
+import BlogCard from "@/component_common/Helpers/Cards/BlogCard";
 
 export default function About() {
   const settings = {
