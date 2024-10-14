@@ -44,7 +44,7 @@ const HomePage = () => {
       ...values,
       userLogin: currentUser?.userLogin,
     };
-    console.log(body);
+    console.log("store login before await handleLoginStore: ", body);
     await handleLoginStore.mutateAsync(body);
   };
   return (
@@ -78,7 +78,6 @@ const HomePage = () => {
                       <InputOTPSlot index={0} />
                       <InputOTPSlot index={1} />
                       <InputOTPSlot index={2} />
-
                       <InputOTPSlot index={3} />
                       <InputOTPSlot index={4} />
                       <InputOTPSlot index={5} />
