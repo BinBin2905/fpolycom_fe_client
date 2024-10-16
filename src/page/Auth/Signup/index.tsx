@@ -202,12 +202,12 @@ export default function Signup() {
                       <InputFormikForm
                         label="Địa chỉ"
                         name="username"
-                        placeholder="Nhập số điện thoại..."
+                        placeholder="Nhập địa chỉ..."
                         disabled={true}
                       ></InputFormikForm>
                       <div>
                         <label htmlFor="" className="mb-2 block">
-                          <span className="text-gray-700 text-sm font-semibold">
+                          <span className="text-gray-600 text-sm font-semibold">
                             Giới tính
                           </span>
                         </label>

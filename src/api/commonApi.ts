@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useUserStore } from "@/store/userStore";
+import { storage } from "@/lib/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 // import moment from "moment";
 
 export const fetchDataCondition = async (body: { [key: string]: any }) => {
@@ -191,6 +193,26 @@ export const deleteImage = async (body: FormData) => {
 };
 
 /// Code
+export const uploadImage = async (file: File, url: string) => {
+  if (!file) return;
+
+  // Tạo một reference trong Firebase Storage
+  const storageRef = ref(storage, `${url}/${file.name}`);
+
+  // Upload file lên Firebase Storage
+  try {
+    const snapshot = await uploadBytes(storageRef, file);
+
+    // Lấy URL tải xuống của file sau khi upload
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    console.log("File uploaded and available at:", downloadURL);
+    return downloadURL; // URL của hình ảnh để bạn có thể sử dụng
+  } catch (error) {
+    console.error("Upload failed", error);
+    throw error;
+  }
+};
+
 export const fetchData = async (enpoint: string) => {
   const response = await axios.get(import.meta.env.VITE_API_URL + enpoint, {
     headers: {
