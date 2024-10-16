@@ -6,7 +6,6 @@ const DatePickerFormikForm = ({
   important = false,
   disabled = false,
   name,
-  ...props
 }: {
   label: string;
   important: boolean;
@@ -42,15 +41,6 @@ const DatePickerFormikForm = ({
         </label>
       )}
 
-      {/* <Datepicker
-        {...props}
-        {...field}
-        selected={field.value}
-        onChange={(date) => helpers.setValue(date)}
-        className={`${
-          meta.error && meta.touched ? "border-red-500" : "border-gray-200"
-        } px-3 py-3 text-sm disabled:bg-slate-50 border outline-none rounded-sm w-full`}
-      ></Datepicker> */}
       <div
         className={`${
           meta.error && meta.touched ? "border-red-500" : "border-gray-200"
@@ -62,7 +52,7 @@ const DatePickerFormikForm = ({
           disabled={disabled}
           asSingle={true}
           i18n="vn"
-          containerClassName="relative"
+          // containerClassName="relative"
           inputClassName={`Datepicker px-3 py-3 w-full outline-none`}
           toggleClassName="absolute bg-slate-400 text-white right-0 h-full px-3 text-gray-400 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
           displayFormat={"DD/MM/YYYY"}
