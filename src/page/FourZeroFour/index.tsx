@@ -1,6 +1,5 @@
-import Layout from "@/component_common/Partials/Headers/Layout";
+import { Layout, BreadcrumbCom } from "@/component_common";
 import ErrorThumb from "./ErrorThumb";
-import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 
 export default function FourZeroFour() {
   return (

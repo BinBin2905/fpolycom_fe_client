@@ -5,7 +5,6 @@ import PageTitle from "@/component_common/Helpers/PageTitle";
 import Layout from "@/component_common/Partials/Headers/Layout";
 import ProductsTable from "@/component_common/Wishlist/ProductsTable";
 
-
 export default function CardPage({ cart = true }) {
   return (
     <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>

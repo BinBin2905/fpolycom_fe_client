@@ -1,10 +1,9 @@
-import BreadcrumbCustom from "@/component_common/breadcrumb/BreadcrumbCustom";
-import ButtonForm from "@/component_common/commonForm/ButtonForm";
+import { BreadcrumbCustom, ButtonForm } from "@/component_common";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const MessagesPage = () => {
   const [openFile, setOpenFile] = useState<boolean>(false);

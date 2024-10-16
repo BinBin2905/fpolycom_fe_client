@@ -5,13 +5,14 @@ type userObject = {
   userImage: string;
   token: string;
   storeStatus: string;
-  storeName: string
+  storeName: string;
   userId: string;
   userLogin: string;
 };
 
 type storeUser = {
   currentUser: userObject | null;
+  tokenLocation: string | null;
   setCurrentUser: (user: userObject) => void;
   logoutUser: () => void;
 };
@@ -20,10 +21,10 @@ export const useUserStore = create<storeUser>()(
   persist(
     (set) => ({
       currentUser: null,
+      tokenLocation: null,
       setCurrentUser: (user) => set(() => ({ currentUser: user })),
       logoutUser: () =>
         set(() => ({
-
           currentUser: null,
         })),
     }),

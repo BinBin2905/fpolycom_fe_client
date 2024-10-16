@@ -1,7 +1,7 @@
-import { FieldHookConfig, useField, useFormikContext } from "formik";
-import React, { memo, useCallback, useEffect, useState } from "react";
-import { areEqual, FixedSizeList as List } from "react-window";
-import { any } from "zod";
+import { useField, useFormikContext } from "formik";
+import React, { useEffect, useState } from "react";
+import { FixedSizeList as List } from "react-window";
+// import { any } from "zod";
 type ObjectSelect = {
   [key: string]: any;
 };

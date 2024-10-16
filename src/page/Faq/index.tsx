@@ -1,7 +1,4 @@
-import Accordion from "@/component_common/Helpers/Accodion";
-import InputCom from "@/component_common/Helpers/InputCom";
-import PageTitle from "@/component_common/Helpers/PageTitle";
-import Layout from "@/component_common/Partials/Headers/Layout";
+import { Accordion, InputCom, PageTitle, Layout } from "@/component_common";
 
 export default function Faq() {
   return (

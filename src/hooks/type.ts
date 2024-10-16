@@ -2,11 +2,11 @@ export type SectionStyle = {
   className?: string;
   sectionTitle?: string;
   seeMoreUrl?: string;
-  categoryTitle?: string;
+  categoryTitle: string | null;
   products?: Product[];
   type?: any;
   brands?: any[];
-  categoryBackground?: string;
+  categoryBackground: string | null;
   showProducts?: number;
 };
 

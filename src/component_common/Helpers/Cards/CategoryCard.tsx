@@ -1,6 +1,6 @@
 type CategoryCardProps = {
-  background: string | null;
-  title: string | null;
+  background?: string | null;
+  title?: string | null;
   brands?: any[];
 };
 

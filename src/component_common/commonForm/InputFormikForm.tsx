@@ -1,5 +1,5 @@
 import React from "react";
-import { FieldHookConfig, useField } from "formik";
+import { useField } from "formik";
 
 const InputFormikForm = ({
   label,

@@ -77,7 +77,7 @@ export type CommonObject = {
 export type SearchObjectProduct = {
   key: string;
   name: string;
-  type: "text" | "combobox";
+  type?: "text" | "combobox";
   dataList?: CommonObject[];
   dataKey?: keyof CommonObject;
   dataName?: keyof CommonObject;

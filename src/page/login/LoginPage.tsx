@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { loginAdmin } from "@/api/authApi";
-import { LoginLocationObject } from "@/type/TypeCommon";
+// import { LoginLocationObject } from "@/type/TypeCommon";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
@@ -9,7 +8,7 @@ import InputFormikForm from "@/component_common/commonForm/InputFormikForm";
 import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
 import { useUserStore } from "@/store/userStore";
-import { error } from "console";
+// import { error } from "console";
 
 const formSchema = Yup.object().shape({
   userLogin: Yup.string().min(

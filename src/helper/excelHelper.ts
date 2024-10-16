@@ -1,5 +1,5 @@
 import { DataExcelPatternObject } from "@/type/TypeCommon";
-import { dataTagSymbol } from "@tanstack/react-query";
+// import { dataTagSymbol } from "@tanstack/react-query";
 import Excel, { Workbook, Worksheet } from "exceljs";
 
 export const exportExcelPattern = async (

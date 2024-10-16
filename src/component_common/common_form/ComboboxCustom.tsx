@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { CommonObject } from "@/type/TypeCommon";
 import { Check, ChevronsUpDown } from "lucide-react";
 import React, { useEffect } from "react";
-import { any } from "zod";
+// import { any } from "zod";
 const frameworks = [
   {
     value: "next.js",
@@ -71,7 +71,7 @@ const ComboboxCustom = ({
         >
           {!!value
             ? dataList.length > 0 &&
-              dataList.find((item) => item[dataKey] == value)[dataName]
+              dataList.find((item) => item[dataKey] == value)![dataName]
             : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

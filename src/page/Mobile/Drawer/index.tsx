@@ -1,5 +1,4 @@
-import Compair from "@/component_common/Helpers/icons/Compair";
-import ThinLove from "@/component_common/Helpers/icons/ThinLove";
+import { Compair, ThinLove } from "@/component_common";
 import { useState } from "react";
 
 type DrawerProps = {
