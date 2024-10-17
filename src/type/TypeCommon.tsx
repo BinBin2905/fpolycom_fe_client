@@ -150,11 +150,11 @@ export type SectionStyle = {
   className?: string;
   sectionTitle?: string;
   seeMoreUrl?: string;
-  categoryTitle?: string;
+  categoryTitle: string | null;
   products?: Product[];
   type?: any;
   brands?: any[];
-  categoryBackground?: string;
+  categoryBackground: string | null;
   showProducts?: number;
 };
 
@@ -213,4 +213,31 @@ export type Product = {
   cam_product_available: number | null;
   cam_product_sale: number | null;
   product_type: string | null;
+};
+
+export type userProfile = {
+  userLogin?: string;
+  name: string;
+  phone: string;
+  email: string;
+  addressDetail: string | "";
+  address: string | "";
+  image:
+    | string
+    | "https://cdn-media.sforum.vn/storage/app/media/THANHAN/2/2a/avatar-dep-89.jpg";
+  bannerImage: string | "";
+  dateOfBirth: string | "1999-01-01";
+  gender: boolean | true;
+  provinceCode: number | 1;
+  districtCode: number | 1;
+  wardCode: number | 1;
+  provinceName: string | "";
+  districtName: string | "";
+  wardName: string | "";
+};
+
+export type NewPassword = {
+  userLogin: string;
+  passwordCurrent: string;
+  passwordNew: string;
 };

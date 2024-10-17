@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import Detail from "../../../components/Helpers/icons/detail";
-import Star from "../../../components/Helpers/icons/Star";
-import { SanPham } from "../../../hooks/type";
+import Detail from "@/component_common/Helpers/icons/Detail";
+import Star from "@/component_common/Helpers/icons/Star";
+import { SanPham } from "@/type/TypeCommon";
 
 export default function ProductCardBoxOwnerView({ data }: { data: SanPham }) {
   const cal = (args: string) => {

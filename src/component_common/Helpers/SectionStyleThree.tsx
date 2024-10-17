@@ -1,4 +1,4 @@
-import { SectionStyle } from "../../hooks/type";
+import { SectionStyle } from "@/type/TypeCommon";
 import ProductCardStyleOne from "./Cards/ProductCardStyleOne";
 import DataIteration from "./DataIteration";
 import ViewMoreTitle from "./ViewMoreTitle";

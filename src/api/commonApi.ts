@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useUserStore } from "@/store/userStore";
+import { NewPassword, userProfile } from "@/type/TypeCommon";
 // import moment from "moment";
 
 export const fetchDataCondition = async (body: { [key: string]: any }) => {
@@ -230,3 +231,71 @@ export const postData = async (
   }
   return response.data?.data;
 };
+
+// current user info
+export async function getCurrentUserInfo(body: { userLogin: string }) {
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/get",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  return response.data?.data;
+}
+
+export async function updateCurrentUserInfo(body: userProfile) {
+  console.log("body: ", body);
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/change-info",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  return response.data?.data;
+}
+
+export async function updateNewPassword(body: NewPassword) {
+  console.log("body: ", body);
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/change-password",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  return response.data?.data;
+}

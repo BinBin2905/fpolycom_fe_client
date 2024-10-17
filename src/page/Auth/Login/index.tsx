@@ -9,10 +9,11 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/api/authApi";
 import { useUserStore } from "@/store/userStore";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
+import { getCurrentUserInfo } from "@/api/commonApi";
 
 export default function Login() {
   const [checked, setValue] = useState(false);
-  const { currentUser, setCurrentUser } = useUserStore();
+  const { currentUser, setCurrentUser, setCurrentUserInfo } = useUserStore();
   const rememberMe = () => {
     setValue(!checked);
   };
@@ -24,8 +25,11 @@ export default function Login() {
 
   const handleLoginUser = useMutation({
     mutationFn: (body: typeof validationSchema) => loginUser(body),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setCurrentUser(data);
+      // setCurrentUserInfo(
+      //   await getCurrentUserInfo({ userLogin: data?.userLogin }, "/user/get")
+      // );
     },
   });
 

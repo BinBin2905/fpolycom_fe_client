@@ -1,7 +1,7 @@
 // import { useState, useRef, useEffect } from "react";
 
 import Star from "../../../components/Helpers/icons/Star";
-import { SanPham } from "../../../hooks/type";
+import { SanPham } from "@/type/TypeCommon";
 
 // import Detail from "../../Helpers/icons/detail";
 

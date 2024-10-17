@@ -160,7 +160,12 @@ const Navbar = () => {
             <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate("/profile");
+                }}
+              >
                 Thông tin tài khoản
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
