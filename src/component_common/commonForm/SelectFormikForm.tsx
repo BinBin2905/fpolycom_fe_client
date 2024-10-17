@@ -59,6 +59,7 @@ const SelectFormikForm = ({
       if (!field.value) {
         setSelected(options[0]);
         helpers.setValue(options[0][`${itemKey}`]);
+        // if (onChange) onChange(options[0]);
       } else {
         const findItem = options.find((item: ObjectSelect) => {
           console.log(item[itemKey], name + itemKey);
@@ -70,6 +71,7 @@ const SelectFormikForm = ({
         helpers.setValue(
           findItem ? findItem[itemKey] : options[0][`${itemKey}`]
         );
+        // if (onChange) onChange(options[0]);
       }
       setDataFilter([...options]);
     } else {

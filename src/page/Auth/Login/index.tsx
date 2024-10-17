@@ -10,6 +10,9 @@ import { loginUser } from "@/api/authApi";
 import { useUserStore } from "@/store/userStore";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
 import { getCurrentUserInfo } from "@/api/commonApi";
+import { NavLink } from "react-router-dom";
+import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
+
 
 export default function Login() {
   const [checked, setValue] = useState(false);
@@ -83,14 +86,14 @@ export default function Login() {
                       ></InputFormikForm>
                     </div>
                     <div className="input-item mb-5">
-                      <InputFormikForm
+                      <PasswordFormikForm
                         label="Mật khẩu"
                         name="password"
                         placeholder="Nhập mật khẩu..."
                         important={true}
 
                         // disabled={handlePostProvince.isPending}
-                      ></InputFormikForm>
+                      ></PasswordFormikForm>
                     </div>
                     {handleLoginUser.isError && (
                       <span className="text-xs text-red-500">
@@ -200,9 +203,9 @@ export default function Login() {
                     <div className="signup-area flex justify-center">
                       <p className="text-base text-qgraytwo font-normal">
                         Chưa có tài khoản ?
-                        <a href="/signup" className="ml-2 text-qblack">
+                        <NavLink to={"/signup"} className="ml-2 text-qblack">
                           Đăng kí
-                        </a>
+                        </NavLink>
                       </p>
                     </div>
                   </Form>
