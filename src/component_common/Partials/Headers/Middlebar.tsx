@@ -14,9 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, logoutUser } = useUserStore();
+  const navigate = useNavigate();
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
       <div className="container-x mx-auto h-full">
@@ -74,7 +76,12 @@ export default function Middlebar({ className }: { className?: string }) {
                       <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => {
+                            navigate("/profile");
+                          }}
+                        >
                           Thông tin tài khoản
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer">

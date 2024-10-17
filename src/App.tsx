@@ -39,7 +39,7 @@ function App() {
   console.log(import.meta.env.VITE_API_URL);
   return (
     <>
-      <Toaster />
+      <Toaster closeButton richColors position="bottom-left" expand={true} />
       <BrowserRouter>
         <Routes>
           <Route

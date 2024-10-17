@@ -1,4 +1,4 @@
-import { SectionStyle } from "../../hooks/type";
+import { SectionStyle } from "@/type/TypeCommon";
 
 export default function BrandSection({
   className,
