@@ -38,12 +38,11 @@ export default function ProfileTab() {
     queryFn: async () => await getCurrentUserInfo({ userLogin: username }),
     enabled: !!username,
   });
-
   const handleUpdateProfile = useMutation({
     mutationFn: updateCurrentUserInfo,
     onSuccess: (data) => {
       queryClient.setQueryData(["userInfo"], data);
-      // queryClient.invalidateQueries(["userInfo"]);
+      queryClient.invalidateQueries(["userInfo"]);
       setCurrentUserInfo(data);
       toast.success("Thông báo", {
         description: "Cập nhật thành công",
@@ -59,22 +58,28 @@ export default function ProfileTab() {
   });
 
   const handleSubmit = async (values: userProfile): Promise<void> => {
-    // console.log(values);
     await handleUpdateProfile.mutateAsync(values);
-    // console.log("data after update profile: " + data);
   };
 
   useEffect(() => {
     if (userProfile.data) {
       setCurrentUserInfo(userProfile.data);
-      setFullName(currentUserInfo!.name);
-      setEmail(currentUserInfo!.email);
-      setPhoneNumber(currentUserInfo!.phone);
-      setAddress(currentUserInfo!.address);
+      setFullName(userProfile.data.name);
+      setEmail(userProfile.data.email);
+      setPhoneNumber(userProfile.data.phone);
+      setAddress(userProfile.data.address);
     }
   }, [userProfile.data]);
 
-  if (email === "") return <h1>Loading</h1>;
+  if (
+    fullName === "" ||
+    email === "" ||
+    phoneNumber === "" ||
+    address === "" ||
+    userProfile.isLoading
+  ) {
+    return <h1>Loading</h1>;
+  }
 
   return (
     <>
