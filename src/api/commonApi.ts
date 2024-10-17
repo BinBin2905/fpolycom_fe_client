@@ -351,33 +351,3 @@ export const fetchDataCommon = async (enpoint: string) => {
   }
   return response.data?.data;
 };
-
-export const postDataCommon = async (
-  body: { [key: string]: any },
-  endpoint: string
-) => {
-  const response = await axios.post(
-    import.meta.env.VITE_API_URL + endpoint,
-    body
-  );
-  if (response.status != 200) {
-    throw new Error("Thêm dữ liệu thất bại!");
-  }
-  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
-  if (!(response.data?.code == "00")) {
-    throw new Error("No data found");
-  }
-  return response.data?.data;
-};
-
-export const fetchDataCommon = async (enpoint: string) => {
-  const response = await axios.get(import.meta.env.VITE_API_URL + enpoint);
-  if (response.status != 200) {
-    throw new Error("Failed to fetch data");
-  }
-  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
-  if (!(response.data?.code == "00")) {
-    throw new Error("No data found");
-  }
-  return response.data?.data;
-};
