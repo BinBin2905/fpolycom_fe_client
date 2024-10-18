@@ -1,6 +1,7 @@
 import { updateNewPassword } from "@/api/commonApi";
 import { ButtonForm } from "@/component_common";
 import { useUserStore } from "@/store";
+import { NewPassword } from "@/type/TypeCommon";
 import { useMutation } from "@tanstack/react-query";
 
 import { useRef, useState } from "react";
@@ -18,29 +19,48 @@ export default function PasswordTab() {
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
+  // const updateNewPass = useMutation({
+  //   mutationFn: updateNewPassword,
+  //   onMutate: () => {
+  //     setIsUpdate(true);
+  //   },
+  //   onSuccess: () => {
+  //     setPassBlank();
+  //     setTimeout(() => {
+  //       setIsUpdate(false);
+  //       toast.success("Thông báo", {
+  //         description: "Cập nhật thành công",
+  //         className: "p-3",
+  //       });
+  //     }, 1500);
+  //   },
+  //   onError: (data) => {
+  //     setIsUpdate(false);
+  //     toast.error("Thông báo", {
+  //       description: data.message,
+  //       className: "p-3",
+  //     });
+  //   },
+  // });
+
   const updateNewPass = useMutation({
     mutationFn: updateNewPassword,
-    onMutate: () => {
-      setIsUpdate(true);
-    },
     onSuccess: () => {
       setPassBlank();
-      setTimeout(() => {
-        setIsUpdate(false);
-        toast.success("Thông báo", {
-          description: "Cập nhật thành công",
-          className: "p-3",
-        });
-      }, 1500);
+      setIsUpdate(false);
     },
     onError: (data) => {
       setIsUpdate(false);
-      toast.error("Thông báo", {
-        description: data.message,
-        className: "p-3",
-      });
     },
   });
+
+  const promise = (values: NewPassword) =>
+    new Promise((resolve, reject) => {
+      setIsUpdate(true);
+      setTimeout(async () => {
+        await updateNewPass.mutateAsync(values).then(resolve).catch(reject);
+      }, 3000);
+    });
 
   const setPassBlank = () => {
     oldPasswordRef.current!.value = "";
@@ -49,24 +69,30 @@ export default function PasswordTab() {
   };
 
   const handleChangePassword = async () => {
+    console.log("Old Password:", oldPasswordRef.current?.value);
+    console.log("New Password:", newPasswordRef.current?.value);
+    console.log("Confirm Password:", confirmPasswordRef.current?.value);
     if (
-      oldPasswordRef.current === null ||
-      newPasswordRef.current === null ||
-      confirmPasswordRef.current === null
+      oldPasswordRef.current?.value === "" ||
+      newPasswordRef.current?.value === "" ||
+      confirmPasswordRef.current?.value === ""
     ) {
+      toast.info("Thông báo", {
+        description: "Không được để trống",
+        className: "p-4 text-lg",
+      });
       return;
     }
 
-    const oldPassword = oldPasswordRef.current.value;
-    const newPassword = newPasswordRef.current.value;
-    const confirmPassword = confirmPasswordRef.current.value;
+    const oldPassword = oldPasswordRef.current!.value;
+    const newPassword = newPasswordRef.current!.value;
+    const confirmPassword = confirmPasswordRef.current!.value;
 
     if (!(newPassword == confirmPassword)) {
       toast.info("Thông báo", {
         description: "Mật khẩu không trùng khớp",
-        className: "p-3",
+        className: "p-4 text-lg",
       });
-      console.log("Mật khẩu không trùng khớp");
       return;
     }
 
@@ -75,11 +101,29 @@ export default function PasswordTab() {
     console.log("New Password:", newPassword);
     console.log("Confirm Password:", confirmPassword);
 
-    await updateNewPass.mutateAsync({
-      userLogin: currentUser!.userLogin,
-      passwordCurrent: oldPassword,
-      passwordNew: newPassword,
-    });
+    // await updateNewPass.mutateAsync({
+    //   userLogin: currentUser!.userLogin,
+    //   passwordCurrent: oldPassword,
+    //   passwordNew: newPassword,
+    // });
+
+    await toast.promise(
+      promise({
+        userLogin: currentUser!.userLogin,
+        passwordCurrent: oldPassword,
+        passwordNew: newPassword,
+      }),
+      {
+        className: "p-5 text-lg",
+        loading: "Đang cập nhật...",
+        success: (data) => {
+          return `Cập nhật thành công `;
+        },
+        error: (error) => {
+          return ` ${error.message}`;
+        },
+      }
+    );
   };
 
   const showPassword = (value: string | null) => {
@@ -358,7 +402,7 @@ export default function PasswordTab() {
                 className={`bg-qblack ${
                   isUpdate ? "bg-slate-400  w-full" : ""
                 } h-full mb-3 `}
-                loading={isUpdate}
+                // loading={isUpdate}
                 labelLoading="Đang cập nhật..."
                 disabled={isUpdate}
               />
