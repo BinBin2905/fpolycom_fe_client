@@ -1,26 +1,94 @@
 import { useEffect, useRef, useState } from "react";
-import data from "../../data/products.json";
-
-import ProductView from "./ProductView";
-import Reviews from "./Reviews";
-import SallerInfo from "./SallerInfo";
-import { Comments } from "@/type/TypeCommon";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
-import Layout from "@/component_common/Partials/Headers/Layout";
-import DataIteration from "@/component_common/Helpers/DataIteration";
-import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
-import InputCom from "@/component_common/Helpers/InputCom";
 import { useUserStore } from "@/store";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { postDataCommon } from "@/api/commonApi";
-import Selectbox from "@/component_common/Helpers/Selectbox";
+import { postData, postDataCommon } from "@/api/commonApi";
+import { SectionStyleOne } from "@/component_common";
+import { toast } from "sonner";
+
+type ProductDetailObject = {
+  productDetailCode: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  discountCode: number;
+  percentDecrease: number;
+};
+
+type ProductAttrObject = {
+  attrValue: string;
+  typeGoodAttrCode: string;
+  nameAttr: string;
+  productCode: string;
+  productAttrCode: string;
+};
+
+type ProductObject = {
+  productCode: number;
+  name: string;
+  description: string;
+  shortDescription: string;
+  image: string;
+  status: string;
+  typeGoodName: string;
+  typeGoodCode: string;
+  numberOfLikes: number;
+  numberOfEvaluates: number;
+  pointEvaluate: number;
+  minPrice: number;
+  maxPrice: number;
+  liked: boolean | null;
+  storeCode: number;
+  storeName: string;
+  productDetailList?: ProductDetailObject[];
+  productAttrList: ProductAttrObject[];
+};
 
 export default function SingleProductPage() {
   const { id } = useParams();
+  const [productDetail, setProductDetail] = useState<ProductObject | null>(
+    null
+  );
+  const [selected, setSelected] = useState<ProductDetailObject | null>(null);
   const { currentUser } = useUserStore();
   const handleFetchProduct = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/product/detail"),
+    onSuccess: (data, variables) => {},
+  });
+
+  const handleFetchStore = useMutation({
+    mutationFn: (body: any) => postDataCommon(body, "/common/store/detail"),
+    onSuccess: (data, variables) => {},
+  });
+
+  const handleFetchEvaludate = useMutation({
+    mutationFn: (body: any) => postDataCommon(body, "/product/evaluate/all"),
+    onSuccess: (data, variables) => {},
+  });
+
+  const handlePostLikeProduct = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/product/liked"),
+    onSuccess: (data, variables) => {
+      if (productDetail) {
+        setProductDetail({ ...productDetail, liked: true });
+      }
+    },
+  });
+
+  const handlePostUnLikeProduct = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/product/unliked"),
+    onSuccess: (data, variables) => {
+      if (productDetail) {
+        setProductDetail({ ...productDetail, liked: false });
+      }
+    },
+  });
+
+  const handleFetchProductByStore = useMutation({
+    mutationFn: (body: any) =>
+      postDataCommon(body, "/common/store/all-product"),
     onSuccess: (data, variables) => {},
   });
   const [tab, setTab] = useState<string>("des");
@@ -42,10 +110,56 @@ export default function SingleProductPage() {
           productCode: id,
           userLogin: currentUser ? currentUser.userLogin : "",
         });
+        await handleFetchEvaludate.mutateAsync({
+          productCode: id,
+        });
       }
     };
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    if (handleFetchProduct.isSuccess && handleFetchProduct.data) {
+      setProductDetail(handleFetchProduct.data);
+      handleFetchStore.mutateAsync({
+        storeCode: handleFetchProduct.data?.storeCode,
+      });
+      handleFetchProductByStore.mutateAsync({
+        storeCode: handleFetchProduct.data?.storeCode,
+      });
+    }
+  }, [handleFetchProduct.isSuccess]);
+  console.log(
+    handleFetchEvaludate.data
+      ? handleFetchEvaludate.data[0]?.imageList.length
+      : 0
+  );
+
+  const handleLike = (): void => {
+    if (!currentUser) {
+      toast("Thông báo", {
+        description: "Đăng nhập để sử dụng tính năng này!",
+        action: {
+          label: "Undo",
+          onClick: () => console.log("Undo"),
+        },
+      });
+      return;
+    }
+    if (productDetail) {
+      if (!productDetail?.liked) {
+        handlePostLikeProduct.mutateAsync({
+          userLogin: currentUser?.userLogin,
+          productCode: productDetail.productCode,
+        });
+      } else {
+        handlePostUnLikeProduct.mutateAsync({
+          userLogin: currentUser?.userLogin,
+          productCode: productDetail.productCode,
+        });
+      }
+    }
+  };
   return (
     <>
       <div className="single-product-wrapper w-full ">
@@ -68,98 +182,137 @@ export default function SingleProductPage() {
           <div className="w-full bg-white pb-[60px]">
             <div className="container-x mx-auto">
               <div className={`product-view w-full lg:flex justify-between`}>
-                <div
-                  data-aos="fade-right"
-                  className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]"
-                >
+                <div className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]">
                   <div className="w-full">
                     <div className="w-full h-[600px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
                       <img
                         src={`${
-                          handleFetchProduct.data
-                            ? handleFetchProduct.data.image
-                            : ""
+                          selected ? selected.image : productDetail?.image
                         }`}
                         alt=""
                         className="object-contain"
                       />
-                      <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
-                        <span>-10%</span>
-                      </div>
+                      {selected && (
+                        <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
+                          <span>-{selected.percentDecrease}%</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      {/* {productsImg &&
-                        productsImg.length > 0 &&
-                        productsImg.map((img) => (
+                      <div
+                        onClick={() => setSelected(null)}
+                        // key={item.productDetailCode}
+                        className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
+                      >
+                        <img
+                          src={productDetail ? productDetail.image : ""}
+                          alt=""
+                          className={`w-full h-full object-contain ${
+                            selected == null ? "opacity-100" : "opacity-50"
+                          }`}
+                        />
+                      </div>
+                      {productDetail?.productDetailList &&
+                        productDetail.productDetailList.length > 0 &&
+                        productDetail.productDetailList.map((item) => (
                           <div
-                            onClick={() => changeImgHandler(img.src)}
-                            key={img.id}
+                            onClick={() => setSelected(item)}
+                            key={item.productDetailCode}
                             className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
                           >
                             <img
-                              src={`/assets/images/${img.src}`}
+                              src={item?.image}
                               alt=""
                               className={`w-full h-full object-contain ${
-                                src !== img.src ? "opacity-50" : ""
-                              } `}
+                                selected?.productDetailCode ==
+                                item.productDetailCode
+                                  ? "opacity-100"
+                                  : "opacity-50"
+                              }`}
                             />
                           </div>
-                        ))} */}
+                        ))}
                     </div>
                   </div>
                 </div>
                 <div className="flex-1">
                   <div className="product-details w-full mt-10 lg:mt-0">
-                    <span
-                      data-aos="fade-up"
-                      className="text-qgray text-xs font-normal uppercase tracking-wider mb-2 inline-block"
-                    >
-                      Điện thoại
+                    <span className="text-qgray text-xs font-normal uppercase tracking-wider mb-2 inline-block">
+                      {productDetail?.typeGoodName}
                     </span>
                     <p
                       data-aos="fade-up"
-                      className="text-xl font-medium text-qblack mb-4"
+                      className="text-xl font-medium text-qblack mb-2"
                     >
-                      Samsung Galaxy Z Fold3 5G - Phiên bản 8GB RAM
+                      {productDetail?.name}
                     </p>
-                    <div
-                      data-aos="fade-up"
-                      className="flex space-x-[10px] items-center mb-6"
-                    >
+                    <div className="flex space-x-[10px] items-center mb-2">
                       <div className="flex">
+                        {productDetail &&
+                          Array.from({
+                            length: productDetail.pointEvaluate,
+                          }).map((_, index) => (
+                            <span key={index}>
+                              <i className="ri-star-fill text-yellow-500"></i>
+                            </span>
+                          ))}
+                        {productDetail &&
+                          Array.from({
+                            length: 5 - productDetail.pointEvaluate,
+                          }).map((_, index) => (
+                            <span key={index}>
+                              <i className="ri-star-line text-yellow-500"></i>
+                            </span>
+                          ))}
+
                         {/* <Star />
                         <Star />
                         <Star />
                         <Star />
                         <Star /> */}
                       </div>
-                      <span className="text-[13px] font-normal text-qblack">
-                        6 Đánh giá
-                      </span>
+                      {productDetail && (
+                        <span className="text-gray-500 text-xs">
+                          ({productDetail.numberOfEvaluates} đánh giá)
+                        </span>
+                      )}
                     </div>
 
-                    <div data-aos="fade-up" className="flex space-x-2 mb-7">
-                      <span className="text-sm font-500 text-qgray line-through mt-2">
-                        12 300 000
-                      </span>
-                      <span className="text-2xl font-500 text-qred">
-                        9.000.000
-                        <i className="font-400 text-[12px]">vnđ</i>
-                      </span>
+                    <div className="flex space-x-2 mb-5 text-red-500">
+                      {productDetail &&
+                        productDetail.maxPrice == productDetail.minPrice && (
+                          <span className="offer-price  font-600 ">
+                            {new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(productDetail.maxPrice)}
+                          </span>
+                        )}
+                      {productDetail &&
+                        productDetail.maxPrice > productDetail.minPrice && (
+                          <>
+                            <span className="offer-price  font-600 ">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(productDetail.minPrice)}
+                            </span>
+                            <span>-</span>
+                            <span className="offer-price  font-600 ">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(productDetail.maxPrice)}
+                            </span>
+                          </>
+                        )}
                     </div>
 
                     <p
                       data-aos="fade-up"
                       className="text-qgray text-sm text-normal mb-[30px] leading-7"
                     >
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                      sint occaecat cupidatat non proident, sunt in culpa qui
-                      officia deserunt mollit anim id est laborum.
+                      {productDetail && productDetail?.description}
                     </p>
 
                     {/* <div data-aos="fade-up" className="colors mb-[30px]">
@@ -190,50 +343,44 @@ export default function SingleProductPage() {
             </div>
           </div> */}
 
-                    <div data-aos="fade-up" className="product-size mb-[30px]">
+                    <div className="product-size mb-[30px]">
                       <span className="text-sm font-normal uppercase text-qblack mb-[14px] inline-block">
                         Lựa chọn
                       </span>
-                      <div className="w-full">
-                        <div className=" border border-qgray-border h-[50px] flex justify-between items-center px-6 cursor-pointer">
-                          <Selectbox
-                            className="w-full"
-                            datas={["128 GB", "256 GB", "512 GB", "1 TB"]}
-                          >
-                            {({ item }) => (
-                              <>
-                                <div>
-                                  <span className="text-[13px] text-qblack">
-                                    {item}
-                                  </span>
-                                </div>
-                                <div className="flex space-x-10 align-items-center">
-                                  <span>
-                                    <svg
-                                      width="11"
-                                      height="7"
-                                      viewBox="0 0 11 7"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M5.4 6.8L0 1.4L1.4 0L5.4 4L9.4 0L10.8 1.4L5.4 6.8Z"
-                                        fill="#222222"
-                                      />
-                                    </svg>
-                                  </span>
-                                </div>
-                              </>
-                            )}
-                          </Selectbox>
-                        </div>
+                      <div className="w-ful flex flex-wrap gap-2">
+                        {productDetail &&
+                          productDetail.productDetailList &&
+                          productDetail.productDetailList.map((item) => {
+                            return (
+                              <div
+                                onClick={() => setSelected(item)}
+                                className={`${
+                                  selected?.productDetailCode ==
+                                  item.productDetailCode
+                                    ? "border-red-300 shadow-md"
+                                    : "border-gray-200"
+                                } border relative px-2 py-2 rounded-md flex items-center gap-x-2 w-fit cursor-pointer`}
+                              >
+                                <img
+                                  src={item.image}
+                                  alt=""
+                                  className="size-8"
+                                />
+                                <span className="text-sm w-16">
+                                  {item.name}
+                                </span>
+                                {item.percentDecrease && (
+                                  <div className="absolute -top-3 bg-red-500 -right-2 text-white rounded-full border border-gray-100 shadow-md size-8 text-[9px] flex items-center justify-center">
+                                    -{item.percentDecrease}%
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
 
-                    <div
-                      data-aos="fade-up"
-                      className="quantity-card-wrapper w-full flex items-center h-[50px] space-x-[10px] mb-[30px]"
-                    >
+                    <div className="quantity-card-wrapper w-full flex items-center h-[50px] space-x-[10px] mb-[30px]">
                       <div className="w-[120px] h-full px-[26px] flex items-center border border-qgray-border">
                         <div className="flex justify-between items-center w-full">
                           <button
@@ -253,26 +400,15 @@ export default function SingleProductPage() {
                           </button>
                         </div>
                       </div>
-                      <div className="w-[60px] h-full flex justify-center items-center border border-qgray-border">
-                        <button type="button">
-                          <span>
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M17 1C14.9 1 13.1 2.1 12 3.7C10.9 2.1 9.1 1 7 1C3.7 1 1 3.7 1 7C1 13 12 22 12 22C12 22 23 13 23 7C23 3.7 20.3 1 17 1Z"
-                                stroke="#D5D5D5"
-                                strokeWidth="2"
-                                strokeMiterlimit="10"
-                                strokeLinecap="square"
-                              />
-                            </svg>
-                          </span>
-                        </button>
+                      <div
+                        onClick={() => handleLike()}
+                        className="w-[60px] cursor-pointer h-full flex justify-center items-center border border-qgray-border"
+                      >
+                        {productDetail?.liked ? (
+                          <i className="ri-heart-fill text-red-500  text-xl"></i>
+                        ) : (
+                          <i className="ri-heart-line text-xl"></i>
+                        )}
                       </div>
                       <div className="flex-1 h-full">
                         <button
@@ -286,15 +422,23 @@ export default function SingleProductPage() {
 
                     <div data-aos="fade-up" className="mb-[20px]">
                       <p className="text-[13px] text-qgray leading-7">
-                        <span className="text-qblack">Mã sản phẩm:</span>{" "}
-                        SP_SGZF35G_8GB
+                        <span className="text-qblack">Mã sản phẩm:</span> #
+                        {productDetail && productDetail.productCode}
                       </p>
                       <p className="text-[13px] text-qgray leading-7">
-                        <span className="text-qblack">Tồn kho :</span> 50
+                        <span className="text-qblack">Tồn kho :</span>{" "}
+                        {productDetail &&
+                          productDetail.productDetailList &&
+                          productDetail.productDetailList.reduce(
+                            (accumulator, currentValue) => {
+                              return accumulator + currentValue.quantity;
+                            },
+                            0
+                          )}
                       </p>
                       <p className="text-[13px] text-blue-900 leading-7">
-                        <span className="text-qblack">Tags :</span> Điện thoại,
-                        Tai nghe, Phụ kiện
+                        <span className="text-qblack">Tags :</span>{" "}
+                        {productDetail && productDetail.typeGoodName}
                       </p>
                     </div>
 
@@ -362,13 +506,13 @@ export default function SingleProductPage() {
           className="product-des-wrapper w-full relative pb-[60px]"
           ref={reviewElement}
         >
-          <div className="tab-buttons w-full mb-10 mt-5 sm:mt-0">
+          <div className="tab-buttons w-full mb-5 mt-5 sm:mt-0">
             <div className="container-x mx-auto">
-              <ul className="flex space-x-12 ">
+              <ul className="flex border-b border-gray-100">
                 <li>
                   <span
                     onClick={() => setTab("des")}
-                    className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
+                    className={`py-[15px] px-4 sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
                       tab === "des"
                         ? "border-qyellow text-qblack "
                         : "border-transparent text-qgray"
@@ -380,7 +524,7 @@ export default function SingleProductPage() {
                 <li>
                   <span
                     onClick={() => setTab("review")}
-                    className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
+                    className={`py-[15px] px-4 sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
                       tab === "review"
                         ? "border-qyellow text-qblack "
                         : "border-transparent text-qgray"
@@ -392,7 +536,7 @@ export default function SingleProductPage() {
                 <li>
                   <span
                     onClick={() => setTab("info")}
-                    className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
+                    className={`py-[15px] px-4 sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
                       tab === "info"
                         ? "border-qyellow text-qblack "
                         : "border-transparent text-qgray"
@@ -409,75 +553,187 @@ export default function SingleProductPage() {
             <div className="container-x mx-auto">
               {tab === "des" && (
                 <div data-aos="fade-up" className="w-full tab-content-item">
-                  <h6 className="text-[18px] font-medium text-qblack mb-2">
-                    Introduction
+                  <h6 className="text-base font-medium text-gray-800 italic mb-2">
+                    Mô tả sản phẩm
                   </h6>
                   <p className="text-[15px] text-qgray text-normal mb-10">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries
-                    but also the on leap into electronic typesetting, remaining
-                    essentially unchanged. It wasnt popularised in the 1960s
-                    with the release of Letraset sheets containing Lorem Ipsum
-                    passages, andei more recently with desktop publishing
-                    software like Aldus PageMaker including versions of Lorem
-                    Ipsum to make a type specimen book
+                    {productDetail && productDetail.description}
                   </p>
                   <div>
-                    <h6 className="text-[18px] text-medium mb-4">Tính năng:</h6>
-                    <ul className="list-disc ml-[15px]">
-                      <li className="font-normal text-qgray leading-9">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                      </li>
-                      <li className="font-normal text-qgray leading-9">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                      </li>
-                      <li className="font-normal text-qgray leading-9">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                      </li>
-                      <li className="font-normal text-qgray leading-9">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry.
-                      </li>
+                    <h6 className="text-base text-gray-800 italic font-medium mb-4">
+                      Thông tin chi tiết:
+                    </h6>
+                    <ul className="ml-[15px]">
+                      {productDetail &&
+                        productDetail.productAttrList &&
+                        productDetail.productAttrList.map((item) => {
+                          return (
+                            <li className="font-normal text-gray-700 leading-9 text-xs">
+                              <span className="font-semibold">
+                                {item?.nameAttr}:{" "}
+                              </span>
+                              {item?.attrValue}
+                            </li>
+                          );
+                        })}
                     </ul>
                   </div>
                 </div>
               )}
               {tab === "review" && (
-                <div data-aos="fade-up" className="w-full tab-content-item">
-                  <h6 className="text-[18px] font-medium text-qblack mb-2">
-                    Reviews
-                  </h6>
+                <div className="w-full tab-content-item">
                   {/* review-comments */}
                   <div className="w-full">
-                    {/* <Reviews
-                      reviewLoading={reviewLoading}
-                      reviewAction={reviewAction}
-                      comments={comments.slice(0, 2)}
-                      name={name}
-                      nameHandler={(e) => setName(e.target.value)}
-                      email={email}
-                      emailHandler={(e) => setEmail(e.target.value)}
-                      phone={phone}
-                      phoneHandler={(e) => setPhone(e.target.value)}
-                      message={message}
-                      messageHandler={(e) => setMessage(e.target.value)}
-                      rating={rating}
-                      ratingHandler={setRating}
-                      hoverRating={hover}
-                      hoverHandler={setHover}
-                    /> */}
+                    {handleFetchEvaludate.data &&
+                      handleFetchEvaludate.data.map((item: any) => {
+                        return (
+                          <div>
+                            <div
+                              // key={reply.id}
+                              className="sub-comment-item bg-white px-10 py-4 border-b border-slate-100"
+                            >
+                              <div className="comment-author  mb-3">
+                                <div className="flex gap-x-3 items-start">
+                                  <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+                                    <img
+                                      src={
+                                        item?.userImage ? item?.userImage : ""
+                                      }
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-qblack flex items-center gap-x-2">
+                                      <span>
+                                        {item?.username ? item?.username : ""}{" "}
+                                      </span>
+                                      <div className="flex gap-x-0.5">
+                                        {item?.quality &&
+                                          Array.from({
+                                            length: item?.quality,
+                                          }).map((_, index) => (
+                                            <span key={index}>
+                                              <i className="ri-star-fill text-yellow-500"></i>
+                                            </span>
+                                          ))}
+                                        {item?.quality &&
+                                          Array.from({
+                                            length: 5 - item?.quality,
+                                          }).map((_, index) => (
+                                            <span key={index}>
+                                              <i className="ri-star-line text-yellow-500"></i>
+                                            </span>
+                                          ))}
+                                      </div>
+                                    </p>
+                                    <p className="text-[10px] italic font-normal text-qgray">
+                                      {item?.dateEvaluate
+                                        ? item?.dateEvaluate
+                                        : ""}
+                                    </p>
+                                    <div className="ml-3 mt-2 text-gray-700 text-xs flex flex-col gap-y-2 mb-2">
+                                      <p>"{item?.title ? item?.title : ""}"</p>
+                                      <p>
+                                        {item?.content ? item?.content : ""}
+                                      </p>
+                                    </div>
+                                    <div className="flex gap-x-2">
+                                      {item?.imageList &&
+                                        item?.imageList?.map((i: any) => {
+                                          return (
+                                            <img
+                                              src={i?.image}
+                                              className="w-28 h-14 object-cover object-top border border-gray-100"
+                                              alt=""
+                                            />
+                                          );
+                                        })}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               )}
               {tab === "info" && (
-                <div data-aos="fade-up" className="w-full tab-content-item">
-                  <SallerInfo products={data.products.slice(0, 8)} />
+                <div className="w-full tab-content-item">
+                  {handleFetchStore.data && (
+                    <div className="saller-info sm:flex justify-between items-center pb-[30px] border-[#E8E8E8]">
+                      <div className="sm:flex sm:space-x-5 items-center sm:w-1/4">
+                        <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden">
+                          <img
+                            src={handleFetchStore.data.image}
+                            alt="saller"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h6 className="text-[18px] font-medium leading-[30px]">
+                            {handleFetchStore.data.name}
+                          </h6>
+                          <p className="text-[13px] font-normal text-qgray leading-[30px]">
+                            {handleFetchStore.data.districtName},
+                            {handleFetchStore.data.provinceName}
+                          </p>
+                          <div className="flex items-center mt-4">
+                            <div className="flex">
+                              {/* <Star w="15" h="15" />
+                            <Star w="15" h="15" />
+                            <Star w="15" h="15" />
+                            <Star w="15" h="15" />
+                            <Star w="15" h="15" /> */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full sm:flex sm:space-x-5 justify-between sm:ml-[60px] border-b mt-5 sm:mt-0">
+                        <div className="w-full mb-5 sm:mb-0">
+                          <ul>
+                            <li className="text-qgray leading-[30px]">
+                              <span className="text-[15px] text-gray-700 font-medium">
+                                Số điện thoại:
+                              </span>
+                              {handleFetchStore.data.phone}
+                            </li>
+                            <li className="text-qgray leading-[30px] text-xs">
+                              <span className="text-[15px] text-gray-700 font-medium">
+                                Email:{" "}
+                              </span>
+                              {handleFetchStore.data.email}
+                            </li>
+                            <li className="text-qgray leading-[30px] text-xs">
+                              <span className="text-[15px] text-gray-700 font-medium">
+                                Trạng thái:{" "}
+                              </span>
+                              {handleFetchStore.data.status == "active" &&
+                                "Đang hoạt động"}
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="w-full ">
+                          <ul>
+                            <li className="text-qgray leading-[30px] text-xs">
+                              <span className="text-[15px] text-gray-700 font-medium">
+                                Lượt theo dõi:{" "}
+                              </span>
+                              {handleFetchStore.data.numberOfFollowed}
+                            </li>
+                            <li className="text-qgray leading-[30px] text-xs">
+                              <span className="text-[15px] text-gray-700 font-medium">
+                                Lượt thích:{" "}
+                              </span>
+                              {handleFetchStore.data.numberOfLiked}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -509,6 +765,16 @@ export default function SingleProductPage() {
             </div>
           </div>
         </div> */}
+
+        <SectionStyleOne
+          products={
+            handleFetchProductByStore.data ? handleFetchProductByStore.data : []
+          }
+          categoryTitle="Mobile & Tablet"
+          sectionTitle="Sản phẩm liên quan"
+          seeMoreUrl="/all-products"
+          className="category-products mb-[60px]"
+        />
       </div>
       {/* {report && (
         <div className="w-full h-full flex fixed left-0 top-0 justify-center z-50 items-center">

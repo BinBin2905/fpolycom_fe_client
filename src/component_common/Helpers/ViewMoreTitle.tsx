@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 type ViewMoreTitleProps = {
   categoryTitle?: string;
   className?: string;
@@ -16,14 +18,14 @@ export default function ViewMoreTitle({
       <div className="container-x mx-auto">
         <div className=" section-title flex justify-between items-center mb-5">
           <div>
-            <h1 className="sm:text-3xl text-xl font-600 text-qblacktext leading-none">
+            <h1 className="sm:text-3xl text-xl font-600 text-slate-700 leading-none">
               {categoryTitle}
             </h1>
           </div>
           <div>
-            <a href={seeMoreUrl}>
+            <NavLink to={seeMoreUrl}>
               <div className="flex space-x-2 items-center">
-                <p className="text-base font-600 text-qblack">View More</p>
+                <p className="text-base font-600 text-qblack">Xem thêm</p>
                 <span className="animate-right-dir">
                   <svg
                     width="17"
@@ -43,7 +45,7 @@ export default function ViewMoreTitle({
                   </svg>
                 </span>
               </div>
-            </a>
+            </NavLink>
           </div>
         </div>
         <div className="section-content">{children && children}</div>

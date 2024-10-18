@@ -17,18 +17,14 @@ import { Product, SectionStyle } from "@/type/TypeCommon";
 
 export default function SectionStyleOne({
   className,
-  categoryTitle,
   sectionTitle,
   seeMoreUrl,
-  brands,
   products,
-  categoryBackground,
 }: {
   className: string;
   categoryTitle: string;
   sectionTitle: string;
   seeMoreUrl: string;
-  brands: string;
   products: Product[];
   categoryBackground?: [];
 }) {
