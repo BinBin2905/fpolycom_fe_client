@@ -15,6 +15,9 @@ import {
   SectionStyleThree,
   SectionStyleFour,
 } from "@/component_common";
+import { fetchDataCommon } from "@/api/commonApi";
+import { useQuery } from "@tanstack/react-query";
+import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
 
 export default function Home() {
   const { products } = datas;
@@ -22,6 +25,16 @@ export default function Home() {
   // JSON.parse(sessionStorage.getItem("user"));
   products.forEach((product) => {
     brands.push(product.brand);
+  });
+
+  const {
+    data: dataProducts,
+    isSuccess: isSuccessProducts,
+    isError: isErrorProducts,
+    isFetching: isFetchingProducts,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetchDataCommon("/common/product/all"),
   });
 
   // const setUser = actors.
@@ -39,14 +52,14 @@ export default function Home() {
       {/* {ads && <Ads handler={adsHandle} />} */}
       <div className="btn w-5 h-5 "></div>
       <Banner className="banner-wrapper mb-[60px]" />
+
       <SectionStyleOne
-        products={products}
+        products={dataProducts}
         brands={brands}
         categoryTitle="Mobile & Tablet"
         sectionTitle="Gamer World"
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
-        categoryBackground={null}
       />
       <BrandSection
         sectionTitle="Shop by Brand"
@@ -78,7 +91,7 @@ export default function Home() {
         sectionHeight="sm:h-[295px] h-full"
         className="products-ads-section mb-[60px]"
       />
-      <SectionStyleOne
+      {/* <SectionStyleOne
         categoryBackground={`/assets/images/BannerDrinks.png`}
         products={products.slice(4, products.length)}
         brands={brands}
@@ -86,7 +99,7 @@ export default function Home() {
         sectionTitle="Đồ uống"
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
-      />
+      /> */}
       <ProductsAds
         ads={[`/assets/images/ads-3.png`]}
         className="products-ads-section mb-[60px]"
