@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import Arrow from "../../Helpers/icons/Arrow";
 import { useUserStore } from "@/store/userStore";
 
-export default function Navbar({ className }: { className?: string }) {
+export default function Navbar() {
   const { currentUser, logoutUser } = useUserStore();
   const isSaller = true;
   const [categoryToggle, setToggle] = useState(false);
@@ -28,8 +28,7 @@ export default function Navbar({ className }: { className?: string }) {
 
   return (
     <div
-      className={`nav-widget-wrapper w-full  h-[60px] relative z-30 bg-qyellow
-        ${className || ""}`}
+      className="nav-widget-wrapper w-full  h-[60px] relative z-30 bg-qyellow"
     >
       <div className="container-x mx-auto h-full">
         <div className="w-full h-full relative">

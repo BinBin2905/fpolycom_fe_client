@@ -26,6 +26,7 @@ import FourZeroFour from "./FourZeroFour/index.js";
 import Drawer from "./Mobile/Drawer";
 import DiscountBanner from "./home/DiscountBanner";
 import Cart from "./Cart";
+import OrderDetail from "./Auth/Profile/OrderDetail/index.js";
 
 export {
   DashboardProductPage,
@@ -56,4 +57,5 @@ export {
   Drawer,
   DiscountBanner,
   Cart,
+  OrderDetail
 };
