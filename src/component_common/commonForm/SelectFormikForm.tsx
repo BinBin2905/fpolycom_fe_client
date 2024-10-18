@@ -37,7 +37,7 @@ const SelectFormikForm = ({
   const [field, meta, helpers] = useField(name);
   const [dataFilter, setDataFilter] = useState(options);
   const [show, setShow] = useState(false);
-  const [selected, setSelected] = useState<ObjectSelect>(options[0]);
+  const [selected, setSelected] = useState<ObjectSelect | null>(options[0]);
   const handleSelectItem = (item: ObjectSelect) => {
     helpers.setValue(item[`${itemKey}`]);
     if (onChange) onChange(item);
@@ -75,6 +75,7 @@ const SelectFormikForm = ({
       }
       setDataFilter([...options]);
     } else {
+      setSelected(null);
       setDataFilter([]);
     }
     setShow(false);

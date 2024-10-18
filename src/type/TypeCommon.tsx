@@ -214,3 +214,18 @@ export type Product = {
   cam_product_sale: number | null;
   product_type: string | null;
 };
+
+export type RegisterObject = {
+  userLogin?: string | null | undefined;
+  password?: string | null | undefined;
+  name?: string | null | undefined;
+  phone?: string | null | undefined;
+  addressDetail?: string | null | undefined;
+  address?: string | null | undefined;
+  email?: string | null | undefined;
+  dateOfBirth?: string | null | undefined;
+  gender?: boolean | null | undefined;
+  provinceCode?: string | null | undefined;
+  wardCode?: string | null | undefined;
+  districtCode?: string | null | undefined;
+};
