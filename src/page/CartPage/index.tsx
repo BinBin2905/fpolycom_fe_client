@@ -7,8 +7,9 @@ import ProductsTable from "@/component_common/Wishlist/ProductsTable";
 
 export default function CardPage({ cart = true }) {
   return (
-    <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
-      {cart === false ? (
+    // <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
+    <>
+      {!cart ? (
         <div className="cart-page-wrapper w-full">
           <div className="container-x mx-auto">
             <BreadcrumbCom
@@ -192,6 +193,7 @@ export default function CardPage({ cart = true }) {
           </div>
         </div>
       )}
-    </Layout>
+    </>
+    // </Layout>
   );
 }

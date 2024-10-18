@@ -1,13 +1,9 @@
-import React from "react";
-
 export default function Dashboard() {
   return (
     <>
       <div className="welcome-msg w-full">
         <div>
-          <h1 className="font-bold text-[24px] text-qblack">
-            Lượt mua
-          </h1>
+          <h1 className="font-bold text-[24px] text-qblack">Lượt mua</h1>
         </div>
       </div>
       <div className="quick-view-grid w-full flex justify-start space-x-10 items-center mt-3 ">
@@ -68,9 +64,11 @@ export default function Dashboard() {
           </span>
         </div>
       </div>
-      
+
       <div className="relative w-full overflow-x-auto sm:rounded-lg">
-      <p className="title text-[22px] font-semibold mb-1 mt-10 w-100">Đơn hàng</p>
+        <p className="title text-[22px] font-semibold mb-1 mt-10 w-100">
+          Đơn hàng
+        </p>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <tbody>
             {/* table heading */}
@@ -112,7 +110,6 @@ export default function Dashboard() {
                 </button>
               </td>
             </tr>
-            
           </tbody>
         </table>
       </div>
