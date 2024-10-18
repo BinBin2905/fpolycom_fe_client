@@ -160,6 +160,10 @@ export default function SingleProductPage() {
       }
     }
   };
+
+  const handleAddCart = async (): Promise<void> => {
+    
+  };
   return (
     <>
       <div className="single-product-wrapper w-full ">
@@ -413,6 +417,7 @@ export default function SingleProductPage() {
                       <div className="flex-1 h-full">
                         <button
                           type="button"
+                          onClick={() => handleAddCart()}
                           className="black-btn text-sm font-semibold w-full h-full"
                         >
                           Thêm vào giỏ hàng

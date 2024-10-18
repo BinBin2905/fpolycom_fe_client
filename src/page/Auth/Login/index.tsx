@@ -45,6 +45,8 @@ export default function Login() {
         localStorage.removeItem("remember");
       }
       setCurrentUser(data);
+      handleLoginUser.reset();
+      console.log(data);
       // setCurrentUserInfo(
       //   await getCurrentUserInfo({ userLogin: data?.userLogin }, "/user/get")
       // );

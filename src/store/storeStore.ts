@@ -25,7 +25,7 @@ export const useStoreStore = create<storeUser>()(
                 })),
         }),
         {
-            name: "user",
+            name: "store",
             storage: createJSONStorage(() => localStorage),
         }
     )
