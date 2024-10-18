@@ -8,6 +8,8 @@ import InputFormikForm from "@/component_common/commonForm/InputFormikForm";
 import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
 import { useUserStore } from "@/store/userStore";
+import { getCurrentUserInfo } from "@/api/commonApi";
+import { userInfo } from "os";
 // import { error } from "console";
 
 const formSchema = Yup.object().shape({
@@ -23,7 +25,7 @@ const formSchema = Yup.object().shape({
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useUserStore();
+  const { currentUser, setCurrentUserInfo, setCurrentUser } = useUserStore();
   const handleLoginAdmin = useMutation({
     mutationFn: (body: typeof formSchema) => loginAdmin(body),
     onSuccess: (data) => {

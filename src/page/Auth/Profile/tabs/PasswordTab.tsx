@@ -1,4 +1,5 @@
 import { updateNewPassword } from "@/api/commonApi";
+import { ButtonForm } from "@/component_common";
 import { useUserStore } from "@/store";
 import { useMutation } from "@tanstack/react-query";
 
@@ -61,6 +62,10 @@ export default function PasswordTab() {
     const confirmPassword = confirmPasswordRef.current.value;
 
     if (!(newPassword == confirmPassword)) {
+      toast.info("Thông báo", {
+        description: "Mật khẩu không trùng khớp",
+        className: "p-3",
+      });
       console.log("Mật khẩu không trùng khớp");
       return;
     }
@@ -336,7 +341,7 @@ export default function PasswordTab() {
         <div className="w-full flex justify-end flex-1">
           <div className="sm:flex sm:space-x-[30px] items-center">
             <div className="w-[180px] h-[50px]">
-              <button
+              {/* <button
                 type="button"
                 className="yellow-btn"
                 onClick={handleChangePassword}
@@ -345,7 +350,18 @@ export default function PasswordTab() {
                 <div className="w-full text-sm font-semibold">
                   {!isUpdate ? "Thay đổi mật khẩu" : "Đang cập nhật..."}
                 </div>
-              </button>
+              </button> */}
+              <ButtonForm
+                label="Thay đổi mật khẩu"
+                type="submit"
+                onClick={handleChangePassword}
+                className={`bg-qblack ${
+                  isUpdate ? "bg-slate-400  w-full" : ""
+                } h-full mb-3 `}
+                loading={isUpdate}
+                labelLoading="Đang cập nhật..."
+                disabled={isUpdate}
+              />
             </div>
           </div>
         </div>
