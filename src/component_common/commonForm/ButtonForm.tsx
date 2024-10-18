@@ -4,7 +4,7 @@ import SpinnerLoading from "../loading/SpinnerLoading";
 const ButtonForm = ({
   type = "button",
   label,
-  labelLoading = "",
+  labelLoading,
   loading = false,
   disabled = false,
   className = "",
@@ -23,12 +23,15 @@ const ButtonForm = ({
   return (
     <button
       onClick={onClick}
-      className={`bg-primary rounded-md text-white disabled:bg-slate-400 h-9 shrink-0 text-sm w-full flex justify-center items-center hover:bg-opacity-90 transition-all duration-200 ${className}`}
+      className={` text-white h-9 shrink-0 text-sm w-full flex justify-center items-center hover:bg-opacity-100 transition-all duration-300 ${className} gap-2`}
       disabled={loading || disabled}
       type={type}
     >
       {loading ? (
-        <SpinnerLoading className="!w-4 !h-4 fill-primary"></SpinnerLoading>
+        <>
+          <SpinnerLoading className="!w-4 !h-4 fill-primary"></SpinnerLoading>
+          {labelLoading}
+        </>
       ) : (
         <p className="flex gap-x-2">
           {icon && icon}

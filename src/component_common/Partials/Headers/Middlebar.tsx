@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
 export default function Middlebar({ className }: { className?: string }) {
-  const { currentUser, logoutUser } = useUserStore();
+  const { currentUser, currentUserInfo, logoutUser } = useUserStore();
   const navigate = useNavigate();
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
@@ -67,7 +67,9 @@ export default function Middlebar({ className }: { className?: string }) {
                         </Avatar>
                         <div className="flex flex-col text-gray-600">
                           <span className="font-medium">
-                            {currentUser?.username}
+                            {currentUserInfo
+                              ? currentUserInfo!.name
+                              : currentUser.username}
                           </span>
                         </div>
                       </div>

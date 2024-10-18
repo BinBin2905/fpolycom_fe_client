@@ -1,5 +1,9 @@
 import { getCurrentUserInfo, updateCurrentUserInfo } from "@/api/commonApi";
-import { ButtonForm, InputFormikForm } from "@/component_common";
+import {
+  ButtonForm,
+  InputFormikForm,
+  SpinnerLoading,
+} from "@/component_common";
 // import InputCom from "@/component_common/Helpers/InputCom";
 import { useUserStore } from "@/store";
 import { userProfile } from "@/type/TypeCommon";
@@ -12,7 +16,7 @@ export default function ProfileTab() {
   const queryClient = useQueryClient();
 
   const { currentUser, currentUserInfo, setCurrentUserInfo } = useUserStore();
-
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
   const [username, setUsername] = useState(currentUser!.userLogin);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,14 +44,20 @@ export default function ProfileTab() {
   });
   const handleUpdateProfile = useMutation({
     mutationFn: updateCurrentUserInfo,
+    onMutate: () => {
+      setIsUpdate(true);
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(["userInfo"], data);
       queryClient.invalidateQueries(["userInfo"]);
       setCurrentUserInfo(data);
-      toast.success("Thông báo", {
-        description: "Cập nhật thành công",
-        className: "p-3",
-      });
+      setTimeout(() => {
+        setIsUpdate(false);
+        toast.success("Thông báo", {
+          description: "Cập nhật thành công",
+          className: "p-3",
+        });
+      }, 1500);
     },
     onError: (data) => {
       toast.error("Thông báo", {
@@ -211,14 +221,21 @@ export default function ProfileTab() {
                 Loại bỏ thay đổi
               </button>
 
-              <div className="w-[100px] h-[50px] bg-qblack text-white text-sm">
+              <div
+                className={`w-[100px] h-[50px]  bg-qblack ${
+                  isUpdate ? "bg-slate-400 w-[150px]" : ""
+                }  text-white text-sm`}
+              >
                 <ButtonForm
                   label="Lưu"
                   type="submit"
-                  className="!bg-slate-900 !h-11 mb-3"
-                  loading={handleUpdateProfile.isPending}
-                  disabled={handleUpdateProfile.isPending}
-                ></ButtonForm>
+                  className={`bg-qblack ${
+                    isUpdate ? "bg-slate-400  w-full" : ""
+                  } h-full mb-3 `}
+                  loading={isUpdate}
+                  labelLoading="Đang cập nhật..."
+                  disabled={isUpdate}
+                />
               </div>
             </div>
           </Form>

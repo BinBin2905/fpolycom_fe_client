@@ -157,11 +157,9 @@ export default function Profile() {
                     <>
                       <Payment />
                     </>
-                  ) : // ) : active === "order" ? (
-                  //   <>
-                  //     <OrderTab />
-                  //   </>
-                  active === "wishlist" ? (
+                  ) : active === "order" ? (
+                    <>{/* <OrderTab /> */}</>
+                  ) : active === "wishlist" ? (
                     <>
                       <WishlistTab />
                     </>

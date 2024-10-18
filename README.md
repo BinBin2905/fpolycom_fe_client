@@ -41,6 +41,7 @@ export default tseslint.config({
     react,
   },
   rules: {
+    //Duc was here
     // other rules...
     // Enable its recommended rules
     ...react.configs.recommended.rules,
