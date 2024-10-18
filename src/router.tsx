@@ -17,6 +17,7 @@ import Faq from "./page/Faq/index.js";
 import Login from "./page/Auth/Login";
 import Signup from "./page/Auth/Signup";
 import Profile from "./page/Auth/Profile/index.js";
+import OrderDetail from "./page/Auth/Profile/OrderDetail/index.js";
 import BecomeSaller from "./page/BecomeSaller/index.js";
 import PrivacyPolicy from "./page/PrivacyPolicy/index.js";
 import TermsCondition from "./page/TermsCondition/index.js";
@@ -50,6 +51,7 @@ export default function Routers() {
       <Route path="/become-saller" element={<BecomeSaller />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-condition" element={<TermsCondition />} />
+      <Route path="/order-detail" element={<OrderDetail />} />
       <Route path="*" element={<FourZeroFour />} />
     </Routes>
   );
