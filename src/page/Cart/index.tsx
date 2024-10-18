@@ -1,3 +1,8 @@
+import { fetchData, postData } from "@/api/commonApi";
+import { useUserStore } from "@/store";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+
 export default function Cart({
   className,
   type,
@@ -5,6 +10,19 @@ export default function Cart({
   className?: string;
   type?: any;
 }) {
+  const { currentUser } = useUserStore();
+  const fetchCart = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/cart/all"),
+  });
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      await fetchCart.mutateAsync({ userLogin: currentUser?.userLogin });
+    };
+    if (currentUser != null) {
+      fetchData();
+    }
+  }, [currentUser]);
   return (
     <>
       <div

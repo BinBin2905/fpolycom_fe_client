@@ -1,22 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import data from "../../data/products.json";
-
-import ProductView from "./ProductView";
-import Reviews from "./Reviews";
-import SallerInfo from "./SallerInfo";
-import { Comments } from "@/type/TypeCommon";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
-import Layout from "@/component_common/Partials/Headers/Layout";
-import DataIteration from "@/component_common/Helpers/DataIteration";
-import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
-import InputCom from "@/component_common/Helpers/InputCom";
 import { useUserStore } from "@/store";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { postDataCommon } from "@/api/commonApi";
-import Selectbox from "@/component_common/Helpers/Selectbox";
-import { Item } from "@radix-ui/react-dropdown-menu";
+import { postData, postDataCommon } from "@/api/commonApi";
 import { SectionStyleOne } from "@/component_common";
+import { toast } from "sonner";
 
 type ProductDetailObject = {
   productDetailCode: number;
@@ -79,6 +68,24 @@ export default function SingleProductPage() {
     onSuccess: (data, variables) => {},
   });
 
+  const handlePostLikeProduct = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/product/liked"),
+    onSuccess: (data, variables) => {
+      if (productDetail) {
+        setProductDetail({ ...productDetail, liked: true });
+      }
+    },
+  });
+
+  const handlePostUnLikeProduct = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/product/unliked"),
+    onSuccess: (data, variables) => {
+      if (productDetail) {
+        setProductDetail({ ...productDetail, liked: false });
+      }
+    },
+  });
+
   const handleFetchProductByStore = useMutation({
     mutationFn: (body: any) =>
       postDataCommon(body, "/common/store/all-product"),
@@ -127,6 +134,32 @@ export default function SingleProductPage() {
       ? handleFetchEvaludate.data[0]?.imageList.length
       : 0
   );
+
+  const handleLike = (): void => {
+    if (!currentUser) {
+      toast("Thông báo", {
+        description: "Đăng nhập để sử dụng tính năng này!",
+        action: {
+          label: "Undo",
+          onClick: () => console.log("Undo"),
+        },
+      });
+      return;
+    }
+    if (productDetail) {
+      if (!productDetail?.liked) {
+        handlePostLikeProduct.mutateAsync({
+          userLogin: currentUser?.userLogin,
+          productCode: productDetail.productCode,
+        });
+      } else {
+        handlePostUnLikeProduct.mutateAsync({
+          userLogin: currentUser?.userLogin,
+          productCode: productDetail.productCode,
+        });
+      }
+    }
+  };
   return (
     <>
       <div className="single-product-wrapper w-full ">
@@ -367,14 +400,15 @@ export default function SingleProductPage() {
                           </button>
                         </div>
                       </div>
-                      <div className="w-[60px] h-full flex justify-center items-center border border-qgray-border">
-                        <button type="button">
-                          {productDetail?.liked ? (
-                            <i className="ri-heart-fill text-red-500  text-xl"></i>
-                          ) : (
-                            <i className="ri-heart-line text-xl"></i>
-                          )}
-                        </button>
+                      <div
+                        onClick={() => handleLike()}
+                        className="w-[60px] cursor-pointer h-full flex justify-center items-center border border-qgray-border"
+                      >
+                        {productDetail?.liked ? (
+                          <i className="ri-heart-fill text-red-500  text-xl"></i>
+                        ) : (
+                          <i className="ri-heart-line text-xl"></i>
+                        )}
                       </div>
                       <div className="flex-1 h-full">
                         <button
@@ -570,8 +604,28 @@ export default function SingleProductPage() {
                                     />
                                   </div>
                                   <div>
-                                    <p className="text-sm font-medium text-qblack">
-                                      {item?.username ? item?.username : ""}
+                                    <p className="text-sm font-medium text-qblack flex items-center gap-x-2">
+                                      <span>
+                                        {item?.username ? item?.username : ""}{" "}
+                                      </span>
+                                      <div className="flex gap-x-0.5">
+                                        {item?.quality &&
+                                          Array.from({
+                                            length: item?.quality,
+                                          }).map((_, index) => (
+                                            <span key={index}>
+                                              <i className="ri-star-fill text-yellow-500"></i>
+                                            </span>
+                                          ))}
+                                        {item?.quality &&
+                                          Array.from({
+                                            length: 5 - item?.quality,
+                                          }).map((_, index) => (
+                                            <span key={index}>
+                                              <i className="ri-star-line text-yellow-500"></i>
+                                            </span>
+                                          ))}
+                                      </div>
                                     </p>
                                     <p className="text-[10px] italic font-normal text-qgray">
                                       {item?.dateEvaluate
