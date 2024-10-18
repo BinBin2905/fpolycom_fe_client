@@ -21,7 +21,7 @@ export default function Login() {
   const [checked, setValue] = useState(
     localStorage.getItem("remember") ? true : false
   );
-  const { currentUser, setCurrentUser } = useUserStore();
+  const { currentUser, setCurrentUser, setCurrentUserInfo } = useUserStore();
 
   const rememberMe = () => {
     setValue(!checked);
@@ -34,7 +34,7 @@ export default function Login() {
 
   const handleLoginUser = useMutation({
     mutationFn: (body: typeof validationSchema) => loginUser(body),
-    onSuccess: (data, variables) => {
+    onSuccess: async (data, variables) => {
       console.log(variables);
       if (checked) {
         const remember = {
@@ -45,9 +45,9 @@ export default function Login() {
         localStorage.removeItem("remember");
       }
       setCurrentUser(data);
-      // setCurrentUserInfo(
-      //   await getCurrentUserInfo({ userLogin: data?.userLogin }, "/user/get")
-      // );
+      setCurrentUserInfo(
+        await getCurrentUserInfo({ userLogin: data?.userLogin })
+      );
     },
   });
 
