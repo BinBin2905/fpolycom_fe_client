@@ -30,6 +30,7 @@ import {
   SingleProductPage,
   TermsCondition,
   TrackingOrder,
+  OrderDetail
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
@@ -148,6 +149,7 @@ function App() {
             <Route path="/become-saller" element={<BecomeSaller />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
+            <Route path="/order-detail" element={<OrderDetail />} />
             <Route path="*" element={<FourZeroFour />} />.
           </Route>
         </Routes>

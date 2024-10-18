@@ -1,10 +1,9 @@
 import InputCom from "@/component_common/Helpers/InputCom";
 import PageTitle from "@/component_common/Helpers/PageTitle";
-import Layout from "@/component_common/Partials/Headers/Layout";
 
 export default function Contact() {
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
       <div className="page-title mb-10">
         <PageTitle
           title="Contact"
@@ -219,6 +218,6 @@ export default function Contact() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }
