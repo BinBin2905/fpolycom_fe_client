@@ -4,7 +4,6 @@ import StarRating from "@/component_common/Helpers/StarRating";
 import Star from "@/component_common/Helpers/icons/Star";
 import { Comments } from "@/type/TypeCommon";
 
-
 type ReviewsProps = {
   reviewLoading: boolean;
   reviewAction: () => void;
@@ -105,9 +104,7 @@ export default function Reviews({
                             />
                           </div>
                           <div>
-                            <p className="text-[18px] font-medium text-qblack">
-                              {reply.author}
-                            </p>
+                            <p className="text-[18px] font-medium text-qblack"></p>
                             <p className="text-[13px] font-normal text-qgray">
                               London,UK
                             </p>
@@ -116,7 +113,7 @@ export default function Reviews({
                       </div>
                       <div className="comment mb-[30px]">
                         <p className="text-[15px] text-qgray leading-7 text-normal">
-                          {reply.comments}
+                          ádasdas
                         </p>
                       </div>
                     </div>
