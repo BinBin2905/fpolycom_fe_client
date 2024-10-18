@@ -1,4 +1,4 @@
-import { SanPham } from "../../../hooks/type";
+import { SanPham } from "@/type/TypeCommon";
 import ProductCardBoxOwnerView from "./ProductCardBoxOwnerView";
 import ProductRowOwnerView from "./ProductRowOwnerView";
 import ProductRowOwnerView2nd from "./ProductRowOwnerView2nd";

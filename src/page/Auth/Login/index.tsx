@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/api/authApi";
 import { useUserStore } from "@/store/userStore";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
+import { getCurrentUserInfo } from "@/api/commonApi";
 import { NavLink } from "react-router-dom";
 import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
 import ForgotPasswordDialog from "./ForgotPasswordDialog";
@@ -21,6 +22,7 @@ export default function Login() {
     localStorage.getItem("remember") ? true : false
   );
   const { currentUser, setCurrentUser } = useUserStore();
+
   const rememberMe = () => {
     setValue(!checked);
   };
@@ -43,6 +45,9 @@ export default function Login() {
         localStorage.removeItem("remember");
       }
       setCurrentUser(data);
+      // setCurrentUserInfo(
+      //   await getCurrentUserInfo({ userLogin: data?.userLogin }, "/user/get")
+      // );
     },
   });
 

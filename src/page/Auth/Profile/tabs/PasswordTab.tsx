@@ -1,9 +1,82 @@
-import { useState } from "react";
+import { updateNewPassword } from "@/api/commonApi";
+import { useUserStore } from "@/store";
+import { useMutation } from "@tanstack/react-query";
+
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function PasswordTab() {
+  const { currentUser } = useUserStore();
+
   const [oldPass, setOldPass] = useState("hide-password");
   const [newPass, setNewPass] = useState("hide-password");
   const [confirmPass, setConfirmPass] = useState("hide-password");
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  const oldPasswordRef = useRef<HTMLInputElement>(null);
+  const newPasswordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+
+  const updateNewPass = useMutation({
+    mutationFn: updateNewPassword,
+    onMutate: () => {
+      setIsUpdate(true);
+    },
+    onSuccess: () => {
+      setPassBlank();
+      setTimeout(() => {
+        setIsUpdate(false);
+        toast.success("Thông báo", {
+          description: "Cập nhật thành công",
+          className: "p-3",
+        });
+      }, 1500);
+    },
+    onError: (data) => {
+      setIsUpdate(false);
+      toast.error("Thông báo", {
+        description: data.message,
+        className: "p-3",
+      });
+    },
+  });
+
+  const setPassBlank = () => {
+    oldPasswordRef.current!.value = "";
+    newPasswordRef.current!.value = "";
+    confirmPasswordRef.current!.value = "";
+  };
+
+  const handleChangePassword = async () => {
+    if (
+      oldPasswordRef.current === null ||
+      newPasswordRef.current === null ||
+      confirmPasswordRef.current === null
+    ) {
+      return;
+    }
+
+    const oldPassword = oldPasswordRef.current.value;
+    const newPassword = newPasswordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+
+    if (!(newPassword == confirmPassword)) {
+      console.log("Mật khẩu không trùng khớp");
+      return;
+    }
+
+    // Thực hiện các thao tác thay đổi mật khẩu ở đây
+    console.log("Old Password:", oldPassword);
+    console.log("New Password:", newPassword);
+    console.log("Confirm Password:", confirmPassword);
+
+    await updateNewPass.mutateAsync({
+      userLogin: currentUser!.userLogin,
+      passwordCurrent: oldPassword,
+      passwordNew: newPassword,
+    });
+  };
+
   const showPassword = (value: string | null) => {
     const password = document.getElementById(`${value}`) as HTMLInputElement;
     if (value && value === "old_password") {
@@ -34,6 +107,7 @@ export default function PasswordTab() {
       }
     }
   };
+
   return (
     <div className="changePasswordTab w-full">
       <div className="w-full flex flex-col space-x-5">
@@ -47,10 +121,12 @@ export default function PasswordTab() {
             </label>
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
-                placeholder="● ● ● ● ● ●"
+                // placeholder="● ● ● ● ● ●"
+                placeholder="************"
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="old_password"
+                ref={oldPasswordRef}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -118,10 +194,12 @@ export default function PasswordTab() {
             </label>
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
-                placeholder="● ● ● ● ● ●"
+                // placeholder="● ● ● ● ● ●"
+                placeholder="************"
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="new_password"
+                ref={newPasswordRef}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -189,10 +267,12 @@ export default function PasswordTab() {
             </label>
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
-                placeholder="● ● ● ● ● ●"
+                // placeholder="● ● ● ● ● ●"
+                placeholder="************"
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="confirm_password"
+                ref={confirmPasswordRef}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -256,17 +336,19 @@ export default function PasswordTab() {
         <div className="w-full flex justify-end flex-1">
           <div className="sm:flex sm:space-x-[30px] items-center">
             <div className="w-[180px] h-[50px]">
-              <button type="button" className="yellow-btn">
+              <button
+                type="button"
+                className="yellow-btn"
+                onClick={handleChangePassword}
+                disabled={isUpdate}
+              >
                 <div className="w-full text-sm font-semibold">
-                  Thay đổi mật khẩu
+                  {!isUpdate ? "Thay đổi mật khẩu" : "Đang cập nhật..."}
                 </div>
               </button>
             </div>
           </div>
         </div>
-        {/* <div className="flex-1 sm:flex hidden justify-center">
-          <PasswordSvg />
-        </div> */}
       </div>
     </div>
   );

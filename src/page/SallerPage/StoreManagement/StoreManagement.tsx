@@ -3,7 +3,7 @@ import productDatas from "../../../data/dataSP.json";
 import shopInfo from "../../../data/shopInfo.json";
 import ProbsManagement from "./ProbsManagementBox";
 import Layout from "../../../components/Partials/Headers/Layout";
-import { SanPham } from "../../../hooks/type";
+import { SanPham } from "@/type/TypeCommon";
 // import Star from "../Helpers/icons/Star";
 
 // import ProductsFilter from "../../AllProductPage/ProductsFilter";
