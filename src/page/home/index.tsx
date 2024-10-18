@@ -55,9 +55,8 @@ export default function Home() {
 
       <SectionStyleOne
         products={dataProducts}
-        brands={brands}
         categoryTitle="Mobile & Tablet"
-        sectionTitle="Gamer World"
+        sectionTitle="Laptop"
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
       />
