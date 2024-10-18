@@ -360,7 +360,11 @@ export default function Signup() {
                                 )}
                               </button>
                               <span
-                                onClick={rememberMe}
+                                onClick={() => {
+                                  if (isValid) {
+                                    rememberMe();
+                                  }
+                                }}
                                 className="text-base text-black"
                               >
                                 Tôi đồng ý với các điều khoản

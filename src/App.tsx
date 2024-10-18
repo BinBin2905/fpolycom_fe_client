@@ -129,7 +129,7 @@ function App() {
           >
             <Route path="/" element={<Home />} />
             <Route path="/all-products" element={<AllProductPage />} />
-            <Route path="/single-product" element={<SingleProductPage />} />
+            <Route path="/single-product/:id" element={<SingleProductPage />} />
             <Route path="/cart" element={<CardPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
