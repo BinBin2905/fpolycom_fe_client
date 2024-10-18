@@ -12,10 +12,17 @@ import ButtonForm from "@/component_common/commonForm/ButtonForm";
 import { getCurrentUserInfo } from "@/api/commonApi";
 import { NavLink } from "react-router-dom";
 import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
+import ForgotPasswordDialog from "./ForgotPasswordDialog";
 
 export default function Login() {
-  const [checked, setValue] = useState(false);
-  const { currentUser, setCurrentUser, setCurrentUserInfo } = useUserStore();
+  const [openForgot, setOpenForgot] = useState<boolean>(false);
+  const remember = localStorage.getItem("remember");
+  const parsedRemember = remember ? JSON.parse(remember) : null;
+  const [checked, setValue] = useState(
+    localStorage.getItem("remember") ? true : false
+  );
+  const { currentUser, setCurrentUser } = useUserStore();
+
   const rememberMe = () => {
     setValue(!checked);
   };
@@ -27,7 +34,16 @@ export default function Login() {
 
   const handleLoginUser = useMutation({
     mutationFn: (body: typeof validationSchema) => loginUser(body),
-    onSuccess: async (data) => {
+    onSuccess: (data, variables) => {
+      console.log(variables);
+      if (checked) {
+        const remember = {
+          ...variables,
+        };
+        localStorage.setItem("remember", JSON.stringify(remember));
+      } else {
+        localStorage.removeItem("remember");
+      }
       setCurrentUser(data);
       // setCurrentUserInfo(
       //   await getCurrentUserInfo({ userLogin: data?.userLogin }, "/user/get")
@@ -38,8 +54,13 @@ export default function Login() {
   const handleSubmit = async (values: any): Promise<void> => {
     const data = await handleLoginUser.mutateAsync(values);
   };
+
   return (
     <div className="login-page-wrapper w-full mt-20">
+      <ForgotPasswordDialog
+        open={openForgot}
+        onClose={() => setOpenForgot(false)}
+      ></ForgotPasswordDialog>
       <div className="container-x mx-auto">
         <div className="lg:flex items-center relative">
           <div className="lg:w-[572px] w-full h-[783px] bg-white flex flex-col justify-center sm:p-10 p-5 border border-[#E0E0E0]">
@@ -66,7 +87,10 @@ export default function Login() {
               {/* <div className="input-area"> */}
               <Formik
                 key={"formCreateProvince"}
-                initialValues={{ username: "", password: "" }}
+                initialValues={{
+                  username: parsedRemember?.username || "",
+                  password: parsedRemember?.password || "",
+                }}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
                   console.log("values on user login : ", values);
@@ -128,12 +152,12 @@ export default function Login() {
                           Ghi nhớ
                         </span>
                       </div>
-                      <a
-                        href="/forgot-password"
-                        className="text-base text-qyellow"
+                      <span
+                        onClick={() => setOpenForgot(true)}
+                        className="text-base text-qyellow cursor-pointer"
                       >
                         Quên mật khẩu
-                      </a>
+                      </span>
                     </div>
                     <div className="signin-area mb-3.5">
                       <div className="flex justify-center">

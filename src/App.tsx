@@ -31,6 +31,8 @@ import {
   TermsCondition,
   TrackingOrder,
 } from "./page/index.js";
+import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
+import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -93,6 +95,26 @@ function App() {
               path="/signup"
               element={
                 currentUser ? <Navigate to={"/"}></Navigate> : <Signup />
+              }
+            />
+            <Route
+              path="/confirm_account/:token"
+              element={
+                currentUser ? (
+                  <Navigate to={"/"}></Navigate>
+                ) : (
+                  <ConfirmAccountPage />
+                )
+              }
+            />
+            <Route
+              path="/recover_password/:token"
+              element={
+                currentUser ? (
+                  <Navigate to={"/"}></Navigate>
+                ) : (
+                  <PasswordRecoverPage />
+                )
               }
             />
           </Route>
