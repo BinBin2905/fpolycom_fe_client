@@ -20,6 +20,8 @@ import {
   FourZeroFour,
   Home,
   Login,
+  NewProductPage,
+  NewVoucherPage,
   PrivacyPolicy,
   ProbView,
   Profile,
@@ -64,6 +66,26 @@ function App() {
                 )
               }
               path="/store/dashboard_product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <NewProductPage></NewProductPage>
+                )
+              }
+              path="/store/dashboard_product/new_product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <NewVoucherPage></NewVoucherPage>
+                )
+              }
+              path="/store/voucher"
             ></Route>
             <Route
               element={
