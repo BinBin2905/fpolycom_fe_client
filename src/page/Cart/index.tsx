@@ -63,6 +63,7 @@ export default function Cart({
                   <NavLink
                     to={`/single-product/${item.productCode}`}
                     className="w-full h-fit flex border-b border-gray-100"
+                    key={item.productCode}
                   >
                     <div className="flex space-x-[6px] justify-center items-center px-4 my-[20px]">
                       <div className="w-[65px]  h-[40px] flex-shrink">
