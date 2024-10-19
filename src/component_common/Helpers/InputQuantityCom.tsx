@@ -1,30 +1,48 @@
-import { useState } from "react";
+import { OrderDetailObject } from "@/type/TypeCommon";
+import { useEffect, useState } from "react";
 
-export default function InputQuantityCom() {
-  const [quantity, setQuantity] = useState(1);
-  const increment = () => {
-    setQuantity((prev) => prev + 1);
-  };
-  const decrement = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
+export default function InputQuantityCom({
+  item,
+  increment,
+  decrement,
+  onBlurValue,
+  disableb = false,
+}: {
+  item: OrderDetailObject;
+  increment: (item: OrderDetailObject) => void;
+  decrement: (item: OrderDetailObject) => void;
+  onBlurValue: (item: OrderDetailObject) => void;
+  disableb: boolean;
+}) {
+  const [value, setValue] = useState(item.quantity);
+  useEffect(() => {
+    setValue(item.quantity);
+  }, [item.quantity]);
   return (
-    <div className="w-[120px] h-[40px] px-[26px] flex items-center border border-qgray-border">
+    <div className="w-[150px] h-[40px] px-[26px] flex items-center border border-qgray-border">
       <div className="flex justify-between items-center w-full">
         <button
-          onClick={decrement}
+          onClick={() => decrement(item)}
           type="button"
-          className="text-base text-qgray"
+          disabled={disableb}
+          className="text-base text-qgray w-4 h-full"
         >
           -
         </button>
-        <span className="text-qblack">{quantity}</span>
+        <input
+          value={value}
+          onBlur={(e) => {
+            setValue(Number.parseInt(e.target.value));
+            onBlurValue({ ...item, quantity: Number.parseInt(e.target.value) });
+          }}
+          onChange={(e) => setValue(Number.parseInt(e.target.value))}
+          className="w-10 outline-none text-center bg-transparent"
+        ></input>
         <button
-          onClick={increment}
+          onClick={() => increment(item)}
           type="button"
-          className="text-base text-qgray"
+          disabled={disableb}
+          className="text-base text-qgray w-4 h-full"
         >
           +
         </button>

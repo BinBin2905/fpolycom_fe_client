@@ -4,9 +4,10 @@ import { useUserStore } from "@/store";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { postData, postDataCommon } from "@/api/commonApi";
-import { SectionStyleOne } from "@/component_common";
+import { ButtonForm, SectionStyleOne } from "@/component_common";
 import { toast } from "sonner";
-
+import { useCartStore } from "@/store/cartStore";
+import { CartObject } from "@/type/TypeCommon";
 type ProductDetailObject = {
   productDetailCode: number;
   name: string;
@@ -47,12 +48,13 @@ type ProductObject = {
 };
 
 export default function SingleProductPage() {
+  const { currentUser } = useUserStore();
+  const { currentCart, updateCart, addNewCart } = useCartStore();
   const { id } = useParams();
   const [productDetail, setProductDetail] = useState<ProductObject | null>(
     null
   );
   const [selected, setSelected] = useState<ProductDetailObject | null>(null);
-  const { currentUser } = useUserStore();
   const handleFetchProduct = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/product/detail"),
     onSuccess: (data, variables) => {},
@@ -61,6 +63,19 @@ export default function SingleProductPage() {
   const handleFetchStore = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/store/detail"),
     onSuccess: (data, variables) => {},
+  });
+  const handleAddNewCart = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/cart/update"),
+    onSuccess: (data, variables) => {
+      addNewCart(data);
+    },
+  });
+
+  const handleUpdateCart = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/cart/new"),
+    onSuccess: (data, variables) => {
+      updateCart(data);
+    },
   });
 
   const handleFetchEvaludate = useMutation({
@@ -138,11 +153,7 @@ export default function SingleProductPage() {
   const handleLike = (): void => {
     if (!currentUser) {
       toast("Thông báo", {
-        description: "Đăng nhập để sử dụng tính năng này!",
-        action: {
-          label: "Undo",
-          onClick: () => console.log("Undo"),
-        },
+        description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
       });
       return;
     }
@@ -156,6 +167,52 @@ export default function SingleProductPage() {
         handlePostUnLikeProduct.mutateAsync({
           userLogin: currentUser?.userLogin,
           productCode: productDetail.productCode,
+        });
+      }
+    }
+  };
+
+  const handleAddCart = async (): Promise<void> => {
+    if (!currentUser) {
+      toast("Thông báo", {
+        description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
+      });
+      return;
+    }
+    if (selected == null) {
+      toast("Thông báo", {
+        description: <span>Chưa chọn loại sản phẩm!</span>,
+      });
+      return;
+    }
+    const findItem: CartObject | undefined = currentCart.find(
+      (item) => item.productDetailCode == selected.productDetailCode
+    );
+    console.log({
+      userLogin: currentUser.userLogin,
+      productDetailCode: selected.productDetailCode,
+      quantity: quantity,
+    });
+    if (!findItem) {
+      const data = await handleUpdateCart.mutateAsync({
+        userLogin: currentUser.userLogin,
+        productDetailCode: selected.productDetailCode,
+        quantity: quantity,
+      });
+      if (data) {
+        toast("Thông báo", {
+          description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
+        });
+      }
+    } else {
+      const data = await handleAddNewCart.mutateAsync({
+        userLogin: currentUser.userLogin,
+        productDetailCode: selected.productDetailCode,
+        quantity: quantity,
+      });
+      if (data) {
+        toast("Thông báo", {
+          description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
         });
       }
     }
@@ -279,35 +336,65 @@ export default function SingleProductPage() {
                     </div>
 
                     <div className="flex space-x-2 mb-5 text-red-500">
-                      {productDetail &&
-                        productDetail.maxPrice == productDetail.minPrice && (
-                          <span className="offer-price  font-600 ">
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(productDetail.maxPrice)}
-                          </span>
-                        )}
-                      {productDetail &&
-                        productDetail.maxPrice > productDetail.minPrice && (
+                      {selected ? (
+                        selected.percentDecrease ? (
                           <>
                             <span className="offer-price  font-600 ">
                               {new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                              }).format(productDetail.minPrice)}
+                              }).format(
+                                selected.price -
+                                  (selected.percentDecrease * selected.price) /
+                                    100
+                              )}
                             </span>
-                            <span>-</span>
-                            <span className="offer-price  font-600 ">
+                            <span className="offer-price  font-600 line-through text-gray-500">
                               {new Intl.NumberFormat("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                              }).format(productDetail.maxPrice)}
+                              }).format(selected.price)}
                             </span>
                           </>
-                        )}
+                        ) : (
+                          new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(selected.price)
+                        )
+                      ) : (
+                        <div>
+                          {productDetail &&
+                            productDetail.maxPrice ==
+                              productDetail.minPrice && (
+                              <span className="offer-price  font-600 ">
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(productDetail.maxPrice)}
+                              </span>
+                            )}
+                          {productDetail &&
+                            productDetail.maxPrice > productDetail.minPrice && (
+                              <>
+                                <span className="offer-price  font-600 ">
+                                  {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(productDetail.minPrice)}
+                                </span>
+                                <span>-</span>
+                                <span className="offer-price  font-600 ">
+                                  {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(productDetail.maxPrice)}
+                                </span>
+                              </>
+                            )}
+                        </div>
+                      )}
                     </div>
-
                     <p
                       data-aos="fade-up"
                       className="text-qgray text-sm text-normal mb-[30px] leading-7"
@@ -411,12 +498,12 @@ export default function SingleProductPage() {
                         )}
                       </div>
                       <div className="flex-1 h-full">
-                        <button
+                        <ButtonForm
                           type="button"
-                          className="black-btn text-sm font-semibold w-full h-full"
-                        >
-                          Thêm vào giỏ hàng
-                        </button>
+                          label="Thêm vào giỏ"
+                          onClick={() => handleAddCart()}
+                          className="!bg-slate-800 h-full"
+                        ></ButtonForm>
                       </div>
                     </div>
 
@@ -427,14 +514,16 @@ export default function SingleProductPage() {
                       </p>
                       <p className="text-[13px] text-qgray leading-7">
                         <span className="text-qblack">Tồn kho :</span>{" "}
-                        {productDetail &&
-                          productDetail.productDetailList &&
-                          productDetail.productDetailList.reduce(
-                            (accumulator, currentValue) => {
-                              return accumulator + currentValue.quantity;
-                            },
-                            0
-                          )}
+                        {selected
+                          ? selected.quantity
+                          : productDetail &&
+                            productDetail.productDetailList &&
+                            productDetail.productDetailList.reduce(
+                              (accumulator, currentValue) => {
+                                return accumulator + currentValue.quantity;
+                              },
+                              0
+                            )}
                       </p>
                       <p className="text-[13px] text-blue-900 leading-7">
                         <span className="text-qblack">Tags :</span>{" "}

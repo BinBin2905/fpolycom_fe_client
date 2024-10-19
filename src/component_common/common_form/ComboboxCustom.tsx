@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CommonObject } from "@/type/TypeCommon";
+import { dataTagSymbol } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
 import React, { useEffect } from "react";
 // import { any } from "zod";
@@ -59,7 +60,7 @@ const ComboboxCustom = ({
       if (onChange) onChange(value);
     }
   }, [value]);
-  console.log(dataList);
+  console.log(dataList.find((item) => item[dataKey] == value));
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -71,7 +72,8 @@ const ComboboxCustom = ({
         >
           {!!value
             ? dataList.length > 0 &&
-              dataList.find((item) => item[dataKey] == value)![dataName]
+              dataList.find((item) => item[dataName] == value) &&
+              dataList.find((item) => item[dataName] == value)[dataName]
             : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -84,18 +86,19 @@ const ComboboxCustom = ({
             <CommandGroup>
               {(dataList.length > 0 ? dataList : []).map((item) => (
                 <CommandItem
-                  key={item[dataKey]}
-                  value={item[dataKey]}
+                  key={item[dataName]}
+                  value={item[dataName]}
                   onSelect={(currentValue) => {
                     setValue(currentValue == value ? "" : currentValue);
                     console.log(currentValue);
+                    console.log(value);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item[dataKey] ? "opacity-100" : "opacity-0"
+                      value === item[dataName] ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {item[dataName]}

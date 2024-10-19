@@ -244,6 +244,7 @@ export const postData = async (
       },
     }
   );
+  console.log(response.data)
   if (response.status != 200) {
     throw new Error("Thêm dữ liệu thất bại!");
   }

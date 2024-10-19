@@ -27,9 +27,7 @@ export default function Navbar() {
   }, [categoryToggle]);
 
   return (
-    <div
-      className="nav-widget-wrapper w-full  h-[60px] relative z-30 bg-qyellow"
-    >
+    <div className="nav-widget-wrapper w-full  h-[60px] relative z-30 bg-qyellow">
       <div className="container-x mx-auto h-full">
         <div className="w-full h-full relative">
           <div className="w-full h-full flex justify-between items-center">
@@ -442,7 +440,7 @@ export default function Navbar() {
               </div>
             </div>
             <div className="become-seller-btn">
-              <Link to="/become-saller">
+              <div>
                 <div className="black-btn w-[180px] h-[40px] flex justify-center items-center cursor-pointer">
                   <div className="flex space-x-2 items-center">
                     {currentUser?.storeStatus == "active" ? (
@@ -486,7 +484,7 @@ export default function Navbar() {
                     </span>
                   </div>
                 </div>
-              </Link>
+              </div>
             </div>
           </div>
         </div>
