@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Menu from "./Menu";
-import IconCompany from "@/assets/img/iconcompany.png";
+import IconCompany from "@/assets/img";
 // import { link } from "fs";
 // import { any } from "zod";
 const menu: any[] = [
@@ -130,7 +130,7 @@ const Sidebar = () => {
         <div
           className={`${
             !open && "px-1"
-          } h-20 bg-gradient-to-r from-[#C7977C] to-[#09B291] flex justify-center`}
+          } h-20 bg-gradient-to-r from-[#C7977C] to-[#b14719] flex justify-center`}
         >
           <div className="flex items-center">
             <div
@@ -138,7 +138,11 @@ const Sidebar = () => {
                 open ? "p-2 px-5" : "p-2"
               } bg-white w-fit border-gray-500 rounded-full shadow-custom-sm shadow-gray-500`}
             >
-              <img src={IconCompany} alt="" className="w-full max-w-20" />
+              <img
+                src={`/assets/images/FpolyComLogoVertical.png`}
+                alt=""
+                className="w-full max-w-20"
+              />
             </div>
           </div>
         </div>
