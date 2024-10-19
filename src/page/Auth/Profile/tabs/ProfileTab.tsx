@@ -27,6 +27,7 @@ export default function ProfileTab() {
   const browseprofileImg = () => {
     profileImgInput.current!.click();
   };
+
   const profileImgChangHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value !== "") {
       const imgReader = new FileReader();
@@ -42,34 +43,74 @@ export default function ProfileTab() {
     queryFn: async () => await getCurrentUserInfo({ userLogin: username }),
     enabled: !!username,
   });
+
   const handleUpdateProfile = useMutation({
     mutationFn: updateCurrentUserInfo,
-    onMutate: () => {
-      setIsUpdate(true);
-    },
+    // onMutate: () => {
+    //   setIsUpdate(true);
+    // },
     onSuccess: (data) => {
       queryClient.setQueryData(["userInfo"], data);
       queryClient.invalidateQueries(["userInfo"]);
       setCurrentUserInfo(data);
-      setTimeout(() => {
-        setIsUpdate(false);
-        toast.success("Thông báo", {
-          description: "Cập nhật thành công",
-          className: "p-3",
-        });
-      }, 1500);
+
+      setIsUpdate(false);
     },
-    onError: (data) => {
-      toast.error("Thông báo", {
-        description: data.message,
-        className: "p-3",
-      });
-    },
+    onError: (data) => {},
   });
 
+  const promise = (values: userProfile) =>
+    new Promise((resolve, reject) => {
+      setIsUpdate(true);
+      setTimeout(async () => {
+        await handleUpdateProfile
+          .mutateAsync(values)
+          .then(resolve)
+          .catch(reject);
+      }, 3000);
+    });
+
   const handleSubmit = async (values: userProfile): Promise<void> => {
-    await handleUpdateProfile.mutateAsync(values);
+    toast.promise(promise(values), {
+      className: "p-5 text-lg",
+      loading: "Đang cập nhật...",
+      success: (data) => {
+        return `Cập nhật thành công `;
+      },
+      error: (error) => {
+        return ` ${error.message}`;
+      },
+    });
   };
+
+  // const handleUpdateProfile = useMutation({
+  //   mutationFn: updateCurrentUserInfo,
+  //   onMutate: () => {
+  //     setIsUpdate(true);
+  //   },
+  //   onSuccess: (data) => {
+  //     queryClient.setQueryData(["userInfo"], data);
+  //     queryClient.invalidateQueries(["userInfo"]);
+  //     setCurrentUserInfo(data);
+  //     setTimeout(() => {
+  //       setIsUpdate(false);
+  //       toast.success("Thông báo", {
+  //         description: "Cập nhật thành công",
+  //         className: "p-3",
+  //       });
+  //     }, 1500);
+  //   },
+  //   onError: (data) => {
+  //     toast.error("Thông báo", {
+  //       description: data.message,
+  //       className: "p-3",
+  //     });
+  //   },
+  // });
+
+  // const handleSubmit = async (values: userProfile): Promise<void> => {
+  //   await handleUpdateProfile.mutateAsync(values);
+  // };
 
   useEffect(() => {
     if (userProfile.data) {
@@ -88,7 +129,14 @@ export default function ProfileTab() {
     address === "" ||
     userProfile.isLoading
   ) {
-    return <h1>Loading</h1>;
+    return (
+      <>
+        <div className="flex items-center gap-3">
+          <SpinnerLoading></SpinnerLoading>
+          <h1>Loading...</h1>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -232,8 +280,8 @@ export default function ProfileTab() {
                   className={`bg-qblack ${
                     isUpdate ? "bg-slate-400  w-full" : ""
                   } h-full mb-3 `}
-                  loading={isUpdate}
-                  labelLoading="Đang cập nhật..."
+                  // loading={isUpdate}
+                  // labelLoading="Đang cập nhật..."
                   disabled={isUpdate}
                 />
               </div>

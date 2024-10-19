@@ -228,9 +228,9 @@ export type RegisterObject = {
   provinceCode?: string | null | undefined;
   wardCode?: string | null | undefined;
   districtCode?: string | null | undefined;
-}
+};
 export type userProfile = {
-  userLogin?: string;
+  userLogin: string;
   name: string;
   phone: string;
   email: string;
@@ -254,4 +254,50 @@ export type NewPassword = {
   userLogin: string;
   passwordCurrent: string;
   passwordNew: string;
+};
+
+export type OrderProps = {
+  orderCode: string | "1";
+  storeName: string | "Cuawr hang thu cng";
+  storeImage: string | null;
+  orderStatus: string | "complete";
+  pickupDate: string | "2024-10-18";
+  deliveryDate: string | "2024-10-18";
+  totalAmount: number | 60000.0;
+  paymentTypeName: string | "Thanh toasn viet qr";
+  totalAmountVoucher: number | 30000.0;
+  totalAmountShip: number | 80000.0;
+  finalTotal: number | 50000.0;
+  deliveryType: string | "Ship hang sieu toc";
+  paymentSuccess: boolean | false;
+};
+
+export type OrderDetailList = {
+  totalAmount: number | 100000.0;
+  totalDiscount: number | 10000.0;
+  finalTotal: number | 9000000.0;
+  quantity: number | 10;
+  productDetailCode: number | 1;
+  discountCode: number | 1;
+};
+export type OrderDetailsProps = {
+  orderCode: string | "1";
+  userLogin: string | null;
+  totalAmount: number | 60000.0;
+  totalAmountVoucher: number | 30000.0;
+  totalAmountShip: number | 80000.0;
+  finalTotal: number | 50000.0;
+  orderBillCode: string | null;
+  noteContent: string | "Content";
+  addressDetail: string | "35 Trai Dai Nghiax kp noi hoa 2 ";
+  address: string | "35 Tran dai nghia";
+  shippingFeeCode: number | 1;
+  storeCode: number | 1;
+  provinceCode: number | null;
+  districtCode: number | null;
+  wardCode: number | null;
+  deliveryTypeCode: number | 1;
+  paymentTypeCode: number | 1;
+  paymentSuccess: boolean | false;
+  orderDetailList: OrderDetailList[] | null;
 };
