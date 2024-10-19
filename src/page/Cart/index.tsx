@@ -57,15 +57,15 @@ export default function Cart({
       >
         <div className="w-full h-full">
           <div className="product-items h-[310px] py-5 overflow-y-scroll flex flex-col justify-start">
-            {currentCart ? (
+            {currentCart.length > 0 ? (
               currentCart.map((item) => {
                 return (
                   <NavLink
                     to={`/single-product/${item.productCode}`}
-                    className="w-full h-fit flex"
+                    className="w-full h-fit flex border-b border-gray-100"
                   >
                     <div className="flex space-x-[6px] justify-center items-center px-4 my-[20px]">
-                      <div className="w-[65px]  h-[65px] flex-shrink">
+                      <div className="w-[65px]  h-[40px] flex-shrink">
                         <img
                           src={item.image}
                           alt=""
@@ -82,13 +82,15 @@ export default function Cart({
                 );
               })
             ) : (
-              <span>Không có sản phẩm trong giỏ hàng...</span>
+              <div className="h-full flex justify-center">
+                Không có sản phẩm trong giỏ hàng...
+              </div>
             )}
           </div>
           <div className="w-full px-4 mt-[20px] mb-[12px]">
             <div className="h-[1px] bg-[#F0F1F3]"></div>
           </div>
-          <div className="product-actions px-4 mb-[30px]">
+          <div className="product-actions px-4">
             <div className="product-action-btn">
               {currentCart.length > 0 ? (
                 <NavLink to={"/cart"}>

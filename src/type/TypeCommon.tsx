@@ -228,7 +228,7 @@ export type RegisterObject = {
   provinceCode?: string | null | undefined;
   wardCode?: string | null | undefined;
   districtCode?: string | null | undefined;
-}
+};
 export type userProfile = {
   userLogin?: string;
   name: string;
@@ -254,4 +254,63 @@ export type NewPassword = {
   userLogin: string;
   passwordCurrent: string;
   passwordNew: string;
+};
+
+export type CartObject = {
+  checked: boolean;
+  productDetailCode: number;
+  productName: string;
+  discountCode: number;
+  productCode: number;
+  image: string;
+  percentDecrease: number;
+  provinceCode: string;
+  detailName: string;
+  price: number;
+  quantity: number;
+  storeName: string;
+  storeCode: number;
+};
+
+export type OrderDetailObject = {
+  totalAmount: number;
+  totalDiscount: number;
+  checked: boolean;
+  finalTotal: number;
+  quantity: number;
+  productDetailCode: number;
+  discountCode: number;
+  percentDecrease: number;
+  image: string;
+  productName: string;
+  productDetailName: string;
+  price: number;
+};
+
+export type VoucherObject = {
+  voucherCode: 1;
+};
+
+export type OrderObject = {
+  userLogin?: string;
+  totalAmount?: number;
+  totalAmountVoucher?: number;
+  totalAmountShip?: number;
+  totalAmountDiscount?: number;
+  provinceStoreCode?: string;
+  finalTotal?: number;
+  orderBillCode?: string;
+  noteContent?: string;
+  addressDetail?: string;
+  address?: string;
+  shippingFeeCode?: number;
+  storeCode?: number;
+  storeName?: string;
+  paymentTypeCode?: number;
+  provinceCode?: number;
+  districtCode?: number;
+  wardCode?: number;
+  deliveryTypeCode?: number;
+  orderDetailList: OrderDetailObject[];
+  voucherList: VoucherObject[];
 };

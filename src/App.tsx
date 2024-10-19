@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "@/page/home/HomePage";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import Wishlist from "./component_common/Wishlist";
 import { useUserStore, useStoreStore } from "./store/index.js";
 import { AppCommon, AppCommonUser, AppLoginUser } from "./template/index.js";
@@ -30,7 +30,7 @@ import {
   SingleProductPage,
   TermsCondition,
   TrackingOrder,
-  OrderDetail
+  OrderDetail,
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
@@ -40,9 +40,10 @@ function App() {
   const { currentStore } = useStoreStore();
   console.log(currentUser?.username);
   console.log(import.meta.env.VITE_API_URL);
+
   return (
     <>
-      <Toaster closeButton richColors position="bottom-left" expand={true} />
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route

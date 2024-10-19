@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, currentUserInfo, logoutUser } = useUserStore();
@@ -25,14 +25,14 @@ export default function Middlebar({ className }: { className?: string }) {
         <div className="relative h-full">
           <div className="flex justify-between items-center h-full">
             <div>
-              <a href="/">
+              <NavLink to="/">
                 <img
                   width="152"
                   height="36"
                   src={`/assets/images/FpolyComLogoVertical.png`}
                   alt="logo"
                 />
-              </a>
+              </NavLink>
             </div>
             <div className="w-[517px] h-[44px]">
               <SearchBox className="search-com" />
