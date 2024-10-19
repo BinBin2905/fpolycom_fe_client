@@ -318,6 +318,24 @@ export type CartObject = {
   storeCode: number;
 };
 
+export type CommonProductAll = {
+  productCode: number | 1;
+  name: string | "San pharm 01";
+  image:
+    | string
+    | "https://tiki.vn/blog/wp-content/uploads/2023/11/laptop-mini.jpeg";
+  status: string | "active";
+  typeGoodName: string | "Laptop";
+  typeGoodCode: string | "1";
+  numberOfLikes: number | 1;
+  numberOfEvaluates: number | 0;
+  provinceCode: number | 1;
+  provinceName: string | "Bình Dương";
+  pointEvaluate: number | 0.0;
+  minPrice: number | 45000.0;
+  maxPrice: number | 450000.0;
+};
+
 export type OrderDetailObject = {
   totalAmount: number;
   totalDiscount: number;

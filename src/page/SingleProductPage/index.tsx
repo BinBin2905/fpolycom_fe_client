@@ -447,6 +447,7 @@ export default function SingleProductPage() {
                                     ? "border-red-300 shadow-md"
                                     : "border-gray-200"
                                 } border relative px-2 py-2 rounded-md flex items-center gap-x-2 w-fit cursor-pointer`}
+                                key={item.productDetailCode}
                               >
                                 <img
                                   src={item.image}
