@@ -352,3 +352,48 @@ export const fetchDataCommon = async (enpoint: string) => {
   }
   return response.data?.data;
 };
+
+//order
+export async function getUserOrders(body: { userLogin: string }) {
+  console.log(body);
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/orders/all",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  console.log("orders :", response.data?.data);
+  return response.data?.data;
+}
+
+export async function orderDetails(body: { orderCode?: string }) {
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/orders/detail",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  return response.data?.data;
+}

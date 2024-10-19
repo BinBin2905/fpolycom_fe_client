@@ -1,5 +1,7 @@
 import DashboardProductPage from "./dashboard_product/DashboardProductPage";
 import DashboardRevenuePage from "./dashboard_revenue/DashboardRevenuePage";
+import NewProductPage from "./dashboard_product/AddProductPage.js";
+import NewVoucherPage from "./dashboard_product/AddVoucherPage.js";
 import ProvincePage from "./province/ProvincePage";
 import Home from "./home";
 import AllProductPage from "./AllProductPage";
@@ -29,6 +31,8 @@ import Cart from "./Cart";
 import OrderDetail from "./Auth/Profile/OrderDetail/index.js";
 
 export {
+  NewProductPage,
+  NewVoucherPage,
   DashboardProductPage,
   DashboardRevenuePage,
   ProvincePage,

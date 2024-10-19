@@ -20,6 +20,8 @@ import {
   FourZeroFour,
   Home,
   Login,
+  NewProductPage,
+  NewVoucherPage,
   PrivacyPolicy,
   ProbView,
   Profile,
@@ -30,10 +32,11 @@ import {
   SingleProductPage,
   TermsCondition,
   TrackingOrder,
-  OrderDetail,
+  OrderDetail,,
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
+import PasswordTab from "./page/Auth/Profile/tabs/PasswordTab.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -43,7 +46,7 @@ function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster closeButton richColors position="bottom-right" expand={true} />
       <BrowserRouter>
         <Routes>
           <Route
@@ -65,6 +68,26 @@ function App() {
                 )
               }
               path="/store/dashboard_product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <NewProductPage></NewProductPage>
+                )
+              }
+              path="/store/dashboard_product/new_product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <NewVoucherPage></NewVoucherPage>
+                )
+              }
+              path="/store/voucher"
             ></Route>
             <Route
               element={
@@ -147,10 +170,11 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/profile" element={<Profile />} />
+            {/* <Route path="/password" element={<PasswordTab />} /> */}
             <Route path="/become-saller" element={<BecomeSaller />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
-            <Route path="/order-detail" element={<OrderDetail />} />
+            <Route path="/order-detail/:orderCode" element={<OrderDetail />} />
             <Route path="*" element={<FourZeroFour />} />.
           </Route>
         </Routes>
