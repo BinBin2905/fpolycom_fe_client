@@ -376,7 +376,7 @@ export async function getUserOrders(body: { userLogin: string }) {
   return response.data?.data;
 }
 
-export async function orderDetails(body: { orderCode: string }) {
+export async function orderDetails(body: { orderCode?: string }) {
   const response = await axios.post(
     import.meta.env.VITE_API_URL + "/user/orders/detail",
     body,

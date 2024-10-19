@@ -265,9 +265,9 @@ export default function ProfileTab() {
               </div>
             </div>
             <div className="action-area flex space-x-4 items-center justify-end">
-              <button type="button" className="text-sm text-qred font-semibold">
+              {/* <button type="button" className="text-sm text-qred font-semibold">
                 Loại bỏ thay đổi
-              </button>
+              </button> */}
 
               <div
                 className={`w-[100px] h-[50px]  bg-qblack ${

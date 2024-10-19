@@ -86,7 +86,12 @@ export default function Middlebar({ className }: { className?: string }) {
                         >
                           Thông tin tài khoản
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => {
+                            navigate("/profile#password");
+                          }}
+                        >
                           Đổi mật khẩu
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer">
