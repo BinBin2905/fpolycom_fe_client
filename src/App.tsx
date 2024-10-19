@@ -32,7 +32,7 @@ import {
   SingleProductPage,
   TermsCondition,
   TrackingOrder,
-  OrderDetail,,
+  OrderDetail,
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
