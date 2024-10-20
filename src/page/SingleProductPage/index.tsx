@@ -89,6 +89,9 @@ export default function SingleProductPage() {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: true });
       }
+      toast.success("Đã thêm vào danh sách thích", {
+        className: "p-4",
+      });
     },
   });
 
@@ -98,6 +101,9 @@ export default function SingleProductPage() {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: false });
       }
+      toast.info("Đã bỏ thích", {
+        className: "p-4",
+      });
     },
   });
 
@@ -152,7 +158,8 @@ export default function SingleProductPage() {
 
   const handleLike = (): void => {
     if (!currentUser) {
-      toast("Thông báo", {
+      toast.warning("Thông báo", {
+        className: "p-3",
         description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
       });
       return;
@@ -174,13 +181,15 @@ export default function SingleProductPage() {
 
   const handleAddCart = async (): Promise<void> => {
     if (!currentUser) {
-      toast("Thông báo", {
+      toast.warning("Thông báo", {
+        className: "p-3",
         description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
       });
       return;
     }
     if (selected == null) {
-      toast("Thông báo", {
+      toast.error("Thông báo", {
+        className: "p-3",
         description: <span>Chưa chọn loại sản phẩm!</span>,
       });
       return;
@@ -200,7 +209,8 @@ export default function SingleProductPage() {
         quantity: quantity,
       });
       if (data) {
-        toast("Thông báo", {
+        toast.success("Thông báo", {
+          className: "p-3",
           description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
         });
       }
@@ -211,7 +221,8 @@ export default function SingleProductPage() {
         quantity: quantity,
       });
       if (data) {
-        toast("Thông báo", {
+        toast.success("Thông báo", {
+          className: "p-3",
           description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
         });
       }

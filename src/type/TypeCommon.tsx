@@ -376,5 +376,13 @@ export type OrderObject = {
   wardCode?: number;
   deliveryTypeCode?: number;
   orderDetailList: OrderDetailObject[];
-  voucherList: VoucherObject[];
+  voucherList?: VoucherObject[];
+};
+
+export type WishListProps = {
+  productCode: number;
+  productName: string;
+  productImage: string;
+  typeGoodName: string;
+  typeGoodCode: string;
 };

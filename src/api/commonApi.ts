@@ -235,6 +235,7 @@ export const postData = async (
   body: { [key: string]: any },
   endpoint: string
 ) => {
+  console.log(body);
   const response = await axios.post(
     import.meta.env.VITE_API_URL + endpoint,
     body,
@@ -244,7 +245,7 @@ export const postData = async (
       },
     }
   );
-  console.log(response.data)
+  console.log(response.data);
   if (response.status != 200) {
     throw new Error("Thêm dữ liệu thất bại!");
   }
@@ -380,6 +381,29 @@ export async function getUserOrders(body: { userLogin: string }) {
 export async function orderDetails(body: { orderCode?: string }) {
   const response = await axios.post(
     import.meta.env.VITE_API_URL + "/user/orders/detail",
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useUserStore.getState().currentUser?.token,
+      },
+    }
+  );
+  if (response.status != 200) {
+    throw new Error("Lấy dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+
+  return response.data?.data;
+}
+
+//wish list
+
+export async function getUserWishList(body: { userLogin?: string }) {
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + "/user/product/liked-all",
     body,
     {
       headers: {
