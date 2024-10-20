@@ -1,6 +1,44 @@
-import InputQuantityCom from "../Helpers/InputQuantityCom";
+import { WishListProps } from "@/type/TypeCommon";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { postData } from "@/api/commonApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUserStore } from "@/store";
 
-export default function ProductsTable({ className }: { className?: string }) {
+export default function ProductsTable({
+  className,
+  list,
+}: {
+  className?: string;
+  list: WishListProps[];
+}) {
+  const { currentUser } = useUserStore();
+  const queryClient = useQueryClient();
+
+  const handlePostUnLikeProduct = useMutation({
+    mutationFn: async (body: any) =>
+      await postData(body, "/user/product/unliked"),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      toast.success("Đã bỏ thích thành công", {
+        className: "p-4",
+      });
+    },
+    onError: (data) => {
+      toast.error(data.message, {
+        className: "p-4",
+      });
+    },
+  });
+
+  const handleUnlike = async (productCode: number) => {
+    console.log(productCode);
+    await handlePostUnLikeProduct.mutateAsync({
+      userLogin: currentUser?.userLogin,
+      productCode: productCode,
+    });
+  };
+
   return (
     <div className={`w-full ${className || ""}`}>
       <div className="relative w-full overflow-x-auto border border-[#EDEDED]">
@@ -9,17 +47,91 @@ export default function ProductsTable({ className }: { className?: string }) {
             {/* table heading */}
             <tr className="text-[13px] font-medium text-black bg-[#F6F6F6] whitespace-nowrap px-2 border-b default-border-bottom uppercase">
               <td className="py-4 pl-10 block whitespace-nowrap  w-[380px]">
-                product
+                Sản phẩm
               </td>
-              <td className="py-4 whitespace-nowrap text-center">color</td>
-              <td className="py-4 whitespace-nowrap text-center">size</td>
-              <td className="py-4 whitespace-nowrap text-center">price</td>
-              <td className="py-4 whitespace-nowrap  text-center">quantity</td>
-              <td className="py-4 whitespace-nowrap  text-center">total</td>
+
+              <td className="py-4 whitespace-nowrap text-center">Loại</td>
+              {/* <td className="py-4 whitespace-nowrap text-center"></td>
+              <td className="py-4 whitespace-nowrap text-center"></td>
+              <td className="py-4 whitespace-nowrap  text-center"></td> */}
               <td className="py-4 whitespace-nowrap text-right w-[114px] block"></td>
             </tr>
             {/* table heading end */}
-            <tr className="bg-white border-b hover:bg-gray-50">
+            <>
+              {list.map((item, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="bg-white border-b hover:bg-gray-50"
+                  >
+                    <td className="pl-10  py-4 ">
+                      <div className="flex space-x-6 items-center">
+                        <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
+                          <img
+                            src={item.productImage}
+                            alt="product"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                          <p className="font-medium text-[15px] text-qblack">
+                            <Link to={`/single-product/${item.productCode}`}>
+                              {item.productName}
+                            </Link>
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="text-center py-4 px-2">
+                      <div className=" flex justify-center items-center">
+                        {/* <span className="w-[20px] h-[20px] bg-[#E4BC87] block rounded-full"></span> */}
+                        {item.typeGoodName}
+                      </div>
+                    </td>
+
+                    {/* <td className="text-center py-4 px-2">
+                      <div className="flex space-x-1 items-center justify-center">
+                        <span className="text-[15px] font-normal">Small</span>
+                      </div>
+                    </td>
+
+                    <td className="text-center py-4 px-2">
+                      <div className="flex space-x-1 items-center justify-center">
+                        <span className="text-[15px] font-normal">$38</span>
+                      </div>
+                    </td>
+
+                    <td className="text-right py-4">
+                      <div className="flex space-x-1 items-center justify-center">
+                        <span className="text-[15px] font-normal">$38</span>
+                      </div>
+                    </td> */}
+
+                    <td className="text-right py-4">
+                      <div className="flex space-x-1 items-center justify-center cursor-pointer">
+                        <span onClick={() => handleUnlike(item.productCode)}>
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 10 10"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M9.7 0.3C9.3 -0.1 8.7 -0.1 8.3 0.3L5 3.6L1.7 0.3C1.3 -0.1 0.7 -0.1 0.3 0.3C-0.1 0.7 -0.1 1.3 0.3 1.7L3.6 5L0.3 8.3C-0.1 8.7 -0.1 9.3 0.3 9.7C0.7 10.1 1.3 10.1 1.7 9.7L5 6.4L8.3 9.7C8.7 10.1 9.3 10.1 9.7 9.7C10.1 9.3 10.1 8.7 9.7 8.3L6.4 5L9.7 1.7C10.1 1.3 10.1 0.7 9.7 0.3Z"
+                              fill="#AAAAAA"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </>
+
+            {/* <tr className="bg-white border-b hover:bg-gray-50">
               <td className="pl-10  py-4 ">
                 <div className="flex space-x-6 items-center">
                   <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
@@ -53,7 +165,32 @@ export default function ProductsTable({ className }: { className?: string }) {
               </td>
               <td className=" py-4">
                 <div className="flex justify-center items-center">
-                  <InputQuantityCom />
+                  <InputQuantityCom
+                    item={{
+                      totalAmount: 0,
+                      totalDiscount: 0,
+                      checked: false,
+                      finalTotal: 0,
+                      quantity: 0,
+                      productDetailCode: 0,
+                      discountCode: 0,
+                      percentDecrease: 0,
+                      image: "",
+                      productName: "",
+                      productDetailName: "",
+                      price: 0,
+                    }}
+                    increment={function (item: OrderDetailObject): void {
+                      throw new Error("Function not implemented.");
+                    }}
+                    decrement={function (item: OrderDetailObject): void {
+                      throw new Error("Function not implemented.");
+                    }}
+                    onBlurValue={function (item: OrderDetailObject): void {
+                      throw new Error("Function not implemented.");
+                    }}
+                    disableb={false}
+                  />
                 </div>
               </td>
               <td className="text-right py-4">
@@ -80,128 +217,7 @@ export default function ProductsTable({ className }: { className?: string }) {
                 </div>
               </td>
             </tr>
-            <tr className="bg-white border-b hover:bg-gray-50">
-              <td className="pl-10  py-4  w-[380px]">
-                <div className="flex space-x-6 items-center">
-                  <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
-                    <img
-                      src={`/assets/images/product-img-2.jpg`}
-                      alt="product"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <p className="font-medium text-[15px] text-qblack">
-                      iPhone 12 Pro Max 128GB
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className=" flex justify-center items-center">
-                  <span className="w-[20px] h-[20px] bg-[#E4BC87] block rounded-full"></span>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">Small</span>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">$38</span>
-                </div>
-              </td>
-              <td className=" py-4">
-                <div className="flex justify-center items-center">
-                  <InputQuantityCom />
-                </div>
-              </td>
-              <td className="text-right py-4">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">$38</span>
-                </div>
-              </td>
-              <td className="text-right py-4">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span>
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 10 10"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M9.7 0.3C9.3 -0.1 8.7 -0.1 8.3 0.3L5 3.6L1.7 0.3C1.3 -0.1 0.7 -0.1 0.3 0.3C-0.1 0.7 -0.1 1.3 0.3 1.7L3.6 5L0.3 8.3C-0.1 8.7 -0.1 9.3 0.3 9.7C0.7 10.1 1.3 10.1 1.7 9.7L5 6.4L8.3 9.7C8.7 10.1 9.3 10.1 9.7 9.7C10.1 9.3 10.1 8.7 9.7 8.3L6.4 5L9.7 1.7C10.1 1.3 10.1 0.7 9.7 0.3Z"
-                        fill="#AAAAAA"
-                      />
-                    </svg>
-                  </span>
-                </div>
-              </td>
-            </tr>
-            <tr className="bg-white border-b hover:bg-gray-50">
-              <td className="pl-10  py-4  w-[380px]">
-                <div className="flex space-x-6 items-center">
-                  <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
-                    <img
-                      src={`/assets/images/product-img-3.jpg`}
-                      alt="product"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <p className="font-medium text-[15px] text-qblack">
-                      iPhone 12 Pro Max 128GB
-                    </p>
-                  </div>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className=" flex justify-center items-center">
-                  <span className="w-[20px] h-[20px] bg-[#E4BC87] block rounded-full"></span>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">Small</span>
-                </div>
-              </td>
-              <td className="text-center py-4 px-2">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">$38</span>
-                </div>
-              </td>
-              <td className=" py-4">
-                <div className="flex justify-center items-center">
-                  <InputQuantityCom />
-                </div>
-              </td>
-              <td className="text-right py-4">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">$38</span>
-                </div>
-              </td>
-              <td className="text-right py-4">
-                <div className="flex space-x-1 items-center justify-center">
-                  <span>
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 10 10"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M9.7 0.3C9.3 -0.1 8.7 -0.1 8.3 0.3L5 3.6L1.7 0.3C1.3 -0.1 0.7 -0.1 0.3 0.3C-0.1 0.7 -0.1 1.3 0.3 1.7L3.6 5L0.3 8.3C-0.1 8.7 -0.1 9.3 0.3 9.7C0.7 10.1 1.3 10.1 1.7 9.7L5 6.4L8.3 9.7C8.7 10.1 9.3 10.1 9.7 9.7C10.1 9.3 10.1 8.7 9.7 8.3L6.4 5L9.7 1.7C10.1 1.3 10.1 0.7 9.7 0.3Z"
-                        fill="#AAAAAA"
-                      />
-                    </svg>
-                  </span>
-                </div>
-              </td>
-            </tr>
+*/}
           </tbody>
         </table>
       </div>

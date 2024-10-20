@@ -1,8 +1,7 @@
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import EmptyCardError from "@/component_common/EmptyCardError";
-import InputCom from "@/component_common/Helpers/InputCom";
 import PageTitle from "@/component_common/Helpers/PageTitle";
-import Layout from "@/component_common/Partials/Headers/Layout";
+
 import ProductsTable from "./ProductsTable";
 import { useCartStore } from "@/store/cartStore";
 import { NavLink } from "react-router-dom";
@@ -11,7 +10,6 @@ export default function CardPage({ cart = true }) {
   const { currentCart } = useCartStore();
 
   return (
-    // <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
     <>
       {!cart ? (
         <div className="cart-page-wrapper w-full">
@@ -60,6 +58,5 @@ export default function CardPage({ cart = true }) {
         </div>
       )}
     </>
-    // </Layout>
   );
 }

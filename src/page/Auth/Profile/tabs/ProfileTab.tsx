@@ -51,7 +51,7 @@ export default function ProfileTab() {
     // },
     onSuccess: (data) => {
       queryClient.setQueryData(["userInfo"], data);
-      queryClient.invalidateQueries(["userInfo"]);
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
       setCurrentUserInfo(data);
 
       setIsUpdate(false);

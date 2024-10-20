@@ -97,7 +97,7 @@ export default function ProductsTable({
     handleUpdateCart.mutateAsync({
       userLogin: currentUser?.userLogin,
       productDetailCode: item.productDetailCode,
-      quantity: item.quantity - 1,
+      quantity: item.quantity == 0 ? 0 : item.quantity - 1,
     });
   };
   const onBlurValue = (item: OrderDetailObject) => {

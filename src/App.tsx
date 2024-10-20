@@ -36,7 +36,6 @@ import {
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
-import PasswordTab from "./page/Auth/Profile/tabs/PasswordTab.js";
 
 function App() {
   const { currentUser } = useUserStore();

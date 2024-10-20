@@ -14,10 +14,10 @@ export default function InputQuantityCom({
   onBlurValue: (item: OrderDetailObject) => void;
   disableb: boolean;
 }) {
-  const [value, setValue] = useState(item.quantity);
+  const [value, setValue] = useState(item?.quantity);
   useEffect(() => {
-    setValue(item.quantity);
-  }, [item.quantity]);
+    setValue(item?.quantity);
+  }, [item?.quantity]);
   return (
     <div className="w-[150px] h-[40px] px-[26px] flex items-center border border-qgray-border">
       <div className="flex justify-between items-center w-full">
