@@ -1,5 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import BreadcrumbCom from "../BreadcrumbCom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import EmptyWishlistError from "../EmptyWishlistError";
 import PageTitle from "../Helpers/PageTitle";
 import ProductsTable from "./ProductsTable";
@@ -9,16 +8,10 @@ import { useEffect, useState } from "react";
 import { SpinnerLoading } from "..";
 import { WishListProps } from "@/type/TypeCommon";
 import { useCartStore } from "@/store/cartStore";
-
-// type WishListProps = {
-//   productCode: number;
-//   productName: string;
-//   productImage: string;
-//   typeGoodName: string;
-//   typeGoodCode: string;
-// };
+import { toast } from "sonner";
 
 export default function Wishlist() {
+  const queryClient = useQueryClient();
   const { currentUser } = useUserStore();
   const { updateCart } = useCartStore();
   const [list, setList] = useState<WishListProps[]>([]);
@@ -28,7 +21,24 @@ export default function Wishlist() {
     queryFn: async () => getUserWishList({ userLogin: currentUser?.userLogin }),
   });
 
+  const handlePostUnLikeProduct = useMutation({
+    mutationFn: async (body: any) =>
+      await postData(body, "/user/product/unliked"),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      toast.success("Đã bỏ thích thành công", {
+        className: "p-4",
+      });
+    },
+    onError: (data) => {
+      toast.error(data.message, {
+        className: "p-4",
+      });
+    },
+  });
+
   useEffect(() => {
+    console.log("wishtList.data: ", wishtList.data);
     if (wishtList.data) {
       setList(wishtList.data);
     }
@@ -40,6 +50,22 @@ export default function Wishlist() {
       updateCart(data);
     },
   });
+
+  const handleUnlikeAll = async () => {
+    if (list.length <= 1) {
+      await handlePostUnLikeProduct.mutateAsync({
+        userLogin: currentUser?.userLogin,
+        productCode: list[0].productCode,
+      });
+    } else {
+      list.map(async (item) => {
+        await handlePostUnLikeProduct.mutateAsync({
+          userLogin: currentUser?.userLogin,
+          productCode: item.productCode,
+        });
+      });
+    }
+  };
 
   return (
     <div
@@ -58,16 +84,15 @@ export default function Wishlist() {
       </div>
       {!wishtList.isLoading ? (
         <>
-          {" "}
-          {!wishtList.data ? (
+          {wishtList.data.length == 0 ? (
             <div className="wishlist-page-wrapper w-full">
-              <div className="container-x mx-auto">
-                <BreadcrumbCom
+              <div className="container-x mx-auto my-3">
+                {/* <BreadcrumbCom
                   paths={[
                     { name: "home", path: "/" },
                     { name: "wishlist", path: "/wishlist" },
                   ]}
-                />
+                /> */}
                 <EmptyWishlistError />
               </div>
             </div>
@@ -87,15 +112,19 @@ export default function Wishlist() {
                   <ProductsTable list={list} className="mb-[30px]" />
                   <div className="w-full mt-[30px] flex sm:justify-end justify-start">
                     <div className="sm:flex sm:space-x-[30px] items-center">
-                      <button type="button">
+                      {/* <button  type="button">
                         <div className="w-full text-sm font-semibold text-qred mb-5 sm:mb-0">
-                          Clean Wishlist
+                          Bỏ thích tất cả
                         </div>
-                      </button>
+                      </button> */}
                       <div className="w-[180px] h-[50px]">
-                        <button type="button" className="yellow-btn">
+                        <button
+                          onClick={() => handleUnlikeAll()}
+                          type="button"
+                          className="yellow-btn"
+                        >
                           <div className="w-full text-sm font-semibold">
-                            Add to Cart All
+                            Bỏ thích tất cả
                           </div>
                         </button>
                       </div>
