@@ -68,14 +68,14 @@ export default function SingleProductPage() {
     onSuccess: (data, variables) => {},
   });
   const handleAddNewCart = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/cart/update"),
+    mutationFn: (body: any) => postData(body, "/user/cart/new"),
     onSuccess: (data, variables) => {
       addNewCart(data);
     },
   });
 
   const handleUpdateCart = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/cart/new"),
+    mutationFn: (body: any) => postData(body, "/user/cart/update"),
     onSuccess: (data, variables) => {
       updateCart(data);
     },
@@ -222,7 +222,7 @@ export default function SingleProductPage() {
       productDetailCode: selected.productDetailCode,
       quantity: quantity,
     });
-    if (!findItem) {
+    if (findItem) {
       const data = await handleUpdateCart.mutateAsync({
         userLogin: currentUser.userLogin,
         productDetailCode: selected.productDetailCode,

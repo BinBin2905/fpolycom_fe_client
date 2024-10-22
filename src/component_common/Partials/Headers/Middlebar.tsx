@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, currentUserInfo, logoutUser } = useUserStore();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
@@ -96,7 +98,10 @@ export default function Middlebar({ className }: { className?: string }) {
 
                       <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={() => logoutUser()}
+                        onClick={() => {
+                          queryClient.clear();
+                          logoutUser();
+                        }}
                       >
                         Đăng xuất
                       </DropdownMenuItem>

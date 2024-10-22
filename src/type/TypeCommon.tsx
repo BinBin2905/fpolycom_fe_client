@@ -403,3 +403,28 @@ export type ProductCreateObject = {
   productDetailList: ProductDetailCreateObject[] | [];
   productAttrList: ProductAttrObject[] | [];
 };
+
+export type DocumentObject = {
+  documentUrl: string;
+  documentType: string;
+  documentCode: number;
+  newImage?: File | null;
+};
+
+export type RegisterStoreObject = {
+  newImage?: File | null;
+  newBannerImage?: File | null;
+  userLogin: string;
+  image: string;
+  addressDetail: string;
+  address: string;
+  phone: string;
+  name: string;
+  bannerImage: string;
+  email: string;
+  password: string;
+  provinceCode: string;
+  districtCode: string;
+  wardCode: string;
+  documentList: DocumentObject[] | [];
+};
