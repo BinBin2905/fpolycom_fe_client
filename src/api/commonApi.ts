@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useUserStore } from "@/store/userStore";
+import { useStoreStore } from "@/store";
 import { NewPassword, userProfile } from "@/type/TypeCommon";
 import { storage } from "@/lib/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -398,6 +399,31 @@ export async function orderDetails(body: { orderCode?: string }) {
 
   return response.data?.data;
 }
+
+//Store
+export const postDataStore = async (
+  body: { [key: string]: any },
+  endpoint: string
+) => {
+  const response = await axios.post(
+    import.meta.env.VITE_API_URL + endpoint,
+    body,
+    {
+      headers: {
+        Authorization: "Bearer " + useStoreStore.getState().currentStore?.token,
+      },
+    }
+  );
+  console.log(response.data);
+  if (response.status != 200) {
+    throw new Error("Thêm dữ liệu thất bại!");
+  }
+  // Nếu dữ liệu trả về là undefined hoặc null, ném lỗi
+  if (!(response.data?.code == "00")) {
+    throw new Error("No data found");
+  }
+  return response.data?.data;
+};
 
 //wish list
 

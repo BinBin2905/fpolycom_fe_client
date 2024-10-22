@@ -50,30 +50,14 @@ const menu: any[] = [
     itemName: "Quản lí chung",
     itemList: [
       {
-        itemName: "Địa điểm",
-        itemIcon: <i className="ri-map-pin-line"></i>,
-        itemList: [
-          {
-            itemName: "Tỉnh/Thành phố",
-            itemIcon: <i className="ri-building-line"></i>,
-            link: "/store/province",
-          },
-          {
-            itemName: "Quận/Huyện",
-            itemIcon: <i className="ri-building-2-line"></i>,
-            link: "/district",
-          },
-          {
-            itemName: "Phường/Thị xã",
-            itemIcon: <i className="ri-building-4-line"></i>,
-            link: "/ward",
-          },
-        ],
+        itemName: "Sản phẩm",
+        itemIcon: <i className="ri-advertisement-line"></i>,
+        link: "/store/product",
       },
       {
-        itemName: "Quảng cáo",
+        itemName: "Voucher",
         itemIcon: <i className="ri-advertisement-line"></i>,
-        link: "/advertisement",
+        link: "/store/voucher",
       },
       {
         itemName: "Bài viết",

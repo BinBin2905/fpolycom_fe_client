@@ -35,32 +35,19 @@ export type CompcodeObject = {
 };
 
 export type ProductObject = {
-  ACCERGHT: number;
-  COMPCODE: string;
-  CURRCODE: string;
-  CUSTCODE: string;
-  CUSTNAME: string;
-  DDDD: string;
-  DSCNAMNT: number;
-  DSCNRATE: number;
-  EXCHQTTY: number;
-  JSTFDATE: string;
-  KKKK0000: string;
-  PRCEDSCN: number;
-  PRCESALE: number;
-  PRDCBRIF: number;
-  PRDCCODE: number;
-  PRDCDESC: string;
-  PRDCIMGE: string;
-  PRDCNAME: string;
-  QUOMCODE: number;
-  QUOMNAME: string;
-  SHOPCODE: string;
-  SHOPNAME: string;
-  STTEICON: number;
-  STTENAME: string;
-  STTESIGN: number;
-  [key: string]: any;
+  productCode: number | undefined | null;
+  name: string | undefined | null;
+  image: string | undefined | null;
+  status: string | undefined | null;
+  typeGoodName: string | undefined | null;
+  typeGoodCode: string | undefined | null;
+  numberOfLikes: number | undefined | null;
+  numberOfEvaluates: number | undefined | null;
+  provinceCode: number | undefined | null;
+  provinceName: string | undefined | null;
+  pointEvaluate: number | undefined | null;
+  minPrice: number | undefined | null;
+  maxPrice: number | undefined | null;
 };
 
 export type Payment = {
@@ -385,4 +372,34 @@ export type WishListProps = {
   productImage: string;
   typeGoodName: string;
   typeGoodCode: string;
+};
+
+export type ProductDetailCreateObject = {
+  productDetailCode: number | undefined | null;
+  name: string | undefined | null;
+  price: number | undefined | null;
+  image: string | undefined | null;
+  quantity: number | undefined | null;
+  newImage?: File | null;
+  discountCode: number | undefined | null;
+};
+
+export type ProductAttrObject = {
+  attrValue: string | undefined | null;
+  typeGoodAttrCode: number | undefined | null;
+  productAttrCode: number | undefined | null;
+  typeGoodAttrName?: string | undefined | null;
+};
+
+export type ProductCreateObject = {
+  productCode: number | undefined | null;
+  name: string | undefined | null;
+  description: string | undefined | null;
+  shortDescription: string | undefined | null;
+  image: string | undefined | null;
+  newImage: File | null;
+  typeGoodCode: number | undefined | null;
+  storeCode: number | undefined | null;
+  productDetailList: ProductDetailCreateObject[] | [];
+  productAttrList: ProductAttrObject[] | [];
 };

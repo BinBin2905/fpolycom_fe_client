@@ -6,6 +6,7 @@ const TextareaFormikForm = ({
   important = false,
   disabled = false,
   onChange,
+  placeholder,
   row = 5,
   name,
   ...props
@@ -13,6 +14,7 @@ const TextareaFormikForm = ({
   label?: string;
   important?: boolean;
   disabled?: boolean;
+  placeholder?: string;
   name: string;
   row: number;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -25,6 +27,7 @@ const TextareaFormikForm = ({
         {important && <span className="text-red-500">*</span>}
       </label>
       <textarea
+        placeholder={placeholder}
         rows={row}
         {...field}
         autoComplete="off"
