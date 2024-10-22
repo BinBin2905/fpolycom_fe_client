@@ -37,6 +37,9 @@ import {
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
 import PasswordTab from "./page/Auth/Profile/tabs/PasswordTab.js";
+import ProductPage from "./page/store_product/ProductPage.js";
+import StoreProductCreatePage from "./page/store_product/StoreProductCreatePage.js";
+import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -74,10 +77,30 @@ function App() {
                 !currentStore ? (
                   <Navigate to={"/store"}></Navigate>
                 ) : (
-                  <NewProductPage></NewProductPage>
+                  <StoreProductCreatePage></StoreProductCreatePage>
                 )
               }
-              path="/store/dashboard_product/new_product"
+              path="/store/create_product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreProductUpdatePage></StoreProductUpdatePage>
+                )
+              }
+              path="/store/update_product/:id"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <ProductPage></ProductPage>
+                )
+              }
+              path="/store/product"
             ></Route>
             <Route
               element={

@@ -1,7 +1,7 @@
-import { useField, useFormikContext } from "formik";
-import React, { useEffect, useState } from "react";
-import { FixedSizeList as List } from "react-window";
-// import { any } from "zod";
+import { FieldHookConfig, useField, useFormikContext } from "formik";
+import React, { memo, useCallback, useEffect, useState } from "react";
+import { areEqual, FixedSizeList as List } from "react-window";
+import { any } from "zod";
 type ObjectSelect = {
   [key: string]: any;
 };
@@ -37,13 +37,15 @@ const SelectFormikForm = ({
   const [field, meta, helpers] = useField(name);
   const [dataFilter, setDataFilter] = useState(options);
   const [show, setShow] = useState(false);
-  const [selected, setSelected] = useState<ObjectSelect | null>(options[0]);
+  const [selected, setSelected] = useState<ObjectSelect>(options[0]);
   const handleSelectItem = (item: ObjectSelect) => {
     helpers.setValue(item[`${itemKey}`]);
+    console.log(item);
     if (onChange) onChange(item);
     setShow(false);
   };
 
+  console.log(field.value);
   const filterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelected({ ...selected, [itemValue]: e.target.value });
     setDataFilter(
@@ -59,7 +61,6 @@ const SelectFormikForm = ({
       if (!field.value) {
         setSelected(options[0]);
         helpers.setValue(options[0][`${itemKey}`]);
-        // if (onChange) onChange(options[0]);
       } else {
         const findItem = options.find((item: ObjectSelect) => {
           console.log(item[itemKey], name + itemKey);
@@ -71,19 +72,19 @@ const SelectFormikForm = ({
         helpers.setValue(
           findItem ? findItem[itemKey] : options[0][`${itemKey}`]
         );
-        // if (onChange) onChange(options[0]);
       }
       setDataFilter([...options]);
     } else {
-      setSelected(null);
       setDataFilter([]);
     }
     setShow(false);
   }, [options]);
   useEffect(() => {
+    console.log(field.value);
     const findItem = options.find(
       (item: ObjectSelect) => item[itemKey] == field.value
     );
+    console.log(findItem, " value change");
     if (findItem) setSelected(findItem);
   }, [field.value]);
   // const renderItem = useCallback(
