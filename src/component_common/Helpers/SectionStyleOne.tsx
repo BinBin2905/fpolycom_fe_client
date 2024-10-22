@@ -43,9 +43,10 @@ export default function SectionStyleOne({
 
             {products &&
               products.length > 0 &&
-              products.map((item) => {
+              products.map((item, index) => {
                 return (
                   <ProductCardStyleOne
+                    key={item.id || index}
                     item={item}
                     id={"productCode"}
                     name={"name"}

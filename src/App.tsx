@@ -36,7 +36,6 @@ import {
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
-import PasswordTab from "./page/Auth/Profile/tabs/PasswordTab.js";
 import ProductPage from "./page/store_product/ProductPage.js";
 import StoreProductCreatePage from "./page/store_product/StoreProductCreatePage.js";
 import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.js";

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import { useUserStore } from "@/store";
 import { useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { postData, postDataCommon } from "@/api/commonApi";
 import { ButtonForm, SectionStyleOne } from "@/component_common";
 import { toast } from "sonner";
@@ -48,6 +48,8 @@ type ProductObject = {
 };
 
 export default function SingleProductPage() {
+  const queryClient = useQueryClient();
+
   const { currentUser } = useUserStore();
   const { currentCart, updateCart, addNewCart } = useCartStore();
   const { id } = useParams();
@@ -55,6 +57,7 @@ export default function SingleProductPage() {
     null
   );
   const [selected, setSelected] = useState<ProductDetailObject | null>(null);
+
   const handleFetchProduct = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/product/detail"),
     onSuccess: (data, variables) => {},
@@ -89,6 +92,15 @@ export default function SingleProductPage() {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: true });
       }
+      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      toast.success("Đã thêm vào danh sách thích", {
+        className: "p-4",
+      });
+    },
+    onError: (data) => {
+      toast.error(data.message, {
+        className: "p-4",
+      });
     },
   });
 
@@ -98,6 +110,15 @@ export default function SingleProductPage() {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: false });
       }
+      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      toast.info("Đã bỏ thích", {
+        className: "p-4",
+      });
+    },
+    onError: (data) => {
+      toast.error(data.message, {
+        className: "p-4",
+      });
     },
   });
 
@@ -105,6 +126,11 @@ export default function SingleProductPage() {
     mutationFn: (body: any) =>
       postDataCommon(body, "/common/store/all-product"),
     onSuccess: (data, variables) => {},
+    onError: (data) => {
+      toast.error(data.message, {
+        className: "p-4",
+      });
+    },
   });
   const [tab, setTab] = useState<string>("des");
   const reviewElement = useRef<HTMLDivElement | null>(null);
@@ -152,7 +178,8 @@ export default function SingleProductPage() {
 
   const handleLike = (): void => {
     if (!currentUser) {
-      toast("Thông báo", {
+      toast.warning("Thông báo", {
+        className: "p-3",
         description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
       });
       return;
@@ -174,13 +201,15 @@ export default function SingleProductPage() {
 
   const handleAddCart = async (): Promise<void> => {
     if (!currentUser) {
-      toast("Thông báo", {
+      toast.warning("Thông báo", {
+        className: "p-3",
         description: <span>Cần đăng nhập để sử dụng tính năng này!</span>,
       });
       return;
     }
     if (selected == null) {
-      toast("Thông báo", {
+      toast.error("Thông báo", {
+        className: "p-3",
         description: <span>Chưa chọn loại sản phẩm!</span>,
       });
       return;
@@ -200,7 +229,8 @@ export default function SingleProductPage() {
         quantity: quantity,
       });
       if (data) {
-        toast("Thông báo", {
+        toast.success("Thông báo", {
+          className: "p-3",
           description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
         });
       }
@@ -211,7 +241,8 @@ export default function SingleProductPage() {
         quantity: quantity,
       });
       if (data) {
-        toast("Thông báo", {
+        toast.success("Thông báo", {
+          className: "p-3",
           description: <span>Thêm sản phẩm vào giỏ thành công!</span>,
         });
       }
@@ -447,6 +478,7 @@ export default function SingleProductPage() {
                                     ? "border-red-300 shadow-md"
                                     : "border-gray-200"
                                 } border relative px-2 py-2 rounded-md flex items-center gap-x-2 w-fit cursor-pointer`}
+                                key={item.productDetailCode}
                               >
                                 <img
                                   src={item.image}

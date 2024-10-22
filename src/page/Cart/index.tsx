@@ -58,13 +58,17 @@ export default function Cart({
         <div className="w-full h-full">
           <div className="product-items h-[310px] py-5 overflow-y-scroll flex flex-col justify-start">
             {currentCart.length > 0 ? (
-              currentCart.map((item) => {
+              currentCart.map((item, index) => {
                 return (
                   <NavLink
+                    key={index}
                     to={`/single-product/${item.productCode}`}
                     className="w-full h-fit flex border-b border-gray-100"
                   >
-                    <div className="flex space-x-[6px] justify-center items-center px-4 my-[20px]">
+                    <div
+                      key={item.productCode || index}
+                      className="flex space-x-[6px] justify-center items-center px-4 my-[20px]"
+                    >
                       <div className="w-[65px]  h-[40px] flex-shrink">
                         <img
                           src={item.image}
