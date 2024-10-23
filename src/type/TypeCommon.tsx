@@ -414,7 +414,7 @@ export type DocumentObject = {
 export type RegisterStoreObject = {
   newImage?: File | null;
   newBannerImage?: File | null;
-  userLogin: string;
+  userLogin?: string;
   image: string;
   addressDetail: string;
   address: string;

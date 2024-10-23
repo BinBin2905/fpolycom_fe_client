@@ -441,18 +441,27 @@ export default function Navbar() {
             </div>
             <div className="become-seller-btn">
               <div>
-                <div className="black-btn w-[180px] h-[40px] flex justify-center items-center cursor-pointer">
+                <div className="black-btn w-[200px] h-[40px] flex justify-center items-center cursor-pointer">
                   <div className="flex space-x-2 items-center">
-                    {currentUser?.storeStatus == "active" ? (
+                    {currentUser?.storeStatus == null ? (
+                      <NavLink
+                        className="font-600 text-xs"
+                        to={"/become-saller"}
+                      >
+                        Đăng kí cửa hàng
+                      </NavLink>
+                    ) : currentUser?.storeStatus == "active" ? (
                       <NavLink className="font-600 text-xs" to={"/store"}>
                         Truy cập cửa hàng
                       </NavLink>
                     ) : (
                       <NavLink
                         className="font-600 text-xs"
-                        to={"/become-saller"}
+                        to={"/infomation-store"}
                       >
-                        Đăng kí cửa hàng
+                        {currentUser?.storeStatus == "pending"
+                          ? "Cửa hàng đợi xét duyệt"
+                          : "Xét duyệt thất bại"}
                       </NavLink>
                     )}
 
