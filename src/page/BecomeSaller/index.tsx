@@ -278,6 +278,42 @@ export default function BecomeSaller() {
                           placeholder="Nhập địa chỉ..."
                           disabled={true}
                         ></InputFormikForm>
+                        <div className="mt-2 mb-1">
+                          <label htmlFor="" className="mb-1 block">
+                            <span className="text-gray-700 font-medium text-sm">
+                              Hình ảnh liên quan
+                            </span>{" "}
+                            <span className="text-red-500">*</span>
+                          </label>
+                          <div className="flex gap-x-2">
+                            <input
+                              type="file"
+                              id="multiDocument"
+                              className="hidden"
+                            />
+                            {values.documentList.map((item) => {
+                              return (
+                                <div className="h-28 w-28">
+                                  <img
+                                    src={
+                                      item.newImage
+                                        ? URL.createObjectURL(item.newImage)
+                                        : ""
+                                    }
+                                    alt=""
+                                    className="h-full w-full"
+                                  />
+                                </div>
+                              );
+                            })}
+                            <label
+                              htmlFor="multiDocument"
+                              className="border border-gray-200 rounded-sm flex items-center justify-center w-28 h-28"
+                            >
+                              <i className="ri-add-line text-xl text-gray-500"></i>
+                            </label>
+                          </div>
+                        </div>
                         <div className="remember-checkbox mt-5 flex items-center space-x-2.5">
                           <button
                             onClick={() => {

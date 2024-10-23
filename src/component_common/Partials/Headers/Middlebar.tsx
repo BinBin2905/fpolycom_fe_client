@@ -100,6 +100,7 @@ export default function Middlebar({ className }: { className?: string }) {
                         className="cursor-pointer"
                         onClick={() => {
                           queryClient.clear();
+                          queryClient.invalidateQueries();
                           logoutUser();
                         }}
                       >
