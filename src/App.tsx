@@ -39,6 +39,7 @@ import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js"
 import ProductPage from "./page/store_product/ProductPage.js";
 import StoreProductCreatePage from "./page/store_product/StoreProductCreatePage.js";
 import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.js";
+import InfomationRegisterStore from "./page/BecomeSaller/InfomationRegisterStore.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -194,6 +195,17 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             {/* <Route path="/password" element={<PasswordTab />} /> */}
             <Route path="/become-saller" element={<BecomeSaller />} />
+            <Route
+              path="/infomation-store"
+              element={
+                currentUser?.storeStatus == "pending" ||
+                currentUser?.storeStatus == "declined" ? (
+                  <InfomationRegisterStore />
+                ) : (
+                  <Navigate to={"/"}></Navigate>
+                )
+              }
+            />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
             <Route path="/order-detail/:orderCode" element={<OrderDetail />} />

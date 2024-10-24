@@ -1,6 +1,6 @@
 import BreadcrumbCustom from "@/component_common/breadcrumb/BreadcrumbCustom";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   deleteData,
@@ -41,7 +41,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [openDialogDelete, setOpentDialogDelete] = useState(false);
-  const { data, isLoading, isFetching, error, isSuccess } = useQuery({
+  const { data, isLoading, isFetching, error, isSuccess, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: () =>
       postDataStore(
@@ -293,6 +293,7 @@ const ProductPage = () => {
     },
   ];
   console.log(data);
+
   return (
     <>
       <Dialog
