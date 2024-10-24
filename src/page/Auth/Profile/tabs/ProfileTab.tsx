@@ -1,4 +1,8 @@
-import { getCurrentUserInfo, updateCurrentUserInfo } from "@/api/commonApi";
+import {
+  getCurrentUserInfo,
+  updateCurrentUserInfo,
+  uploadImage,
+} from "@/api/commonApi";
 import {
   ButtonForm,
   InputFormikForm,
@@ -22,20 +26,32 @@ export default function ProfileTab() {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [profileImg, setprofileImg] = useState<string | null>(null);
+  const [profileImg, setProfileImg] = useState("");
   const profileImgInput = useRef<HTMLInputElement>(null);
   const browseprofileImg = () => {
     profileImgInput.current!.click();
   };
 
-  const profileImgChangHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value !== "") {
-      const imgReader = new FileReader();
-      imgReader.onload = (event) => {
-        setprofileImg(event.target!.result as string);
-      };
-      imgReader.readAsDataURL(e.target.files![0]);
+  const profileImgChangHandler = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file != null) {
+      // const url = ;
+      setProfileImg((await uploadImage(file, "common")) as string);
+
+      // if (url != null) {
+      //   setProfileImg(url);
+      //   console.log(profileImg);
+      // }
     }
+    // if (e.target.value !== "") {
+    //   const imgReader = new FileReader();
+    //   imgReader.onload = (event) => {
+    //     setProfileImg(event.target!.result as string);
+    //   };
+    //   imgReader.readAsDataURL(e.target.files![0]);
+    // }
   };
 
   const userProfile = useQuery({
@@ -50,10 +66,9 @@ export default function ProfileTab() {
     //   setIsUpdate(true);
     // },
     onSuccess: (data) => {
-      queryClient.setQueryData(["userInfo"], data);
       queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+      queryClient.setQueryData(["userInfo"], data);
       setCurrentUserInfo(data);
-
       setIsUpdate(false);
     },
     onError: (data) => {},
@@ -67,11 +82,16 @@ export default function ProfileTab() {
           .mutateAsync(values)
           .then(resolve)
           .catch(reject);
-      }, 3000);
+      }, 1500);
     });
 
   const handleSubmit = async (values: userProfile): Promise<void> => {
-    toast.promise(promise(values), {
+    console.log(values.image);
+    const updatedValues = {
+      ...values,
+      image: profileImg, // Thay thế giá trị mới cho image
+    };
+    toast.promise(promise(updatedValues), {
       className: "p-5 text-lg",
       loading: "Đang cập nhật...",
       success: (data) => {
@@ -119,6 +139,7 @@ export default function ProfileTab() {
       setEmail(userProfile.data.email);
       setPhoneNumber(userProfile.data.phone);
       setAddress(userProfile.data.address);
+      setProfileImg(userProfile.data.image);
     }
   }, [userProfile.data]);
 
@@ -150,8 +171,7 @@ export default function ProfileTab() {
           phone: phoneNumber,
           address: address,
           addressDetail: "",
-          image:
-            "https://cdn-media.sforum.vn/storage/app/media/THANHAN/2/2a/avatar-dep-89.jpg",
+          image: profileImg,
           bannerImage: "",
           dateOfBirth: "1999-01-01",
           gender: true,
@@ -209,10 +229,20 @@ export default function ProfileTab() {
                   </div>
                   <input
                     ref={profileImgInput}
-                    onChange={(e) => profileImgChangHandler(e)}
                     type="file"
                     className="hidden"
+                    name="image"
+                    onChange={(e) => profileImgChangHandler(e)}
                   />
+
+                  {/* <InputFormikForm
+                    className=" relative border-none px-0 py-0 bottom-11 "
+                    type="file"
+                    label=""
+                    name="image"
+                    placeholder=""
+                    onChange={(e) => profileImgChangHandler(e)}
+                  /> */}
                 </div>
               </div>
               <div className="flex-1 space-y-6">

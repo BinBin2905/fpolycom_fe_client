@@ -208,7 +208,7 @@ export const uploadImage = async (file: File, url: string) => {
     // Lấy URL tải xuống của file sau khi upload
     const downloadURL = await getDownloadURL(snapshot.ref);
     console.log("File uploaded and available at:", downloadURL);
-    return downloadURL; // URL của hình ảnh để bạn có thể sử dụng
+    return downloadURL as string; // URL của hình ảnh để bạn có thể sử dụng
   } catch (error) {
     console.error("Upload failed", error);
     throw error;
