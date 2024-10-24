@@ -16,17 +16,17 @@ import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm
 import { InputOTP, InputOTPGroup } from "@/components/ui/input-otp";
 import { useUserStore } from "@/store";
 import { RegisterObject, RegisterStoreObject } from "@/type/TypeCommon";
+import { Item } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { error } from "console";
 import { Form, Formik } from "formik";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
-export default function BecomeSaller() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { currentUser, setCurrentUser } = useUserStore();
+export default function InfomationRegisterStore() {
+  const { currentUser } = useUserStore();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
   const rememberMe = () => {
@@ -42,6 +42,13 @@ export default function BecomeSaller() {
     queryFn: () => fetchDataCommon("/category/provinces"),
   });
 
+  const handleFetchStore = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/store/get-register"),
+    onSuccess: (data: RegisterStoreObject) => {
+      setInitialValue(data);
+    },
+  });
+
   const fetchDistrict = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/category/districts"),
   });
@@ -52,22 +59,14 @@ export default function BecomeSaller() {
 
   const handlePost = useMutation({
     mutationFn: (body: any) => postData(body, "/user/store/register"),
-    onSuccess: (data) => {
-      console.log(data, "REgister stores");
-      setCurrentUser({
-        ...currentUser,
-        storeStatus: "pending",
-        storeCode: data.storeRegisterCode,
-        storeName: data.name,
-      });
-      navigate("/infomation-store");
+    onSuccess: () => {
+      navigate("/");
     },
   });
 
   const handleSubmit = async (values: RegisterStoreObject) => {
-    setIsLoading(true);
     const body: RegisterStoreObject = { ...values };
-    body.userLogin = currentUser?.userLogin ? currentUser.userLogin : "";
+    body.userLogin = currentUser ? currentUser.userLogin : "";
     if (body.newBannerImage) {
       const url = await uploadImage(body.newBannerImage, "common");
       body.bannerImage = url ? url : "";
@@ -78,23 +77,20 @@ export default function BecomeSaller() {
       body.image = url ? url : "";
     }
 
-    await Promise.all(
-      body.documentList.map(async (item) => {
-        if (item.newImage) {
-          const url = await uploadImage(item.newImage, "common");
-          item.documentUrl = url ? url : "";
-        }
-      })
-    );
-
+    body.documentList.forEach(async (item) => {
+      if (item.newImage) {
+        const url = await uploadImage(item.newImage, "common");
+        item.documentUrl = url ? url : "";
+      }
+    });
     console.log(body);
     await handlePost.mutateAsync(body);
-    setIsLoading(false);
   };
 
   const [initialValue, setInitialValue] = useState<
-    RegisterStoreObject & { confirmPassword?: string }
+    RegisterStoreObject & { confirmPassword?: string; status?: string }
   >({
+    status: "",
     userLogin: "",
     confirmPassword: "",
     password: "",
@@ -112,9 +108,9 @@ export default function BecomeSaller() {
   });
   const validationSchema = Yup.object().shape({
     // userLogin: Yup.string().required("Không để trống tên đăng nhập!"),
-    password: Yup.string()
-      .required("Không để trống mật khẩu!")
-      .matches(/^\d{6}$/, "Phải bao gồm đúng 6 ký tự số"),
+    // password: Yup.string()
+    //   .required("Không để trống mật khẩu!")
+    //   .matches(/^\d{6}$/, "Phải bao gồm đúng 6 ký tự số"),
     name: Yup.string().required("Không để trống tên người dùng!"),
     phone: Yup.string().required("Không để trống số điện thoại!"),
     addressDetail: Yup.string().required("Không để trống địa chỉ cụ thể!"),
@@ -166,14 +162,22 @@ export default function BecomeSaller() {
     }
     return result;
   };
+  useEffect(() => {
+    if (currentUser != null) {
+      handleFetchStore.mutateAsync({
+        userLogin: currentUser.userLogin,
+        storeCode: currentUser.storeCode,
+      });
+    }
+  }, [currentUser]);
   return (
     <div className="become-saller-wrapper w-full">
       <div className="title mb-10">
         <PageTitle
-          title="Đăng kí cửa hàng"
+          title="Thông tin đăng kí"
           breadcrumb={[
             { name: "Trang chủ", path: "/" },
-            { name: "Đăng kí cửa hàng", path: "/become-saller" },
+            { name: "Thông tin đăng kí", path: "/become-saller" },
           ]}
         />
       </div>
@@ -181,6 +185,7 @@ export default function BecomeSaller() {
         key={"formCreateProvince"}
         initialValues={initialValue}
         validationSchema={validationSchema}
+        enableReinitialize={true}
         onSubmit={(values) => {
           console.log(values);
           handleSubmit(values);
@@ -197,6 +202,26 @@ export default function BecomeSaller() {
                         <h1 className="text-[22px] font-semibold text-qblack mb-1">
                           Thông tin cửa hàng
                         </h1>
+                        <div className="flex items-center gap-x-2 mb-5">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              initialValue.status == "pending"
+                                ? "bg-yellow-500"
+                                : "bg-red-800"
+                            }`}
+                          ></div>
+                          <span
+                            className={`${
+                              initialValue.status == "pending"
+                                ? "text-yellow-500"
+                                : "text-red-800"
+                            }`}
+                          >
+                            {initialValue.status == "pending"
+                              ? "Đang xét duyệt"
+                              : "Xét duyệt thất bại"}
+                          </span>
+                        </div>
                         <p className="text-[15px] text-qgraytwo">
                           Điền đầy đủ thông tin. Chúng tôi sẽ duyệt bạn trở
                           thành cửa hàng!
@@ -208,6 +233,7 @@ export default function BecomeSaller() {
                             label="Tên cửa hàng"
                             name="name"
                             important={true}
+                            disabled={initialValue.status == "pending"}
                             placeholder="Nhập tên cửa hàng..."
                           ></InputFormikForm>
 
@@ -215,6 +241,7 @@ export default function BecomeSaller() {
                             label="Email cửa hàng"
                             name="email"
                             important={true}
+                            disabled={initialValue.status == "pending"}
                             placeholder="Nhập email cửa hàng..."
                           ></InputFormikForm>
                         </div>
@@ -223,12 +250,14 @@ export default function BecomeSaller() {
                             label="Số điện thoại cửa hàng"
                             name="phone"
                             important={true}
+                            disabled={initialValue.status == "pending"}
                             placeholder="Nhập số điện thoại cửa hàng..."
                           ></InputFormikForm>
                           <PasswordFormikForm
                             label="Mật khẩu cửa hàng"
                             name="password"
                             important={true}
+                            disabled={true}
                             placeholder="Nhập mật khẩu cửa hàng..."
                           ></PasswordFormikForm>
                         </div>
@@ -239,9 +268,10 @@ export default function BecomeSaller() {
                             itemValue={"name"}
                             options={dataProvinces ? dataProvinces : []}
                             name="provinceCode"
-                            onChange={(item) => {
+                            disabled={initialValue.status == "pending"}
+                            onChange={async (item) => {
                               fetchWardCode.reset();
-                              fetchDistrict.mutateAsync({
+                              await fetchDistrict.mutateAsync({
                                 provinceCode: item.provinceCode,
                               });
                               setFieldValue("address", convertAddress(values));
@@ -253,13 +283,16 @@ export default function BecomeSaller() {
                             label="Phường/Huyện"
                             itemKey={"districtCode"}
                             itemValue={"name"}
-                            disabled={!fetchDistrict.data}
+                            disabled={
+                              !fetchDistrict.data ||
+                              initialValue.status == "pending"
+                            }
                             options={
                               fetchDistrict.data ? fetchDistrict.data : []
                             }
                             name="districtCode"
-                            onChange={(e) => {
-                              fetchWardCode.mutateAsync({
+                            onChange={async (e) => {
+                              await fetchWardCode.mutateAsync({
                                 districtCode: e.districtCode,
                               });
                               setFieldValue("address", convertAddress(values));
@@ -281,7 +314,10 @@ export default function BecomeSaller() {
                             onChange={() => {
                               setFieldValue("address", convertAddress(values));
                             }}
-                            disabled={!fetchWardCode.data}
+                            disabled={
+                              !fetchWardCode.data ||
+                              initialValue.status == "pending"
+                            }
                             name="wardCode"
                             // placeholder="Nhập họ và tên..."
                             important={true}
@@ -313,6 +349,7 @@ export default function BecomeSaller() {
                           </label>
                           <div className="flex gap-x-2">
                             <input
+                              disabled={initialValue.status == "pending"}
                               type="file"
                               multiple
                               id="multiDocument"
@@ -340,7 +377,7 @@ export default function BecomeSaller() {
                                     src={
                                       item.newImage
                                         ? URL.createObjectURL(item.newImage)
-                                        : ""
+                                        : item.documentUrl
                                     }
                                     alt=""
                                     className="h-full w-full object-center object-cover"
@@ -400,7 +437,6 @@ export default function BecomeSaller() {
                         <ButtonForm
                           type="submit"
                           disabled={!checked}
-                          loading={isLoading}
                           className="!bg-primary mt-2 disabled:!bg-gray-800"
                           label="Đăng kí"
                         ></ButtonForm>
@@ -443,12 +479,15 @@ export default function BecomeSaller() {
                               src={
                                 values.newImage
                                   ? URL.createObjectURL(values.newImage)
+                                  : values.image
+                                  ? values.image
                                   : `/assets/images/edit-logoimg.jpg`
                               }
                               alt=""
                               className="sm:w-[198px] sm:h-[198px] w-[199px] h-[199px] rounded-full overflow-hidden object-cover"
                             />
                             <input
+                              disabled={initialValue.status == "pending"}
                               onChange={(e) => {
                                 setFieldValue(
                                   "newImage",
@@ -524,12 +563,15 @@ export default function BecomeSaller() {
                               src={
                                 values.newBannerImage
                                   ? URL.createObjectURL(values.newBannerImage)
+                                  : values.bannerImage
+                                  ? values.bannerImage
                                   : `/assets/images/edit-coverimg.jpg`
                               }
                               alt=""
                               className="w-full h-[120px] rounded-lg overflow-hidden object-cover"
                             />
                             <input
+                              disabled={initialValue.status == "pending"}
                               onChange={(e) => {
                                 setFieldValue(
                                   "newBannerImage",

@@ -35,32 +35,19 @@ export type CompcodeObject = {
 };
 
 export type ProductObject = {
-  ACCERGHT: number;
-  COMPCODE: string;
-  CURRCODE: string;
-  CUSTCODE: string;
-  CUSTNAME: string;
-  DDDD: string;
-  DSCNAMNT: number;
-  DSCNRATE: number;
-  EXCHQTTY: number;
-  JSTFDATE: string;
-  KKKK0000: string;
-  PRCEDSCN: number;
-  PRCESALE: number;
-  PRDCBRIF: number;
-  PRDCCODE: number;
-  PRDCDESC: string;
-  PRDCIMGE: string;
-  PRDCNAME: string;
-  QUOMCODE: number;
-  QUOMNAME: string;
-  SHOPCODE: string;
-  SHOPNAME: string;
-  STTEICON: number;
-  STTENAME: string;
-  STTESIGN: number;
-  [key: string]: any;
+  productCode: number | undefined | null;
+  name: string | undefined | null;
+  image: string | undefined | null;
+  status: string | undefined | null;
+  typeGoodName: string | undefined | null;
+  typeGoodCode: string | undefined | null;
+  numberOfLikes: number | undefined | null;
+  numberOfEvaluates: number | undefined | null;
+  provinceCode: number | undefined | null;
+  provinceName: string | undefined | null;
+  pointEvaluate: number | undefined | null;
+  minPrice: number | undefined | null;
+  maxPrice: number | undefined | null;
 };
 
 export type Payment = {
@@ -349,10 +336,6 @@ export type OrderDetailObject = {
   price: number;
 };
 
-export type VoucherObject = {
-  voucherCode: 1;
-};
-
 export type OrderObject = {
   userLogin?: string;
   totalAmount?: number;
@@ -383,4 +366,83 @@ export type WishListProps = {
   productImage: string;
   typeGoodName: string;
   typeGoodCode: string;
+};
+
+export type ProductDetailCreateObject = {
+  productDetailCode: number | undefined | null;
+  name: string | undefined | null;
+  price: number | undefined | null;
+  image: string | undefined | null;
+  quantity: number | undefined | null;
+  newImage?: File | null;
+  discountCode: number | undefined | null;
+};
+
+export type ProductAttrObject = {
+  attrValue: string | undefined | null;
+  typeGoodAttrCode: number | undefined | null;
+  productAttrCode: number | undefined | null;
+  typeGoodAttrName?: string | undefined | null;
+};
+
+export type ProductCreateObject = {
+  productCode: number | undefined | null;
+  name: string | undefined | null;
+  description: string | undefined | null;
+  shortDescription: string | undefined | null;
+  image: string | undefined | null;
+  newImage: File | null;
+  typeGoodCode: number | undefined | null;
+  storeCode: number | undefined | null;
+  productDetailList: ProductDetailCreateObject[] | [];
+  productAttrList: ProductAttrObject[] | [];
+};
+
+export type DocumentObject = {
+  documentUrl: string;
+  documentType: string;
+  documentCode: number;
+  newImage?: File | null;
+};
+
+export type RegisterStoreObject = {
+  newImage?: File | null;
+  newBannerImage?: File | null;
+  userLogin?: string;
+  image: string;
+  addressDetail: string;
+  address: string;
+  phone: string;
+  name: string;
+  bannerImage: string;
+  email: string;
+  password: string;
+  provinceCode: string;
+  districtCode: string;
+  wardCode: string;
+  documentList: DocumentObject[] | [];
+};
+
+export type VoucherObject = {
+  storeCode: number | null | undefined;
+  voucherCode?: number | null | undefined;
+  amount: number | null | undefined;
+  name: string | null | undefined;
+  priceApply: number | null | undefined;
+  percentDecrease: number | null | undefined;
+  voucherType: string | null | undefined;
+  beginDate: string | null | undefined;
+  endDate: string | null | undefined;
+};
+
+export type BannerObject = {
+  storeBannerCode: number | undefined | null;
+  image: string | undefined | null;
+  title: string | undefined | null;
+  status: boolean | undefined | null;
+  productCode: number | undefined | null;
+  productName: string | undefined | null;
+  storeCode: number | undefined | null;
+  storeName: string | undefined | null;
+  bannerPosition: string | undefined | null;
 };

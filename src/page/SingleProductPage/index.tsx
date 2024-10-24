@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import { useUserStore } from "@/store";
 import { useParams } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postData, postDataCommon } from "@/api/commonApi";
 import { ButtonForm, SectionStyleOne } from "@/component_common";
 import { toast } from "sonner";
@@ -47,6 +47,7 @@ type ProductObject = {
   productAttrList: ProductAttrObject[];
 };
 
+
 export default function SingleProductPage() {
   const queryClient = useQueryClient();
 
@@ -63,19 +64,21 @@ export default function SingleProductPage() {
     onSuccess: (data, variables) => {},
   });
 
+
   const handleFetchStore = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/store/detail"),
     onSuccess: (data, variables) => {},
   });
+  
   const handleAddNewCart = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/cart/update"),
+    mutationFn: (body: any) => postData(body, "/user/cart/new"),
     onSuccess: (data, variables) => {
       addNewCart(data);
     },
   });
 
   const handleUpdateCart = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/cart/new"),
+    mutationFn: (body: any) => postData(body, "/user/cart/update"),
     onSuccess: (data, variables) => {
       updateCart(data);
     },
@@ -222,7 +225,7 @@ export default function SingleProductPage() {
       productDetailCode: selected.productDetailCode,
       quantity: quantity,
     });
-    if (!findItem) {
+    if (findItem) {
       const data = await handleUpdateCart.mutateAsync({
         userLogin: currentUser.userLogin,
         productDetailCode: selected.productDetailCode,
@@ -280,7 +283,7 @@ export default function SingleProductPage() {
                         alt=""
                         className="object-contain"
                       />
-                      {selected && (
+                      {selected?.percentDecrease != null && (
                         <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
                           <span>-{selected.percentDecrease}%</span>
                         </div>

@@ -1,7 +1,7 @@
-import { useField, useFormikContext } from "formik";
-import React, { useEffect, useState } from "react";
-import { FixedSizeList as List } from "react-window";
-// import { any } from "zod";
+import { FieldHookConfig, useField, useFormikContext } from "formik";
+import React, { memo, useCallback, useEffect, useState } from "react";
+import { areEqual, FixedSizeList as List } from "react-window";
+import { any } from "zod";
 type ObjectSelect = {
   [key: string]: any;
 };
@@ -37,7 +37,7 @@ const SelectFormikForm = ({
   const [field, meta, helpers] = useField(name);
   const [dataFilter, setDataFilter] = useState(options);
   const [show, setShow] = useState(false);
-  const [selected, setSelected] = useState<ObjectSelect | null>(options[0]);
+  const [selected, setSelected] = useState<ObjectSelect>(options[0]);
   const handleSelectItem = (item: ObjectSelect) => {
     helpers.setValue(item[`${itemKey}`]);
     if (onChange) onChange(item);
@@ -59,23 +59,18 @@ const SelectFormikForm = ({
       if (!field.value) {
         setSelected(options[0]);
         helpers.setValue(options[0][`${itemKey}`]);
-        // if (onChange) onChange(options[0]);
       } else {
         const findItem = options.find((item: ObjectSelect) => {
-          console.log(item[itemKey], name + itemKey);
-          console.log(field.value, name + itemValue);
           return item[itemKey] == field.value;
         });
-        console.log(findItem, name);
         setSelected(findItem ? findItem : options[0]);
         helpers.setValue(
           findItem ? findItem[itemKey] : options[0][`${itemKey}`]
         );
-        // if (onChange) onChange(options[0]);
       }
+
       setDataFilter([...options]);
     } else {
-      setSelected(null);
       setDataFilter([]);
     }
     setShow(false);
@@ -84,7 +79,11 @@ const SelectFormikForm = ({
     const findItem = options.find(
       (item: ObjectSelect) => item[itemKey] == field.value
     );
-    if (findItem) setSelected(findItem);
+    console.log(findItem, " value change");
+    if (findItem) {
+      setSelected(findItem);
+      if (onChange) onChange(findItem);
+    }
   }, [field.value]);
   // const renderItem = useCallback(
   //   ({ index, style }: { index: number; style: any }) => {
@@ -189,7 +188,6 @@ const SelectFormikForm = ({
               <div
                 onMouseDown={(e) => {
                   handleSelectItem(dataFilter[index]);
-                  console.log(dataFilter[index]);
                 }}
                 className={`px-2 py-2 ${
                   isScrolling && "animate-pulse"

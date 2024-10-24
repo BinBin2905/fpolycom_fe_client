@@ -42,10 +42,7 @@ export default function Cart({
             <ThinBag />
           </span>
         </a>
-        <span
-          className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] bg-qyellow
-                      `}
-        >
+        <span className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] bg-qyellow`} >
           {currentCart ? currentCart.length : 0}
         </span>
       </div>
@@ -78,7 +75,7 @@ export default function Cart({
                       </div>
                       <div className="flex-1 h-fit flex flex-col justify-center ">
                         <p className="title mb-2 text-[13px] font-600 text-qblack leading-4 line-clamp-2 hover:text-blue-600">
-                          iPhone 12 Pro Max 128GB Golen colour
+                          {item.productName} {item.detailName}
                         </p>
                       </div>
                     </div>

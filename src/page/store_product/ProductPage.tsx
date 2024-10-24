@@ -1,8 +1,14 @@
 import BreadcrumbCustom from "@/component_common/breadcrumb/BreadcrumbCustom";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deleteData, fetchCategory, fetchDataCondition } from "@/api/commonApi";
+import {
+  deleteData,
+  fetchCategory,
+  fetchDataCommon,
+  fetchDataCondition,
+  postDataStore,
+} from "@/api/commonApi";
 import { error } from "console";
 import TableCustom from "@/component_common/table/TableCustom";
 import { payments } from "@/component_common/data/data";
@@ -19,32 +25,41 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import SpinnerLoading from "@/component_common/loading/SpinnerLoading";
+import { useStoreStore, useUserStore } from "@/store";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const ProductPage = () => {
+  const [openNew, setOpenNew] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ProductObject | null>(null);
+  const { currentStore } = useStoreStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [openDialogDelete, setOpentDialogDelete] = useState(false);
-  const [objectDelete, setObjectDelete] = useState<ProductObject | null>(null);
-  const { data, isLoading, isFetching, error, isSuccess } = useQuery({
+  const { data, isLoading, isFetching, error, isSuccess, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: () =>
-      fetchDataCondition({
-        DCMNCODE: "appPrdcList",
-        PARACODE: "001",
-        LCTNCODE: "001",
-        CURRDATE: "2024-09-17",
-        CUSTCODE: "%",
-        SHOPCODE: "%",
-        KEY_WORD: "%",
-      }),
+      postDataStore(
+        { storeCode: currentStore?.storeCode },
+        "/store/product/all"
+      ),
+    enabled: currentStore != null,
   });
   const {
-    data: lstQUOM,
-    isFetching: isFetchingLstQUOM,
-    isSuccess: isSuccessLstQUOM,
+    data: dataTypeGood,
+    isLoading: isLoadingTypeGood,
+    isFetching: isFetchingTypeGood,
+    error: errorTypeGood,
+    isSuccess: isSuccessTypeGood,
   } = useQuery({
-    queryKey: ["lstQUOM"],
-    queryFn: () => fetchCategory("lstQUOM"),
+    queryKey: ["typeGoods"],
+    queryFn: () => fetchDataCommon("/common/type-good/all"),
+    enabled: currentStore != null,
   });
 
   const handleDelete = useMutation({
@@ -55,7 +70,9 @@ const ProductPage = () => {
           if (!oldData) return [];
           console.log(data);
           console.log(body);
-          return oldData.filter((item) => item.KKKK0000 !== body.KEY_CODE);
+          return oldData.filter(
+            (item) => item.productCode !== body.productCode
+          );
         });
       }
     },
@@ -96,7 +113,7 @@ const ProductPage = () => {
       enableHiding: false,
     },
     {
-      accessorKey: "PRDCCODE",
+      accessorKey: "productCode",
       meta: "Mã sản phẩm",
       header: ({ column }) => {
         return (
@@ -114,12 +131,12 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("PRDCCODE")}</div>
+        <div className="capitalize">#{row.getValue("productCode")}</div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "PRDCNAME",
+      accessorKey: "name",
       meta: "Tên sản phẩm",
       header: ({ column }) => {
         return (
@@ -137,20 +154,21 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("PRDCNAME")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
       enableHiding: true,
     },
+
     {
-      accessorKey: "QUOMNAME",
-      meta: "Đơn vị tính",
+      accessorKey: "typeGoodName",
+      meta: "Loại hàng",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Đơn vị tính
+            Loại hàng
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -160,12 +178,77 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div
-          className="capitalize"
-          onClick={() => row.toggleSelected(!row?.getIsSelected())}
-        >
-          {row.getValue("QUOMNAME")}
-        </div>
+        <div className="capitalize">{row.getValue("typeGoodName")}</div>
+      ),
+      enableHiding: true,
+    },
+    {
+      accessorKey: "typeGoodCode",
+      meta: "Mã loại hàng",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="hidden"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Mã loại hàng
+            {column.getIsSorted() === "asc" ? (
+              <i className="ri-arrow-up-line"></i>
+            ) : (
+              <i className="ri-arrow-down-line"></i>
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize hidden">{row.getValue("typeGoodCode")}</div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "numberOfLikes",
+      meta: "Lượt thích",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Lượt thích
+            {column.getIsSorted() === "asc" ? (
+              <i className="ri-arrow-up-line"></i>
+            ) : (
+              <i className="ri-arrow-down-line"></i>
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("numberOfLikes")}</div>
+      ),
+      enableHiding: true,
+    },
+    {
+      accessorKey: "status",
+      meta: "Trạng thại",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Trạng thái
+            {column.getIsSorted() === "asc" ? (
+              <i className="ri-arrow-up-line"></i>
+            ) : (
+              <i className="ri-arrow-down-line"></i>
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("status")}</div>
       ),
       enableHiding: true,
     },
@@ -177,35 +260,40 @@ const ProductPage = () => {
       enableHiding: false,
       cell: ({ row }) => {
         const payment = row.original;
-        return (
-          <div className="flex gap-x-2 justify-end">
-            <ButtonForm
-              className="!bg-yellow-500 !w-28"
-              type="button"
-              icon={<i className="ri-error-warning-line"></i>}
-              label="Xem chi tiết"
-            ></ButtonForm>
 
-            <ButtonForm
-              className="!bg-red-500 !w-20"
-              type="button"
-              icon={<i className="ri-delete-bin-line"></i>}
-              label="Xóa"
-              onClick={() => {
-                setObjectDelete(row.original);
-                setOpentDialogDelete(true);
-                // handleDelete.mutateAsync({
-                //   DCMNCODE: "inpProduct",
-                //   KEY_CODE: row.original.KKKK0000,
-                // });
-              }}
-            ></ButtonForm>
-          </div>
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="w-16 text-end cursor-pointer ml-auto pr-5">
+                <i className="ri-menu-line text-xl text-gray-600"></i>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-44" align="end">
+              <div
+                className="px-3 hover:bg-slate-100 cursor-pointer text-sm py-2 text-gray-600 flex gap-x-1"
+                onClick={() => {
+                  navigate("/store/update_product/" + row.original.productCode);
+                }}
+              >
+                <span>Xem chi tiết</span>
+              </div>
+              <div
+                className="px-3 hover:bg-slate-100 cursor-pointer text-sm py-2 text-gray-600 flex gap-x-1"
+                onClick={async () => {
+                  setSelectedItem(row.original);
+                  setOpenDelete(true);
+                }}
+              >
+                <span>Xóa</span>
+              </div>
+            </PopoverContent>
+          </Popover>
         );
       },
     },
   ];
   console.log(data);
+
   return (
     <>
       <Dialog
@@ -241,7 +329,7 @@ const ProductPage = () => {
                           Bạn có muốn xóa quảng cáo{" "}
                           <b className="text-gray-500">
                             {" "}
-                            {objectDelete?.PRDCNAME}
+                            {selectedItem?.productCode}
                           </b>{" "}
                           ?
                         </span>
@@ -253,13 +341,13 @@ const ProductPage = () => {
                       type="button"
                       className="!w-28 !bg-secondary"
                       label="Xác nhận"
-                      onClick={async () => {
-                        if (objectDelete != null)
-                          handleDelete.mutateAsync({
-                            DCMNCODE: "inpProduct",
-                            KEY_CODE: objectDelete?.KKKK0000,
-                          });
-                      }}
+                      // onClick={async () => {
+                      //   if (objectDelete != null)
+                      //     handleDelete.mutateAsync({
+                      //       DCMNCODE: "inpProduct",
+                      //       KEY_CODE: objectDelete?.KKKK0000,
+                      //     });
+                      // }}
                     ></ButtonForm>
                     <ButtonForm
                       type="button"
@@ -327,7 +415,7 @@ const ProductPage = () => {
               className="!bg-secondary !w-28"
               type="button"
               icon={<i className="ri-file-add-line"></i>}
-              onClick={() => navigate("/create_product")}
+              onClick={() => navigate("/store/create_product")}
               label="Thêm mới"
             ></ButtonForm>
           </div>
@@ -339,15 +427,15 @@ const ProductPage = () => {
             data={isSuccess ? data : []}
             columns={columns}
             search={[
-              { key: "PRDCCODE", name: "mã sản phẩm", type: "text" },
-              { key: "PRDCNAME", name: "tên sản phẩm", type: "text" },
+              { key: "productCode", name: "mã sản phẩm", type: "text" },
+              { key: "name", name: "tên sản phẩm", type: "text" },
               {
-                key: "QUOMNAME",
-                name: "đơn vị tính",
+                key: "typeGoodCode",
+                name: "Loại hàng",
                 type: "combobox",
-                dataList: lstQUOM,
-                dataKey: "ITEMNAME",
-                dataName: "ITEMNAME",
+                dataList: dataTypeGood ? dataTypeGood : [],
+                dataKey: "typeGoodCode",
+                dataName: "name",
               },
             ]}
             isLoading={isFetching}

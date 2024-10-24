@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Menu from "./Menu";
-import IconCompany from "@/assets/img";
 // import { link } from "fs";
 // import { any } from "zod";
 const menu: any[] = [
@@ -35,7 +34,7 @@ const menu: any[] = [
           {
             itemName: "Tạo mới",
             itemIcon: <i className="ri-file-add-line"></i>,
-            link: "/create_product",
+            link: "/store/create_product",
           },
         ],
       },
@@ -50,30 +49,19 @@ const menu: any[] = [
     itemName: "Quản lí chung",
     itemList: [
       {
-        itemName: "Địa điểm",
-        itemIcon: <i className="ri-map-pin-line"></i>,
-        itemList: [
-          {
-            itemName: "Tỉnh/Thành phố",
-            itemIcon: <i className="ri-building-line"></i>,
-            link: "/store/province",
-          },
-          {
-            itemName: "Quận/Huyện",
-            itemIcon: <i className="ri-building-2-line"></i>,
-            link: "/district",
-          },
-          {
-            itemName: "Phường/Thị xã",
-            itemIcon: <i className="ri-building-4-line"></i>,
-            link: "/ward",
-          },
-        ],
+        itemName: "Sản phẩm",
+        itemIcon: <i className="ri-advertisement-line"></i>,
+        link: "/store/product",
       },
       {
-        itemName: "Quảng cáo",
+        itemName: "Voucher",
         itemIcon: <i className="ri-advertisement-line"></i>,
-        link: "/advertisement",
+        link: "/store/voucher",
+      },
+      {
+        itemName: "Banner",
+        itemIcon: <i className="ri-advertisement-line"></i>,
+        link: "/store/banner",
       },
       {
         itemName: "Bài viết",

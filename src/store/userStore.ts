@@ -2,13 +2,14 @@ import { userProfile } from "@/type/TypeCommon";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 type userObject = {
-  username: string;
-  userImage: string;
-  token: string;
-  storeStatus: string;
-  storeName: string;
-  userId: string;
-  userLogin: string;
+  username?: string;
+  userImage?: string;
+  token?: string;
+  storeStatus?: string;
+  storeName?: string;
+  userId?: string;
+  userLogin?: string;
+  storeCode?: number
 };
 
 type storeUser = {

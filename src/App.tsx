@@ -36,6 +36,12 @@ import {
 } from "./page/index.js";
 import ConfirmAccountPage from "./page/confirm_account/ConfirmAccountPage.js";
 import PasswordRecoverPage from "./page/password_recover/PasswordRecoverPage.js";
+import ProductPage from "./page/store_product/ProductPage.js";
+import StoreProductCreatePage from "./page/store_product/StoreProductCreatePage.js";
+import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.js";
+import InfomationRegisterStore from "./page/BecomeSaller/InfomationRegisterStore.js";
+import StoreVoucherPage from "./page/store_voucher/StoreVoucherPage.js";
+import StoreBannerPage from "./page/store_banner/StoreBannerPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -73,20 +79,50 @@ function App() {
                 !currentStore ? (
                   <Navigate to={"/store"}></Navigate>
                 ) : (
-                  <NewProductPage></NewProductPage>
+                  <StoreProductCreatePage></StoreProductCreatePage>
                 )
               }
-              path="/store/dashboard_product/new_product"
+              path="/store/create_product"
             ></Route>
             <Route
               element={
                 !currentStore ? (
                   <Navigate to={"/store"}></Navigate>
                 ) : (
-                  <NewVoucherPage></NewVoucherPage>
+                  <StoreProductUpdatePage></StoreProductUpdatePage>
+                )
+              }
+              path="/store/update_product/:id"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <ProductPage></ProductPage>
+                )
+              }
+              path="/store/product"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreVoucherPage></StoreVoucherPage>
                 )
               }
               path="/store/voucher"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreBannerPage></StoreBannerPage>
+                )
+              }
+              path="/store/banner"
             ></Route>
             <Route
               element={
@@ -171,6 +207,17 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             {/* <Route path="/password" element={<PasswordTab />} /> */}
             <Route path="/become-saller" element={<BecomeSaller />} />
+            <Route
+              path="/infomation-store"
+              element={
+                currentUser?.storeStatus == "pending" ||
+                currentUser?.storeStatus == "declined" ? (
+                  <InfomationRegisterStore />
+                ) : (
+                  <Navigate to={"/"}></Navigate>
+                )
+              }
+            />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-condition" element={<TermsCondition />} />
             <Route path="/order-detail/:orderCode" element={<OrderDetail />} />
