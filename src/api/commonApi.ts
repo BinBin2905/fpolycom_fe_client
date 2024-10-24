@@ -258,7 +258,7 @@ export const postData = async (
 };
 
 // current user info
-export async function getCurrentUserInfo(body: { userLogin: string }) {
+export async function getCurrentUserInfo(body: { userLogin?: string }) {
   const response = await axios.post(
     import.meta.env.VITE_API_URL + "/user/get",
     body,
