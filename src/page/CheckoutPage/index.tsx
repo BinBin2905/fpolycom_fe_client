@@ -11,6 +11,7 @@ import { Form, Formik } from "formik";
 import { UserInfo } from "os";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import * as Yup from "yup";
 
 export default function CheckoutPage() {
@@ -286,13 +287,10 @@ export default function CheckoutPage() {
                                   </p>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                  <span className="text-[15px] text-qblack font-medium">
-                                    {item.finalTotal?.toLocaleString("en-US", {
-                                      style: "currency",
-                                      currency: "VND",
-                                    })}
+                                  <span className="text-[15px] text-qblack font-semibold">
+                                    {item.finalTotal?.toLocaleString("en-US")} <span className="font-normal">đ</span>
                                   </span>
-                                  <span className="text-[15px] text-qblack font-medium">
+                                  {/* <span className="text-[15px] text-qblack font-medium">
                                     ( -
                                     {item.totalDiscount?.toLocaleString(
                                       "en-US",
@@ -302,7 +300,7 @@ export default function CheckoutPage() {
                                       }
                                     )}
                                     )
-                                  </span>
+                                  </span> */}
                                 </div>
                               </div>
                             </li>
@@ -315,27 +313,21 @@ export default function CheckoutPage() {
                     <div className="mt-[30px]">
                       <div className=" flex justify-between mb-5">
                         <p className="text-[13px] font-medium text-qblack uppercase">
-                          Tổng tiền ban đầu
+                          Tổng tiền
                         </p>
                         <p className="text-[15px] font-medium text-qblack uppercase">
-                          {item.totalAmount?.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
+                          {item.totalAmount?.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
                     <div className="mt-[10px]">
                       <div className=" flex justify-between mb-5">
                         <p className="text-[13px] font-medium text-qblack uppercase">
-                          Tổng tiền sản phẩm giảm
+                          Giá trị được giảm
                         </p>
                         <p className="text-[15px] font-medium text-qblack uppercase">
                           -
-                          {item.totalAmountDiscount?.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
+                          {item.totalAmountDiscount?.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -343,13 +335,7 @@ export default function CheckoutPage() {
                       <div className=" flex justify-between mb-5">
                         <div>
                           <p className="text-[13px] font-medium text-qblack uppercase">
-                            {handleFetchVoucherUser.data &&
-                            handleFetchVoucherUser.data.length > 0 &&
-                            handleFetchVoucherUser.data.find(
-                              (i: any) => i.storeCode == item.storeCode
-                            )
-                              ? "Chọn voucher giảm giá"
-                              : "Không có voucher áp dụng"}
+                            Mã giảm giá
                           </p>
                           <div className="h-fit">
                             {handleFetchVoucherUser.data &&
@@ -404,13 +390,9 @@ export default function CheckoutPage() {
                           )
                             ? "-" +
                               item.totalAmountDiscount?.toLocaleString(
-                                "en-US",
-                                {
-                                  style: "currency",
-                                  currency: "VND",
-                                }
+                                "en-US"
                               )
-                            : 0}
+                            : 0} <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -436,55 +418,18 @@ export default function CheckoutPage() {
                         <p className="text-[15px] font-medium text-qblack uppercase">
                           +
                           {item.totalAmountShip &&
-                            item.totalAmountShip.toLocaleString("en-US", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
+                            item.totalAmountShip.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
-                    {/* <div className="mt-[10px]">
-                      <div className=" flex justify-between mb-5">
-                        <p className="text-[13px] font-medium text-qblack uppercase">
-                          <ComboboxCustom
-                            dataList={dataDeliveryType}
-                            dataKey={"deliveryTypeCode"}
-                            dataName={"name"}
-                            placeholder="Chọn loại vận chuyển"
-                            onChange={(e) => console.log(e)}
-                          ></ComboboxCustom>
-                        </p>
-                        <p className="text-[15px] font-medium text-qblack uppercase">
-                          +
-                          {dataShippingFee && user
-                            ? (user?.provinceCode.toString() ==
-                              item.provinceStoreCode
-                                ? dataShippingFee.find(
-                                    (item: any) => item?.typeShipping == "inner"
-                                  )
-                                : dataShippingFee.find(
-                                    (item: any) => item?.typeShipping == "outer"
-                                  )
-                              )?.fee.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "VND",
-                              })
-                            : "0"}
-                        </p>
-                      </div>
-                    </div> */}
                     <div className="mt-[10px] border-t pt-5">
                       <div className=" flex justify-between mb-5">
                         <p className="text-[13px] font-medium text-qblack uppercase">
                           Tổng tiền
                         </p>
-                        <p className="text-[15px] font-medium text-qblack uppercase">
+                        <p className="text-[15px] font-semibold text-qblack uppercase ">
                           {item.finalTotal
-                            ? item.finalTotal.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "VND",
-                              })
-                            : 0}
+                            ? item.finalTotal.toLocaleString("en-US") : 0} <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -492,7 +437,23 @@ export default function CheckoutPage() {
                 );
               })}
             </div>
-            <div className="w-full">
+            <div className="w-full sm:flex justify-end">
+                <div className="flex space-x-2.5 items-center">
+                  <a href="#">
+                    <div className="w-[220px] h-[50px] bg-[#F6F6F6] flex justify-center items-center">
+                      <span className="text-sm font-semibold">
+                        Tiếp tục mua sắm
+                      </span>
+                    </div>
+                  </a>
+                  <NavLink to={"/checkout"}>
+                    <div className="w-[140px] h-[50px] bg-qyellow flex justify-center items-center">
+                      <span className="text-sm font-semibold">Thanh toán</span>
+                    </div>
+                  </NavLink>
+                </div>
+              </div>
+            {/* <div className="w-full">
               <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-3">
                 Hóa đơn
               </h1>
@@ -621,7 +582,7 @@ export default function CheckoutPage() {
                   )}
                 </Formik>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

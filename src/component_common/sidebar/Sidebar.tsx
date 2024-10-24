@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Menu from "./Menu";
-import IconCompany from "@/assets/img";
 // import { link } from "fs";
 // import { any } from "zod";
 const menu: any[] = [
@@ -35,7 +34,7 @@ const menu: any[] = [
           {
             itemName: "Tạo mới",
             itemIcon: <i className="ri-file-add-line"></i>,
-            link: "/create_product",
+            link: "/store/create_product",
           },
         ],
       },

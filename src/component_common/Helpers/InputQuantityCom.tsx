@@ -19,13 +19,13 @@ export default function InputQuantityCom({
     setValue(item?.quantity);
   }, [item?.quantity]);
   return (
-    <div className="w-[150px] h-[40px] px-[26px] flex items-center border border-qgray-border">
+    <div className="w-[100px] h-[40px] flex items-center border border-qgray-border">
       <div className="flex justify-between items-center w-full">
         <button
           onClick={() => decrement(item)}
           type="button"
           disabled={disableb}
-          className="text-base text-qgray w-4 h-full"
+          className="text-base text-qgray h-full w-1/4"
         >
           -
         </button>
@@ -36,13 +36,13 @@ export default function InputQuantityCom({
             onBlurValue({ ...item, quantity: Number.parseInt(e.target.value) });
           }}
           onChange={(e) => setValue(Number.parseInt(e.target.value))}
-          className="w-10 outline-none text-center bg-transparent"
+          className="outline-none text-center bg-transparent w-1/2"
         ></input>
         <button
           onClick={() => increment(item)}
           type="button"
           disabled={disableb}
-          className="text-base text-qgray w-4 h-full"
+          className="text-base text-qgray h-full w-1/4"
         >
           +
         </button>

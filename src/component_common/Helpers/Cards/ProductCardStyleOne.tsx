@@ -46,13 +46,12 @@ export default function ProductCardStyleOne({
         className="product-card-one w-full h-full bg-white relative group overflow-hidden"
         style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
       >
-        <div
-          className="product-card-img w-full h-[300px] border-b border-slate-100 mb-2"
-          style={{
-            background: `url(${image ? item[image] : ""}) no-repeat center`,
-          }}
-        >
-          {/* product available progress */}
+        <div className="product-card-img h-[300px] border-b border-slate-100 mb-2 relative flex items-center justify-center overflow-hidden my-auto">
+        <img
+          src={image ? item[image] : ""}
+          alt="Product"
+          className="w-full object-cover"
+        />
           {/* {datas.campaingn_product && (
           <>
             <div className="px-[30px] absolute left-0 top-3 w-full">

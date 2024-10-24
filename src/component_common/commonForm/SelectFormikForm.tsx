@@ -40,12 +40,10 @@ const SelectFormikForm = ({
   const [selected, setSelected] = useState<ObjectSelect>(options[0]);
   const handleSelectItem = (item: ObjectSelect) => {
     helpers.setValue(item[`${itemKey}`]);
-    console.log(item);
     if (onChange) onChange(item);
     setShow(false);
   };
 
-  console.log(field.value);
   const filterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelected({ ...selected, [itemValue]: e.target.value });
     setDataFilter(
@@ -63,11 +61,8 @@ const SelectFormikForm = ({
         helpers.setValue(options[0][`${itemKey}`]);
       } else {
         const findItem = options.find((item: ObjectSelect) => {
-          console.log(item[itemKey], name + itemKey);
-          console.log(field.value, name + itemValue);
           return item[itemKey] == field.value;
         });
-        console.log(findItem, name);
         setSelected(findItem ? findItem : options[0]);
         helpers.setValue(
           findItem ? findItem[itemKey] : options[0][`${itemKey}`]
@@ -81,7 +76,6 @@ const SelectFormikForm = ({
     setShow(false);
   }, [options]);
   useEffect(() => {
-    console.log(field.value);
     const findItem = options.find(
       (item: ObjectSelect) => item[itemKey] == field.value
     );
@@ -194,7 +188,6 @@ const SelectFormikForm = ({
               <div
                 onMouseDown={(e) => {
                   handleSelectItem(dataFilter[index]);
-                  console.log(dataFilter[index]);
                 }}
                 className={`px-2 py-2 ${
                   isScrolling && "animate-pulse"
