@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { CommonObject } from "@/type/TypeCommon";
 import { dataTagSymbol } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import { any } from "zod";
 const frameworks = [
   {
@@ -53,14 +53,22 @@ const ComboboxCustom = ({
   dataName: keyof CommonObject;
   placeholder?: string;
 }) => {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState<any>("");
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState<any>("");
+  const [valueDisplay, setValueDisplay] = useState("");
   useEffect(() => {
     if (value != "" && value != null) {
       if (onChange) onChange(value);
+
+      if (dataList.length >= 0) {
+        const findItem = dataList.find((item: any) => item[dataKey] == value);
+        if (findItem && dataName) {
+          setValueDisplay(findItem[dataName]);
+        }
+      }
     }
   }, [value]);
-  console.log(dataList.find((item) => item[dataKey] == value));
+  console.log(dataList);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -70,11 +78,7 @@ const ComboboxCustom = ({
           aria-expanded={open}
           className="w-full justify-between font-normal text-gray-600"
         >
-          {!!value
-            ? dataList.length > 0 &&
-              dataList.find((item) => item[dataName] == value) &&
-              dataList.find((item) => item[dataName] == value)[dataName]
-            : placeholder}
+          {!!value && valueDisplay ? valueDisplay : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
