@@ -68,6 +68,7 @@ const SelectFormikForm = ({
           findItem ? findItem[itemKey] : options[0][`${itemKey}`]
         );
       }
+
       setDataFilter([...options]);
     } else {
       setDataFilter([]);
@@ -78,7 +79,11 @@ const SelectFormikForm = ({
     const findItem = options.find(
       (item: ObjectSelect) => item[itemKey] == field.value
     );
-    if (findItem) setSelected(findItem);
+    console.log(findItem, " value change");
+    if (findItem) {
+      setSelected(findItem);
+      if (onChange) onChange(findItem);
+    }
   }, [field.value]);
   // const renderItem = useCallback(
   //   ({ index, style }: { index: number; style: any }) => {

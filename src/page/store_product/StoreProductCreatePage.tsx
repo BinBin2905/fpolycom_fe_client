@@ -60,6 +60,13 @@ const StoreProductCreatePage = () => {
       postDataCommon(body, "/common/type-good-attr/all"),
     onSuccess: async (data, variables) => {},
   });
+  const handleRegister = useMutation({
+    mutationFn: (body: any) => postData(body, "/store/product/new"),
+    // onSuccess: (data) => {
+    //   // setCurrentUser(data);
+    // },
+  });
+
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Không để trống tên sản  phẩm!"),
     description: Yup.string().required("Không để trống mô tả!"),
@@ -75,7 +82,7 @@ const StoreProductCreatePage = () => {
           typeGoodAttrCode: Yup.string().required("Không để trống thuộc tính!"),
         })
       )
-      .required("Không để trống thuộc tính sản phẩm!"),
+      .min(1, "Không để trống thuộc tính sản phẩm!"),
     productDetailList: Yup.array()
       .of(
         Yup.object({
@@ -92,7 +99,7 @@ const StoreProductCreatePage = () => {
           discountCode: Yup.string().required("Không để trống giảm giá!"),
         })
       )
-      .required("Không để trống thuộc tính sản phẩm!"),
+      .min(1, "Không để trống thuộc tính sản phẩm!"),
   });
 
   const initialValue: ProductCreateObject & { newImage?: File | null } = {
@@ -170,9 +177,31 @@ const StoreProductCreatePage = () => {
                     </h5>
                     <div className="grid grid-cols-[1fr_3fr] gap-x-4">
                       <div>
-                        <input type="file" id="mainImg" className="hidden" />
+                        <input
+                          type="file"
+                          id="mainImg"
+                          onChange={(e) => {
+                            setFieldValue(
+                              "newImage",
+                              e.target.files ? e.target.files[0] : null
+                            );
+                            setFieldValue(
+                              "image",
+                              e.target.files ? e.target.files[0].name : ""
+                            );
+                          }}
+                          className="hidden"
+                        />
                         <label htmlFor="mainImg">
-                          <img src={""} alt="" className="h-full w-full" />
+                          <img
+                            src={
+                              values.newImage
+                                ? URL.createObjectURL(values.newImage)
+                                : "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                            }
+                            alt=""
+                            className="h-[450px] w-full object-cover object-center"
+                          />
                         </label>
                       </div>
                       <div className="flex gap-y-2 flex-col">
@@ -228,6 +257,7 @@ const StoreProductCreatePage = () => {
                     <h5 className="text-xl font-medium text-gray-700 mb-2">
                       Thuộc tính sản phẩm
                     </h5>
+
                     <div className="grid grid-cols-3 gap-3">
                       {/* {values.pro} */}
                       {values.productAttrList.map((i: any, index: number) => {
@@ -264,6 +294,11 @@ const StoreProductCreatePage = () => {
                         <i className="ri-file-add-line"></i>
                       </div>
                     </h5>
+                    {errors.productDetailList && touched.productDetailList && (
+                      <span className="text-red-500 text-xs">
+                        Phải có ít nhất một biến thể!
+                      </span>
+                    )}
                     {/* {values.pro} */}
                     <div className="grid grid-cols-4 gap-3">
                       {values.productDetailList.map((i: any, index: number) => {
@@ -285,7 +320,22 @@ const StoreProductCreatePage = () => {
                             <div className="w-full h-48 shrink-0">
                               <input
                                 type="file"
-                                name={`productDetailList[${index}].image`}
+                                onChange={(e) => {
+                                  setFieldValue(
+                                    "productDetailList",
+                                    values.productDetailList.map((j, jndex) => {
+                                      if (jndex == index) {
+                                        j.newImage = e.target.files
+                                          ? e.target.files[0]
+                                          : null;
+                                        j.image = e.target.files
+                                          ? e.target.files[0].name
+                                          : "";
+                                      }
+                                      return j;
+                                    })
+                                  );
+                                }}
                                 id={"imageDetail" + index}
                                 className="hidden"
                               />
@@ -294,9 +344,17 @@ const StoreProductCreatePage = () => {
                                 htmlFor={"imageDetail" + index}
                               >
                                 <img
-                                  src={""}
+                                  src={
+                                    values.productDetailList[index]
+                                      .newImage instanceof File
+                                      ? URL.createObjectURL(
+                                          values.productDetailList[index]
+                                            .newImage as File
+                                        )
+                                      : "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                                  }
                                   alt=""
-                                  className="w-full h-full"
+                                  className="w-full h-full object-cover object-center"
                                 />
                               </label>
                             </div>
