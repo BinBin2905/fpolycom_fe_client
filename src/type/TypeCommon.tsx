@@ -217,7 +217,7 @@ export type RegisterObject = {
   districtCode?: string | null | undefined;
 };
 export type userProfile = {
-  userLogin: string;
+  userLogin?: string;
   name: string;
   phone: string;
   email: string;
