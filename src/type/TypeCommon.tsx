@@ -236,9 +236,7 @@ export type userProfile = {
   email: string;
   addressDetail: string | "";
   address: string | "";
-  image:
-    | string
-    | "https://cdn-media.sforum.vn/storage/app/media/THANHAN/2/2a/avatar-dep-89.jpg";
+  image: string | "";
   bannerImage: string | "";
   dateOfBirth: string | "1999-01-01";
   gender: boolean | true;
