@@ -4,7 +4,7 @@ import TableCustom from "@/component_common/table/TableCustom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { VoucherObject } from "@/type/TypeCommon";
+import { StoreBannerObject, VoucherObject } from "@/type/TypeCommon";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import React, { useState } from "react";
@@ -14,23 +14,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import StoreVoucherDeleteDialog from "./component/StoreVoucherDeleteDialog";
-import StoreVoucherUpdateDialog from "./component/StoreVoucherUpdateDialog";
-import StoreVoucherCreateDialog from "./component/StoreVoucherCreateDialog";
 import { useStoreStore } from "@/store";
-
-const StoreVoucherPage = () => {
+import StoreBannerDeleteDialog from "./component/StoreBannerDeleteDialog";
+import StoreBannerUpdateDialog from "./component/StoreBannerUpdateDialog";
+import StoreBannerCreateDialog from "./component/StoreBannerCreateDialog";
+const StoreBannerPage = () => {
   const { currentStore } = useStoreStore();
   const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<VoucherObject | null>(null);
+  const [selectedItem, setSelectedItem] = useState<StoreBannerObject | null>(
+    null
+  );
   const { data, isError, isFetching, error, isSuccess } = useQuery({
-    queryKey: ["store_vouchers"],
+    queryKey: ["store_banners"],
     queryFn: () =>
       postDataStore(
         { storeCode: currentStore?.storeCode },
-        "/store/voucher/all"
+        "/store/banner/all"
       ),
     enabled: currentStore != null,
   });
@@ -40,11 +41,11 @@ const StoreVoucherPage = () => {
     },
 
     {
-      itemName: "Voucher",
-      itemLink: "/payment_type",
+      itemName: "Banner",
+      itemLink: "/store/banner",
     },
   ];
-  const columns: ColumnDef<VoucherObject>[] = [
+  const columns: ColumnDef<StoreBannerObject>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -68,15 +69,15 @@ const StoreVoucherPage = () => {
       enableHiding: false,
     },
     {
-      accessorKey: "voucherCode",
-      meta: "Mã voucher",
+      accessorKey: "storeBannerCode",
+      meta: "Mã banner",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Mã voucher
+            Mã banner
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -86,20 +87,20 @@ const StoreVoucherPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("voucherCode")}</div>
+        <div className="capitalize">#{row.getValue("storeBannerCode")}</div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "name",
-      meta: "Tên voucher",
+      accessorKey: "title",
+      meta: "Tiêu đề banner",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Tên loại thanh toán
+            Tiêu đề banner
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -109,20 +110,20 @@ const StoreVoucherPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize">{row.getValue("title")}</div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "amount",
-      meta: "Số lượng",
+      accessorKey: "bannerPosition",
+      meta: "Vị trí đặt banner",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Số lượng
+            Vị trí đặt banner
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -132,20 +133,20 @@ const StoreVoucherPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("amount")}</div>
+        <div className="capitalize">{row.getValue("bannerPosition")}</div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "priceApply",
-      meta: "Giá áp dụng",
+      accessorKey: "status",
+      meta: "Trạng thái",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Giá áp dụng
+            Trạng thái
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -155,56 +156,13 @@ const StoreVoucherPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("priceApply")}</div>
+        <div className="capitalize">
+          {row.getValue("status") ? "Đang hoạt động" : "Không hoạt động"}
+        </div>
       ),
       enableHiding: true,
     },
-    {
-      accessorKey: "percentDecrease",
-      meta: "Phần trăm giảm",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Phần trăm giảm
-            {column.getIsSorted() === "asc" ? (
-              <i className="ri-arrow-up-line"></i>
-            ) : (
-              <i className="ri-arrow-down-line"></i>
-            )}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("percentDecrease")}</div>
-      ),
-      enableHiding: true,
-    },
-    {
-      accessorKey: "endDate",
-      meta: "Ngày kết thúc",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Ngày kết thúc
-            {column.getIsSorted() === "asc" ? (
-              <i className="ri-arrow-up-line"></i>
-            ) : (
-              <i className="ri-arrow-down-line"></i>
-            )}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("endDate")}</div>
-      ),
-      enableHiding: true,
-    },
+
     {
       id: "actions",
       header: () => {
@@ -246,20 +204,20 @@ const StoreVoucherPage = () => {
   ];
   return (
     <>
-      <StoreVoucherDeleteDialog
+      <StoreBannerDeleteDialog
         item={selectedItem}
         open={openDelete}
         onClose={() => setOpenDelete(false)}
-      ></StoreVoucherDeleteDialog>
-      <StoreVoucherUpdateDialog
+      ></StoreBannerDeleteDialog>
+      <StoreBannerUpdateDialog
         open={openUpdate}
         onClose={() => setOpenUpdate(false)}
         item={selectedItem}
-      ></StoreVoucherUpdateDialog>
-      <StoreVoucherCreateDialog
+      ></StoreBannerUpdateDialog>
+      <StoreBannerCreateDialog
         open={openNew}
         onClose={() => setOpenNew(false)}
-      ></StoreVoucherCreateDialog>
+      ></StoreBannerCreateDialog>
       <div className="flex flex-col gap-y-2">
         <div className="mb-3">
           <BreadcrumbCustom
@@ -272,7 +230,7 @@ const StoreVoucherPage = () => {
         {/* Action  */}
         <div className="flex justify-between items-center">
           <h4 className="text-xl font-medium text-gray-600">
-            Danh sách voucher
+            Danh sách banner
           </h4>
           <div className="flex gap-x-2">
             <ButtonForm
@@ -312,4 +270,4 @@ const StoreVoucherPage = () => {
   );
 };
 
-export default StoreVoucherPage;
+export default StoreBannerPage;

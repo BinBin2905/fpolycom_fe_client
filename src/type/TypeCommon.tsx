@@ -338,10 +338,6 @@ export type OrderDetailObject = {
   price: number;
 };
 
-export type VoucherObject = {
-  voucherCode: 1;
-};
-
 export type OrderObject = {
   userLogin?: string;
   totalAmount?: number;
@@ -427,4 +423,28 @@ export type RegisterStoreObject = {
   districtCode: string;
   wardCode: string;
   documentList: DocumentObject[] | [];
+};
+
+export type VoucherObject = {
+  storeCode: number | null | undefined;
+  voucherCode?: number | null | undefined;
+  amount: number | null | undefined;
+  name: string | null | undefined;
+  priceApply: number | null | undefined;
+  percentDecrease: number | null | undefined;
+  voucherType: string | null | undefined;
+  beginDate: string | null | undefined;
+  endDate: string | null | undefined;
+};
+
+export type BannerObject = {
+  storeBannerCode: number | undefined | null;
+  image: string | undefined | null;
+  title: string | undefined | null;
+  status: boolean | undefined | null;
+  productCode: number | undefined | null;
+  productName: string | undefined | null;
+  storeCode: number | undefined | null;
+  storeName: string | undefined | null;
+  bannerPosition: string | undefined | null;
 };
