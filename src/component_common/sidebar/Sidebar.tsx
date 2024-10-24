@@ -59,6 +59,11 @@ const menu: any[] = [
         link: "/store/voucher",
       },
       {
+        itemName: "Banner",
+        itemIcon: <i className="ri-advertisement-line"></i>,
+        link: "/store/banner",
+      },
+      {
         itemName: "Bài viết",
         itemIcon: <i className="ri-newspaper-line"></i>,
         link: "/post",

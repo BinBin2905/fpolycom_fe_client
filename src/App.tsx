@@ -40,6 +40,8 @@ import ProductPage from "./page/store_product/ProductPage.js";
 import StoreProductCreatePage from "./page/store_product/StoreProductCreatePage.js";
 import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.js";
 import InfomationRegisterStore from "./page/BecomeSaller/InfomationRegisterStore.js";
+import StoreVoucherPage from "./page/store_voucher/StoreVoucherPage.js";
+import StoreBannerPage from "./page/store_banner/StoreBannerPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -107,10 +109,20 @@ function App() {
                 !currentStore ? (
                   <Navigate to={"/store"}></Navigate>
                 ) : (
-                  <NewVoucherPage></NewVoucherPage>
+                  <StoreVoucherPage></StoreVoucherPage>
                 )
               }
               path="/store/voucher"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreBannerPage></StoreBannerPage>
+                )
+              }
+              path="/store/banner"
             ></Route>
             <Route
               element={
