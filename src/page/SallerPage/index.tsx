@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import productDatas from "../../data/products.json";
 import shopInfo from "../../data/shopInfo.json";
 
@@ -8,453 +8,402 @@ import ProductsFilter from "../AllProductPage/ProductsFilter";
 import Layout from "@/component_common/Partials/Headers/Layout";
 import DataIteration from "@/component_common/Helpers/DataIteration";
 import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
+import { NavLink, useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchDataCommon, postData, postDataCommon } from "@/api/commonApi";
+import { useUserStore } from "@/store";
+import { StoreDetailObject, VoucherObject } from "@/type/TypeCommon";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ButtonForm } from "@/component_common";
+import { toast } from "sonner";
+import VoucherComponent from "@/component_common/voucher/VoucherComponent";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type FilterState = {
   [key: string]: boolean;
 };
 
 export default function SallerPage() {
-  const reviewElement = useRef(null);
-  const [tab, setTab] = useState<string>("des");
-  const [filters, setFilter] = useState<FilterState>({
-    mobileLaptop: false,
-    gaming: false,
-    imageVideo: false,
-    vehicles: false,
-    furnitures: false,
-    sport: false,
-    foodDrinks: false,
-    fashion: false,
-    toilet: false,
-    makeupCorner: false,
-    babyItem: false,
-    apple: false,
-    samsung: false,
-    walton: false,
-    oneplus: false,
-    vivo: false,
-    oppo: false,
-    xiomi: false,
-    others: false,
-    sizeS: false,
-    sizeM: false,
-    sizeL: false,
-    sizeXL: false,
-    sizeXXL: false,
-    sizeFit: false,
+  const queryClient = useQueryClient();
+  const { currentUser } = useUserStore();
+  const [store, setStore] = useState<StoreDetailObject | null>(null);
+
+  const { id } = useParams();
+  const fetchStore = useMutation({
+    mutationFn: (body: any) => postDataCommon(body, "/common/store/detail"),
   });
 
-  const checkboxHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    setFilter((prevState) => ({
-      ...prevState,
-      [name]: !prevState[name],
-    }));
+  const handlePostFollow = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/store/follow"),
+    onSuccess: () => {
+      if (store) {
+        setStore({ ...store, followed: true });
+      }
+    },
+  });
+
+  const handleFetchVoucher = useQuery({
+    queryKey: ["vouchers_store"],
+    queryFn: () =>
+      postDataCommon(
+        {
+          userLogin: currentUser?.userLogin ? currentUser.userLogin : null,
+          storeCode: id,
+        },
+        "/common/store/all-voucher"
+      ),
+  });
+  const fetchTypeGood = useQuery({
+    queryKey: ["typeGoods"],
+    queryFn: () => fetchDataCommon("/common/type-good/all"),
+  });
+
+  const handleFetchBanner = useQuery({
+    queryKey: ["banner_store"],
+    queryFn: () =>
+      postDataCommon(
+        {
+          storeCode: id,
+        },
+        "/common/store/all-banner"
+      ),
+    enabled: id != null,
+  });
+
+  const handleFetchProduct = useQuery({
+    queryKey: ["store_products"],
+    queryFn: () =>
+      postDataCommon(
+        {
+          storeCode: id,
+        },
+        "/common/store/all-product"
+      ),
+    enabled: id != null,
+  });
+
+  const handlePostUnFollow = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/store/unfollow"),
+    onSuccess: () => {
+      if (store) {
+        setStore({ ...store, followed: false });
+      }
+    },
+  });
+
+  const handlePostSaveVoucher = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/voucher/new"),
+    onSuccess: (data: VoucherObject) => {
+      console.log(queryClient.getQueryData(["vouchers_store"]));
+      if (queryClient.getQueryData(["vouchers_store"])) {
+        queryClient.setQueryData(
+          ["vouchers_store"],
+          (oldData: VoucherObject[]) => {
+            const resultData = data;
+            console.log(resultData);
+            return [
+              ...oldData.filter((item) => item.voucherCode != data.voucherCode),
+            ];
+          }
+        );
+        toast.success("Lưu voucher thành công!", {
+          className: "p-4",
+        });
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "vouchers",
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchStore.mutateAsync({
+        storeCode: id,
+        userLogin: currentUser?.userLogin ? currentUser?.userLogin : null,
+      });
+      setStore(data);
+    };
+    if (id) {
+      fetchData();
+    }
+    handleFetchVoucher.refetch();
+    handleFetchBanner.refetch();
+    handleFetchProduct.refetch();
+  }, [id]);
+
+  const handleFollow = (): void => {
+    if (currentUser) {
+      handlePostFollow.mutateAsync({
+        userLogin: currentUser?.userLogin,
+        storeCode: store?.storeCode,
+      });
+    } else {
+      toast.warning("Vui lòng đăng nhập để sử dụng tính năng này!", {
+        className: "p-4",
+      });
+    }
   };
-  const [volume, setVolume] = useState([200, 500]);
 
-  const [storage, setStorage] = useState<string | null>(null);
-  const filterStorage = (value: string) => {
-    setStorage(value);
-  };
-  const [filterToggle, setToggle] = useState(false);
-
-  const { products } = productDatas;
-  const shop = shopInfo;
-
-  const info = shop.shop[0];
-  const shopProbs = shop.sanPham;
-
-  const shopRate = () => {
-    if (shopProbs.length === 0) return 0;
-
-    const totalRating = shopProbs.reduce((sum, product) => {
-      return sum + parseInt(product.danhGia, 10);
-    }, 0);
-
-    return (totalRating / shopProbs.length).toFixed(1);
+  const handleUnFollow = (): void => {
+    handlePostUnFollow.mutateAsync({
+      userLogin: currentUser?.userLogin,
+      storeCode: store?.storeCode,
+    });
   };
 
-  const totalRatingSum = () => {
-    if (shopProbs.length === 0) return 0;
-
-    const totalRating = shopProbs.reduce((sum, product) => {
-      return sum + parseInt(product.soLuotDanhgia, 10);
-    }, 0);
-
-    return totalRating;
+  const handleSaveVoucher = (item: any) => {
+    if (currentUser) {
+      handlePostSaveVoucher.mutateAsync({
+        userLogin: currentUser.userLogin,
+        voucherCode: item.voucherCode,
+      });
+    } else {
+      toast.warning("Vui lòng đăng nhập để sử dụng tính năng này!", {
+        className: "p-4",
+      });
+    }
   };
-
   return (
     <>
-      <Layout>
-        <div className="products-page-wrapper w-full">
-          <div className="container-x mx-auto">
-            <div
-              data-aos="fade-right"
-              className="saller-info w-full mb-[15px] sm:h-[428px] sm:flex justify-between items-center px-11 overflow-hidden relative py-20 sm:py-0"
-              style={{
-                background: `url(/assets/images/shopBanner.jpg) no-repeat center center`,
-                backgroundSize: "cover",
-              }}
-            >
-              {/* PC */}
-              <div className="store-status w-[320px] h-[220px] flex-col justify-center items-center rounded-full absolute -left-[30px] glass hidden sm:flex">
-                <div className="saller-logo flex flex-col items-center">
-                  <div className="w-[100px] h-[100px] flex justify-center items-center rounded-full bg-white mb-2 p-1">
-                    <img
-                      src={`/assets/images/shopLogo.jpg`}
-                      alt="logo"
-                      className="object-cover rounded-full h-full"
-                    />
-                  </div>
-                  <span className="text-[26px] font-medium text-center text-white">
-                    {info.tenShop}
-                  </span>
-                </div>
-              </div>
+      <div className="products-page-wrapper w-full">
+        <div className="container-x mx-auto">
+          <img
+            src={store?.bannerImage ? store?.bannerImage : ""}
+            className="saller-info object-cover object-center w-full sm:h-[428px] sm:flex justify-between items-center overflow-hidden relative"
+          />
+          {/* Mobile */}
 
-              <div className="store-status w-[320px] h-[220px] justify-start items-center rounded-full absolute -right-[30px] glass hidden sm:flex">
-                <span className="text-[12px] items-center font-600 text-white font-medium ml-[20px] w-72">
-                  <ul>
-                    <li className="flex space-x-3 items-center py-3 text-base font-normal">
-                      <span>
-                        <svg
-                          width="16"
-                          height="12"
-                          viewBox="0 0 16 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M0.00250844 3.36719C0.156817 3.46656 0.260523 3.53094 0.362354 3.59906C2.3971 4.95656 4.43123 6.31406 6.46598 7.67156C7.55426 8.39781 8.44825 8.39844 9.53591 7.67281C11.5794 6.30969 13.6217 4.94531 15.6652 3.58219C15.7582 3.52031 15.8544 3.46219 15.9856 3.37969C15.9913 3.50031 15.9994 3.58781 15.9994 3.67594C16 5.91656 16.0013 8.15656 15.9994 10.3972C15.9988 11.3853 15.3903 11.9984 14.4038 11.9991C10.135 12.0009 5.86624 12.0009 1.59682 11.9991C0.612871 11.9984 0.00313317 11.3834 0.00250844 10.3959C0.00125898 8.15469 0.00250844 5.91469 0.00250844 3.67406C0.00250844 3.59156 0.00250844 3.50844 0.00250844 3.36719Z"
-                            fill="white"
-                          />
-                          <path
-                            d="M8.00103 0.00122449C10.1557 0.00122449 12.3104 -0.00252551 14.4651 0.00309949C15.366 0.00559949 16.0345 0.6806 15.9963 1.53997C15.9732 2.05935 15.7058 2.4331 15.2792 2.71622C13.4156 3.95435 11.5564 5.1981 9.6953 6.43998C9.42729 6.61873 9.15928 6.79873 8.89002 6.97685C8.29715 7.3706 7.70428 7.37185 7.11141 6.97623C4.97483 5.54935 2.83637 4.12435 0.699789 2.6956C0.100046 2.29435 -0.126731 1.68935 0.0681849 1.04747C0.256229 0.42685 0.820362 0.00559949 1.50507 0.00372449C3.33741 -0.00252551 5.16912 0.00122449 7.00146 0.00122449C7.33506 0.00122449 7.66805 0.00122449 8.00103 0.00122449Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span>{info.email}</span>
-                    </li>
-                    <li className="flex space-x-3 items-center py-3 text-base font-normal">
-                      <span>
-                        <svg
-                          width="15"
-                          height="14"
-                          viewBox="0 0 15 14"
-                          fill="white"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11.5085 14.0001C10.5529 13.9553 9.6013 13.6377 8.6926 13.1988C6.27351 12.0295 4.30056 10.3639 2.60467 8.39981C1.65664 7.30216 0.854189 6.11977 0.351704 4.78105C0.0963526 4.09939 -0.084448 3.40133 0.0405862 2.66719C0.106332 2.27908 0.266587 1.9347 0.568313 1.65372C1.00388 1.24812 1.43592 0.838683 1.87618 0.437996C2.50077 -0.129964 3.37366 -0.152376 4.00587 0.410664C4.71205 1.03985 5.40649 1.68215 6.07862 2.34304C6.80124 3.05367 6.54589 4.09666 5.5826 4.47384C4.70383 4.81768 4.37452 5.42773 4.72966 6.25151C5.4106 7.8324 6.63746 8.94153 8.32865 9.57454C9.12171 9.87137 9.85842 9.52698 10.1918 8.7923C10.6145 7.86082 11.7292 7.63069 12.5129 8.33093C13.2114 8.9552 13.8936 9.59477 14.5669 10.2425C15.1533 10.8067 15.1416 11.6299 14.5475 12.2077C14.1014 12.6417 13.64 13.0627 13.1792 13.483C12.7383 13.8864 12.1842 13.999 11.5085 14.0001Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span>{info.sdt}</span>
-                    </li>
-                    <li className="flex space-x-3 items-center py-3 text-base font-normal">
-                      <span>
-                        <svg
-                          width="14"
-                          height="19"
-                          viewBox="0 0 14 19"
-                          fill="white"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.97116 2.68819e-05C2.96055 0.0118815 -0.248362 3.57049 0.0150623 7.72998C0.107867 9.19477 0.60259 10.5136 1.45069 11.6909C3.13831 14.0337 4.82379 16.3787 6.5107 18.7214C6.77412 19.0875 7.21745 19.0934 7.47659 18.734C9.17135 16.3816 10.8761 14.0359 12.5566 11.6724C15.2879 7.83075 14.0101 2.65546 9.84454 0.632026C9.03428 0.239342 7.93562 -0.00293677 6.97116 2.68819e-05ZM6.99257 9.29479C5.81395 9.29035 4.85877 8.29975 4.85734 7.08094C4.85592 5.8614 5.80752 4.86931 6.98686 4.86116C8.17762 4.85301 9.14708 5.85769 9.13994 7.09428C9.13351 8.3116 8.16977 9.29924 6.99257 9.29479Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span>{info.diaChi}</span>
-                    </li>
-                  </ul>
-                </span>
-              </div>
-              {/* /PC */}
+          {/* /mobile */}
 
-              {/* Mobile */}
-              <div className="store-status h-[200px] justify-around -mx-8 p-3 items-center glass flex sm:hidden ">
-                <div className="flex-col justify-items-center">
-                  <div className="rounded-full p-1 bg-white mb-1 w-[100px] h-[100px]">
-                    <img
-                      src={`/assets/images/shopLogo.jpg`}
-                      alt="logo"
-                      className="object-cover rounded-full h-full"
-                    />
-                  </div>
-                </div>
-
-                <span className="text-[13px] text-white font-thin p-3">
-                  <span className="text-[20px] font-medium text-center text-white">
-                    {info.tenShop}
-                  </span>
-
-                  <ul className="mt-1 border-t">
-                    <li className="flex space-x-3 items-center leading-7 text-base">
-                      <span>
-                        <svg
-                          width="12"
-                          height="9"
-                          viewBox="0 0 16 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M0.00250844 3.36719C0.156817 3.46656 0.260523 3.53094 0.362354 3.59906C2.3971 4.95656 4.43123 6.31406 6.46598 7.67156C7.55426 8.39781 8.44825 8.39844 9.53591 7.67281C11.5794 6.30969 13.6217 4.94531 15.6652 3.58219C15.7582 3.52031 15.8544 3.46219 15.9856 3.37969C15.9913 3.50031 15.9994 3.58781 15.9994 3.67594C16 5.91656 16.0013 8.15656 15.9994 10.3972C15.9988 11.3853 15.3903 11.9984 14.4038 11.9991C10.135 12.0009 5.86624 12.0009 1.59682 11.9991C0.612871 11.9984 0.00313317 11.3834 0.00250844 10.3959C0.00125898 8.15469 0.00250844 5.91469 0.00250844 3.67406C0.00250844 3.59156 0.00250844 3.50844 0.00250844 3.36719Z"
-                            fill="white"
-                          />
-                          <path
-                            d="M8.00103 0.00122449C10.1557 0.00122449 12.3104 -0.00252551 14.4651 0.00309949C15.366 0.00559949 16.0345 0.6806 15.9963 1.53997C15.9732 2.05935 15.7058 2.4331 15.2792 2.71622C13.4156 3.95435 11.5564 5.1981 9.6953 6.43998C9.42729 6.61873 9.15928 6.79873 8.89002 6.97685C8.29715 7.3706 7.70428 7.37185 7.11141 6.97623C4.97483 5.54935 2.83637 4.12435 0.699789 2.6956C0.100046 2.29435 -0.126731 1.68935 0.0681849 1.04747C0.256229 0.42685 0.820362 0.00559949 1.50507 0.00372449C3.33741 -0.00252551 5.16912 0.00122449 7.00146 0.00122449C7.33506 0.00122449 7.66805 0.00122449 8.00103 0.00122449Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-[12px]">{info.email}</span>
-                      {/* {console.log("Email:" + info.email)} */}
-                    </li>
-                    <li className="flex space-x-3 items-center leading-7 text-base">
-                      <span>
-                        <svg
-                          width="11"
-                          height="11"
-                          viewBox="0 0 15 14"
-                          fill="white"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11.5085 14.0001C10.5529 13.9553 9.6013 13.6377 8.6926 13.1988C6.27351 12.0295 4.30056 10.3639 2.60467 8.39981C1.65664 7.30216 0.854189 6.11977 0.351704 4.78105C0.0963526 4.09939 -0.084448 3.40133 0.0405862 2.66719C0.106332 2.27908 0.266587 1.9347 0.568313 1.65372C1.00388 1.24812 1.43592 0.838683 1.87618 0.437996C2.50077 -0.129964 3.37366 -0.152376 4.00587 0.410664C4.71205 1.03985 5.40649 1.68215 6.07862 2.34304C6.80124 3.05367 6.54589 4.09666 5.5826 4.47384C4.70383 4.81768 4.37452 5.42773 4.72966 6.25151C5.4106 7.8324 6.63746 8.94153 8.32865 9.57454C9.12171 9.87137 9.85842 9.52698 10.1918 8.7923C10.6145 7.86082 11.7292 7.63069 12.5129 8.33093C13.2114 8.9552 13.8936 9.59477 14.5669 10.2425C15.1533 10.8067 15.1416 11.6299 14.5475 12.2077C14.1014 12.6417 13.64 13.0627 13.1792 13.483C12.7383 13.8864 12.1842 13.999 11.5085 14.0001Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-[12px]">{info.sdt}</span>
-                    </li>
-                    <li className="flex space-x-3 items-center leading-7 text-base">
-                      <span>
-                        <svg
-                          width="10"
-                          height="14"
-                          viewBox="0 0 14 19"
-                          fill="white"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.97116 2.68819e-05C2.96055 0.0118815 -0.248362 3.57049 0.0150623 7.72998C0.107867 9.19477 0.60259 10.5136 1.45069 11.6909C3.13831 14.0337 4.82379 16.3787 6.5107 18.7214C6.77412 19.0875 7.21745 19.0934 7.47659 18.734C9.17135 16.3816 10.8761 14.0359 12.5566 11.6724C15.2879 7.83075 14.0101 2.65546 9.84454 0.632026C9.03428 0.239342 7.93562 -0.00293677 6.97116 2.68819e-05ZM6.99257 9.29479C5.81395 9.29035 4.85877 8.29975 4.85734 7.08094C4.85592 5.8614 5.80752 4.86931 6.98686 4.86116C8.17762 4.85301 9.14708 5.85769 9.13994 7.09428C9.13351 8.3116 8.16977 9.29924 6.99257 9.29479Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-[12px]">{info.diaChi}</span>
-                    </li>
-                  </ul>
-                </span>
-              </div>
-              {/* /mobile */}
+          <div className="relative h-40 border-b border-gray-100 pb-2 mb-2">
+            <div className="size-36 rounded-full border-4 border-gray-50 shadow-lg overflow-hidden absolute -top-5 left-3">
+              <img
+                src={store?.image ? store?.image : ""}
+                alt=""
+                className="w-full h-full object-cover object-center"
+              />
             </div>
-
-            <div
-              className="product-des-wrapper w-full relative pb-[30px]"
-              ref={reviewElement}
-            >
-              <div className="tab-buttons w-full mb-5 mt-5 sm:mt-0">
-                <div className="container-x mx-auto">
-                  <ul className="flex space-x-12 ">
-                    <li>
-                      <span
-                        onClick={() => setTab("des")}
-                        className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
-                          tab === "des"
-                            ? "border-qyellow text-qblack "
-                            : "border-transparent text-qgray"
-                        }`}
-                      >
-                        Tổng quan
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        onClick={() => setTab("info")}
-                        className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
-                          tab === "info"
-                            ? "border-qyellow text-qblack "
-                            : "border-transparent text-qgray"
-                        }`}
-                      >
-                        Mô tả
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        onClick={() => setTab("quanLy")}
-                        className={`py-[15px] sm:text-[15px] text-sm sm:block border-b font-medium cursor-pointer ${
-                          tab === "quanLy"
-                            ? "border-qyellow text-qblack "
-                            : "border-transparent text-qgray"
-                        }`}
-                      >
-                        Quản lý thông tin
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="w-full h-[1px] bg-[#E8E8E8] absolute left-0 sm:top-[50px] top-[36px] -z-10"></div>
-              </div>
-              <div className="tab-contents w-full min-h-[100px] ">
-                <div className="container-x mx-auto">
-                  {tab === "des" && (
-                    <div data-aos="fade-up" className="w-full tab-content-item">
-                      <div>
-                        <ul className="list-disc ml-[15px]">
-                          <li className="font-normal text-qgray leading-9">
-                            Ngày tham gia:{" "}
-                            <span className="text-qyellow">
-                              {info.ngayThamGia}
-                            </span>
-                          </li>
-                          <li className="font-normal text-qgray leading-9">
-                            Đánh giá:{" "}
-                            <span className="text-qyellow">{shopRate()} </span>{" "}
-                            ({totalRatingSum()} lượt đánh giá)
-                          </li>
-                          <li className="font-normal text-qgray leading-9">
-                            Sản phẩm:{" "}
-                            <span className="text-qyellow">
-                              {shopProbs.length}
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                  {tab === "info" && (
-                    <div data-aos="fade-up" className="w-full tab-content-item">
-                      <p className="text-[15px] text-qgray text-normal mb-10">
-                        {info.moTa}
-                      </p>
-                    </div>
-                  )}
-                  {tab == "quanLy" && (
-                    <div data-aos="fade-up" className="w-full tab-content-item">
-                      <p className="text-[15px] text-qgray text-normal mb-10">
-                        {info.moTa}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full lg:flex lg:space-x-[30px]">
-              <div className="lg:w-[270px]">
-                <ProductsFilter
-                  filterToggle={filterToggle}
-                  filterToggleHandler={() => setToggle(!filterToggle)}
-                  filters={filters}
-                  checkboxHandler={checkboxHandler}
-                  volume={volume}
-                  volumeHandler={(value) => setVolume(value)}
-                  storage={storage}
-                  filterstorage={filterStorage}
-                  className="mb-[30px]"
-                />
-                {/* ads */}
-                <div className="w-full hidden lg:block h-[295px]">
-                  <img
-                    src={`/assets/images/ads-5.png`}
-                    alt=""
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 space-y-5 md:justify-between md:items-center p-[30px] mb-[40px]">
-                  <div>
-                    <p className="font-400 text-[13px]">
-                      <span className="text-qgray"> Showing</span> 1–16 of 66
-                      results
-                    </p>
-                  </div>
-                  <div className="flex space-x-3 items-center">
-                    <span className="font-400 text-[13px]">Sort by:</span>
-                    <div className="flex space-x-3 items-center border-b border-b-qgray">
-                      <span className="font-400 text-[13px] text-qgray">
-                        Default
-                      </span>
-                      <span>
-                        <svg
-                          width="10"
-                          height="6"
-                          viewBox="0 0 10 6"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M1 1L5 5L9 1" stroke="#9A9A9A" />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setToggle(!filterToggle)}
-                    type="button"
-                    className="w-10 lg:hidden h-10 rounded flex justify-center items-center border border-qyellow text-qyellow"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
+            <div className="absolute right-1 top-2">
+              {store?.followed ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <span
+                      className={`${
+                        store?.followed ? "bg-slate-400" : "bg-slate-700"
+                      } px-2 rounded-md text-white py-2 flex gap-x-2 cursor-pointer text-sm`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[40px]">
-                  <DataIteration datas={products} startLength={0} endLength={6}>
-                    {({ datas }) => (
-                      <div data-aos="fade-up" key={datas.id}>
-                        <ProductCardStyleOne datas={datas} />
-                      </div>
-                    )}
-                  </DataIteration>
-                </div>
-
-                <div className="w-full h-[164px] overflow-hidden mb-[40px]">
-                  <img
-                    src={`/assets/images/ads-6.png`}
-                    alt=""
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5 mb-[40px]">
-                  <DataIteration
-                    datas={products}
-                    startLength={6}
-                    endLength={15}
-                  >
-                    {({ datas }) => (
-                      <div data-aos="fade-up" key={datas.id}>
-                        <ProductCardStyleOne datas={datas} />
-                      </div>
-                    )}
-                  </DataIteration>
-                </div>
+                      {store?.followed && <i className="ri-check-line"></i>}
+                      {store?.followed ? `Đang theo dõi` : "Theo dõi"}
+                    </span>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-44 p-1" align="end">
+                    <div
+                      className="px-3 hover:bg-slate-100 cursor-pointer text-sm py-2 text-gray-600 flex gap-x-1"
+                      onClick={() => {
+                        if (!handlePostUnFollow.isPending) {
+                          handleUnFollow();
+                        }
+                      }}
+                    >
+                      <span>Hủy theo dõi</span>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <ButtonForm
+                  label="Theo dõi"
+                  loading={handlePostFollow.isPending}
+                  type="button"
+                  onClick={() => handleFollow()}
+                  className="bg-primary !w-24 rounded-sm"
+                ></ButtonForm>
+              )}
+            </div>
+            <div className="pl-44 py-2 text-slate-700 w-full pt-5">
+              <h5 className="text-3xl font-medium mb-2">{store?.name}</h5>
+              <div className="grid grid-cols-3 pl-4 gap-x-20 gap-y-2 w-full">
+                <span className="flex items-center gap-x-1">
+                  <i className="ri-map-pin-line"></i> {store?.districtName},{" "}
+                  {store?.provinceName}
+                </span>
+                <span className="flex items-center gap-x-1">
+                  <i className="ri-mail-line"></i>
+                  {store?.email}
+                </span>
+                <span className="flex items-center gap-x-1">
+                  <i className="ri-phone-line"></i>
+                  {store?.phone}
+                </span>
+                <span className="flex items-center gap-x-1">
+                  {" "}
+                  <span> Lượt theo dõi:</span>
+                  {store?.numberOfFollowed} <i className="ri-user-fill"></i>
+                </span>
+                <span className="flex items-center gap-x-1">
+                  <span> Lượt thích:</span>
+                  {store?.numberOfLiked} <i className="ri-thumb-up-fill"></i>
+                </span>
               </div>
             </div>
           </div>
+
+          {handleFetchBanner.data &&
+            handleFetchBanner.data
+              .filter((item: any) => item.bannerPosition == "top")
+              .slice(0, 1)
+              .map((item: any) => {
+                return (
+                  <NavLink to={`/single-product/` + item.productCode}>
+                    <img
+                      src={item.image}
+                      className="h-44 w-full object-cover object-top"
+                      alt=""
+                    />
+                  </NavLink>
+                );
+              })}
+
+          <div className="grid grid-cols-[1fr_4fr] gap-[30px] mt-10">
+            <div className="!bg-white border-r border-gray-200">
+              <h5 className="text-gray-700 mb-3">Loại hàng</h5>
+              <div>
+                {fetchTypeGood.data &&
+                  fetchTypeGood.data.map((item: any) => {
+                    return (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" className="!checked:bg-gray-500" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm text-gray-500 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {item.name}
+                        </label>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+            <div className="flex flex-col gap-[20px]">
+              <div>
+                <h5 className="text-gray-600 font-medium text-xl">
+                  Danh sách sản phẩm
+                </h5>
+              </div>
+              <div className="grid grid-cols-3 gap-[30px]">
+                {handleFetchProduct.data &&
+                  handleFetchProduct.data?.length > 0 &&
+                  handleFetchProduct.data
+                    ?.slice(0, 6)
+                    .map((item: any, index: number) => {
+                      return (
+                        <ProductCardStyleOne
+                          key={item.id || index}
+                          item={item}
+                          id={"productCode"}
+                          name={"name"}
+                          image={"image"}
+                          pointEvaluate={"pointEvaluate"}
+                          minPrice={"minPrice"}
+                          maxPrice={"maxPrice"}
+                          typeGoodName={"typeGoodName"}
+                          typeGoodCode={"typeGoodCode"}
+                          numberOfEvaluates={"numberOfEvaluates"}
+                          numberOfLikes={"numberOfLikes"}
+                          provinceName={"provinceName"}
+                          provinceCode={"provinceCode"}
+                        />
+                      );
+                    })}
+              </div>{" "}
+              <div>
+                {handleFetchVoucher.data &&
+                  handleFetchVoucher.data?.slice(0, 2).map((item: any) => {
+                    return (
+                      <VoucherComponent
+                        item={item}
+                        onSave={(value) => {
+                          handleSaveVoucher(value);
+                        }}
+                        save={false}
+                        loading={handlePostSaveVoucher.isPending}
+                        amount={"amount"}
+                        name={"name"}
+                        dateBegin={"beginDate"}
+                        dateEnd={"endDate"}
+                      ></VoucherComponent>
+                    );
+                  })}
+              </div>
+              <div className="grid grid-cols-3 gap-[30px]">
+                {handleFetchProduct.data &&
+                  handleFetchProduct.data?.length > 0 &&
+                  handleFetchProduct.data
+                    ?.slice(6)
+                    .map((item: any, index: number) => {
+                      return (
+                        <ProductCardStyleOne
+                          key={item.id || index}
+                          item={item}
+                          id={"productCode"}
+                          name={"name"}
+                          image={"image"}
+                          pointEvaluate={"pointEvaluate"}
+                          minPrice={"minPrice"}
+                          maxPrice={"maxPrice"}
+                          typeGoodName={"typeGoodName"}
+                          typeGoodCode={"typeGoodCode"}
+                          numberOfEvaluates={"numberOfEvaluates"}
+                          numberOfLikes={"numberOfLikes"}
+                          provinceName={"provinceName"}
+                          provinceCode={"provinceCode"}
+                        />
+                      );
+                    })}
+              </div>
+              {handleFetchBanner.data &&
+                handleFetchBanner.data
+                  .filter((item: any) => item.bannerPosition == "top")
+                  .slice(0, 1)
+                  .map((item: any) => {
+                    return (
+                      <NavLink to={`/single-product/` + item.productCode}>
+                        <img
+                          src={item.image}
+                          className="h-44 w-full object-cover object-top"
+                          alt=""
+                        />
+                      </NavLink>
+                    );
+                  })}
+            </div>
+          </div>
+
+          {/* Voucher  */}
+
+          {/* Banner  */}
+          {/* {handleFetchBanner.data &&
+            handleFetchBanner.data
+              .filter((item: any) => item.bannerPosition == "bottom")
+              .slice(0, 1)
+              .map((item: any) => {
+                return (
+                  <NavLink to={`/single-product/` + item.productCode}>
+                    <img
+                      src={item.image}
+                      className="h-44 w-full object-cover object-top"
+                      alt=""
+                    />
+                  </NavLink>
+                );
+              })} */}
         </div>
-      </Layout>
+      </div>
     </>
   );
 }

@@ -435,7 +435,7 @@ export type VoucherObject = {
   endDate: string | null | undefined;
 };
 
-export type BannerObject = {
+export type StoreBannerObject = {
   storeBannerCode: number | undefined | null;
   image: string | undefined | null;
   title: string | undefined | null;
@@ -445,4 +445,23 @@ export type BannerObject = {
   storeCode: number | undefined | null;
   storeName: string | undefined | null;
   bannerPosition: string | undefined | null;
+};
+
+export type StoreDetailObject = {
+  storeCode: number | null | undefined | string;
+  image: null | undefined | string;
+  name: number | null | undefined | string;
+  addressDetail: null;
+  address: number | null | undefined | string;
+  phone: number | null | undefined | string;
+  status: number | null | undefined | string;
+  bannerImage: null | undefined | string;
+  followed: boolean | null | undefined;
+  email: number | null | undefined | string;
+  userRegister: number | null | undefined | string;
+  provinceName: number | null | undefined | string;
+  districtName: number | null | undefined | string;
+  wardName: number | null | undefined | string;
+  numberOfFollowed: number | null | undefined | string;
+  numberOfLiked: number | null | undefined | string;
 };

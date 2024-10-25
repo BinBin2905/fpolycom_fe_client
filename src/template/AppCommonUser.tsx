@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 const AppCommonUser = () => {
   return (
-    <div className="overflow-y-scroll h-screen">
+    <div id="appLoginUser" className="overflow-y-scroll h-screen scroll-smooth">
       <Layout>
         <Outlet></Outlet>
       </Layout>
