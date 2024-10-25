@@ -194,7 +194,7 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/flash-sale" element={<FlashSale />} />
-            <Route path="/saller-page" element={<SallerPage />} />
+            <Route path="/saller-page/:id" element={<SallerPage />} />
             {/* <Route path="/my-Store" element={<MyStore />} /> */}
             <Route path="/my-Store/single-product" element={<ProbView />} />
             <Route path="/sallers" element={<Sallers />} />

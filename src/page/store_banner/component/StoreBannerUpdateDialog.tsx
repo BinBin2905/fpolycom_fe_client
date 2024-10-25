@@ -98,7 +98,7 @@ const StoreBannerUpdateDialog = ({
     onSuccess: (data: StoreBannerObject) => {
       if (queryClient.getQueryData(["store_banners"])) {
         queryClient.setQueryData(
-          ["paymentTypes"],
+          ["store_banners"],
           (oldData: StoreBannerObject[]) => {
             const resultData = data;
             console.log(resultData);
@@ -112,13 +112,16 @@ const StoreBannerUpdateDialog = ({
         );
       } else {
         queryClient.invalidateQueries({
-          predicate: (query) => query.queryKey[0] === "paymentTypes",
+          predicate: (query) => query.queryKey[0] === "store_banners",
         });
       }
     },
   });
 
-  const handleSubmit = async (values: any): Promise<void> => {
+  const handleSubmit = async (
+    values: StoreBannerObject & { newImage?: File | null }
+  ): Promise<void> => {
+    console.log(values, "Vluaes");
     setIsLoading(true);
     const body = {
       ...values,
@@ -182,7 +185,7 @@ const StoreBannerUpdateDialog = ({
                 {!handleUpdate.isSuccess ? (
                   <div className="flex flex-col gap-y-4 px-1">
                     <DialogDescription>
-                      <div>
+                      <div className="mb-2">
                         <div>
                           <label htmlFor="imageBank" className="mb-1 block">
                             <span className="text-gray-700 font-medium text-sm">
@@ -226,7 +229,7 @@ const StoreBannerUpdateDialog = ({
                               className="h-full w-full object-center object-cover"
                             />
                           </label>
-                          {errors.image && (
+                          {errors.image && touched.image && (
                             <span className="text-red-500">
                               Không để trống banner
                             </span>
@@ -275,7 +278,7 @@ const StoreBannerUpdateDialog = ({
                         <ButtonForm
                           type="submit"
                           className="!w-28 !bg-primary"
-                          label="Thêm mới"
+                          label="Cập nhật"
                           loading={handleUpdate.isPending || isLoading}
                           // disabled={false}
                         ></ButtonForm>
@@ -300,7 +303,7 @@ const StoreBannerUpdateDialog = ({
                     <DialogDescription className="flex items-center mb-5 justify-center gap-x-2 py-6">
                       <i className="ri-checkbox-line text-gray-700 text-xl"></i>{" "}
                       <span className="text-gray-700 text-base">
-                        Thêm thành công
+                        Cập nhật thành công!
                       </span>
                     </DialogDescription>
                     <div className="flex gap-x-2 justify-end">

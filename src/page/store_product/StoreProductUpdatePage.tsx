@@ -3,18 +3,27 @@ import {
   postData,
   postDataCommon,
   postDataStore,
+  uploadImage,
 } from "@/api/commonApi";
 import {
   BreadcrumbCustom,
   ButtonForm,
   InputFormikForm,
   SelectFormikForm,
+  SpinnerLoading,
 } from "@/component_common";
 import NumberFormikForm from "@/component_common/commonForm/NumberFormikForm";
 import TextareaFormikForm from "@/component_common/commonForm/TextareaFormikForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useStoreStore, useUserStore } from "@/store";
 import { ProductCreateObject } from "@/type/TypeCommon";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +31,10 @@ import * as Yup from "yup";
 
 const StoreProductUpdatePage = () => {
   const { id } = useParams();
+  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [infoLoading, setInfoLoading] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
   const breadBrumb = [
     {
       itemName: "Quản lí chung",
@@ -59,17 +72,8 @@ const StoreProductUpdatePage = () => {
     queryFn: () => fetchDataCommon("/common/discount/all"),
     enabled: currentStore != null,
   });
-  const {
-    data: dataProduct,
-    isLoading: isLoadingProduct,
-    isFetching: isFetchingProduct,
-    error: errorProduct,
-    isSuccess: isSuccessProduct,
-    refetch: refetchProduct,
-  } = useQuery({
-    queryKey: ["product", id],
-    queryFn: () => postDataStore({ productCode: id }, "/store/product/detail"),
-    enabled: id != null,
+  const handleFetchProduct = useMutation({
+    mutationFn: (body: any) => postDataStore(body, "/store/product/detail"),
   });
 
   const handleFetchProductAttr = useMutation({
@@ -112,6 +116,31 @@ const StoreProductUpdatePage = () => {
       )
       .required("Không để trống thuộc tính sản phẩm!"),
   });
+  const handlePost = useMutation({
+    mutationFn: (body: { [key: string]: any }) =>
+      postDataStore(body, "/store/product/update"),
+    onSuccess: (data: ProductCreateObject) => {
+      if (queryClient.getQueryData(["store_products"])) {
+        queryClient.setQueryData(
+          ["store_products"],
+          (oldData: ProductCreateObject[]) => {
+            const resultData = data;
+            console.log(resultData);
+            return [
+              resultData,
+              ...oldData.filter(
+                (item) => item.productCode != resultData.productCode
+              ),
+            ];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "store_products",
+        });
+      }
+    },
+  });
 
   const [initialValue, setInitialValue] = useState<
     ProductCreateObject & {
@@ -129,48 +158,133 @@ const StoreProductUpdatePage = () => {
     productAttrList: [],
     productDetailList: [],
   });
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const handleSubmit = async (values: ProductCreateObject) => {
+    setIsLoading(true);
+    setOpenDialog(true);
+    const body: ProductCreateObject = { ...values };
+    console.log(body);
+    setInfoLoading("Đang tải hình ảnh...");
+    if (values.newImage != null) {
+      const url = await uploadImage(values.newImage, "banner");
+      body.image = url != undefined ? url : "";
+    }
+    await Promise.all(
+      body.productDetailList.map(async (item) => {
+        if (item.newImage) {
+          const url = await uploadImage(item.newImage, "common");
+          item.image = url ? url : "";
+        }
+      })
+    );
+    setInfoLoading("Đang lưu dữ liệu...");
+    await handlePost.mutate(body);
+    setInfoLoading("Hoàn thành");
   };
 
   useEffect(() => {
-    refetchProduct();
+    handleFetchProduct.mutateAsync({ productCode: id });
   }, [id]);
 
   useEffect(() => {
-    if (isSuccessProduct && dataProduct) {
-      setInitialValue(dataProduct);
+    if (handleFetchProduct.isSuccess) {
+      setInitialValue(handleFetchProduct.data);
     }
-  }, [isSuccessProduct]);
+  }, [handleFetchProduct.isSuccess]);
+  console.log(initialValue);
   return (
     <>
-      <div className="flex flex-col gap-y-2">
-        {/* <Progress value={progress} className="w-[60%]" />
-      <Button
-        onClick={() => {
-          setProgress(50);
+      <Formik
+        key={"formLogin"}
+        initialValues={initialValue}
+        enableReinitialize={true}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          console.log(values);
+          handleSubmit(values);
         }}
-      ></Button> */}
-        <div className="mb-3">
-          <BreadcrumbCustom
-            linkList={breadBrumb}
-            itemName={"itemName"}
-            itemLink={"itemLink"}
-          ></BreadcrumbCustom>
-        </div>
+      >
+        {({
+          setFieldValue,
+          handleChange,
+          values,
+          errors,
+          touched,
+          resetForm,
+        }) => (
+          <Form id="formCreateProduct">
+            <Dialog
+              open={openDialog}
+              onOpenChange={() => {
+                if (!handlePost.isPending) {
+                  setOpenDialog(false);
+                  setTimeout(() => {
+                    handlePost.reset();
+                  }, 500);
+                }
+              }}
+            >
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Thông báo</DialogTitle>
+                  <div className="w-full overflow-hidden">
+                    <div
+                      className={`${
+                        handlePost.isSuccess
+                          ? "-translate-x-1/2"
+                          : "translate-x-0"
+                      } w-[200%] grid grid-cols-2 transition-transform`}
+                    >
+                      <div className="flex flex-col">
+                        <DialogDescription className="flex flex-auto items-center mb-5 justify-center gap-x-2 py-6">
+                          <SpinnerLoading className="w-6 h-6 fill-primary"></SpinnerLoading>
+                          <span className="text-gray-700 text-base">
+                            {infoLoading}
+                          </span>
+                        </DialogDescription>
+                      </div>
+                      <div className="flex flex-col">
+                        <DialogDescription className="flex items-center mb-5 justify-center gap-x-2 py-6">
+                          <i className="ri-checkbox-line text-gray-700 text-xl"></i>{" "}
+                          <span className="text-gray-700 text-base">
+                            Thêm sản phẩm thành công!
+                          </span>
+                        </DialogDescription>
+                        <div className="flex gap-x-2 justify-end">
+                          <ButtonForm
+                            type="button"
+                            className="!w-32 bg-secondary"
+                            label="Xem danh sách"
+                            onClick={() => navigate("/product")}
+                          ></ButtonForm>
 
-        <Formik
-          key={"formLogin"}
-          initialValues={initialValue}
-          enableReinitialize={true}
-          validationSchema={validationSchema}
-          onSubmit={(values) => {
-            console.log(values);
-            handleSubmit(values);
-          }}
-        >
-          {({ setFieldValue, handleChange, values, errors, touched }) => (
-            <Form id="formCreateProduct">
+                          <ButtonForm
+                            type="button"
+                            className="!w-28 !bg-red-500"
+                            label="Hủy"
+                            onClick={() => {
+                              setOpenDialog(false);
+                              setTimeout(() => {
+                                handlePost.reset();
+                                setOpenDialog(false);
+                              }, 500);
+                            }}
+                          ></ButtonForm>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+            <div className="flex flex-col gap-y-2">
+              <div className="mb-3">
+                <BreadcrumbCustom
+                  linkList={breadBrumb}
+                  itemName={"itemName"}
+                  itemLink={"itemLink"}
+                ></BreadcrumbCustom>
+              </div>
+
               {/* Action  */}
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-end gap-x-2">
@@ -181,7 +295,7 @@ const StoreProductUpdatePage = () => {
                     <i className="ri-logout-box-line text-xl"></i>
                   </div>
                   <h4 className="text-xl font-medium text-gray-600">
-                    Cập nhật sản phẩm
+                    Thêm sản phẩm mới
                   </h4>
                 </div>
                 <div className="flex gap-x-2 shrink-0">
@@ -201,12 +315,36 @@ const StoreProductUpdatePage = () => {
                     </h5>
                     <div className="grid grid-cols-[1fr_3fr] gap-x-4">
                       <div>
-                        <input type="file" id="mainImg" className="hidden" />
+                        <input
+                          type="file"
+                          id="mainImg"
+                          onChange={(e) => {
+                            setFieldValue(
+                              "newImage",
+                              e.target.files ? e.target.files[0] : null
+                            );
+                            setFieldValue(
+                              "image",
+                              e.target.files ? e.target.files[0].name : ""
+                            );
+                          }}
+                          className="hidden"
+                        />
                         <label htmlFor="mainImg">
-                          <img src={""} alt="" className="h-full w-full" />
+                          <img
+                            src={
+                              values.newImage
+                                ? URL.createObjectURL(values.newImage)
+                                : values.image
+                                ? values.image
+                                : "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                            }
+                            alt=""
+                            className="h-[450px] w-full object-cover object-center"
+                          />
                         </label>
                       </div>
-                      <div className="flex gap-y-2 flex-col">
+                      <div className="flex gap-y-2 flex-col ">
                         <InputFormikForm
                           name="name"
                           label="Tên sản phẩm"
@@ -228,6 +366,7 @@ const StoreProductUpdatePage = () => {
                           row={5}
                         ></TextareaFormikForm>
                         <SelectFormikForm
+                          disabled={true}
                           label="Loại hàng"
                           itemKey={"typeGoodCode"}
                           itemValue={"name"}
@@ -259,6 +398,7 @@ const StoreProductUpdatePage = () => {
                     <h5 className="text-xl font-medium text-gray-700 mb-2">
                       Thuộc tính sản phẩm
                     </h5>
+
                     <div className="grid grid-cols-3 gap-3">
                       {/* {values.pro} */}
                       {values.productAttrList.map((i: any, index: number) => {
@@ -269,7 +409,7 @@ const StoreProductUpdatePage = () => {
                             placeholder={`Nhập ${i.typeGoodAttrName.toLowerCase()}...`}
                           ></InputFormikForm>
                         );
-                      })}{" "}
+                      })}
                     </div>
                   </div>
                   <div className="w-full">
@@ -295,6 +435,12 @@ const StoreProductUpdatePage = () => {
                         <i className="ri-file-add-line"></i>
                       </div>
                     </h5>
+                    {errors.productDetailList && touched.productDetailList && (
+                      <span className="text-red-500 text-xs">
+                        Phải có ít nhất một biến thể hoặc thông tin nhập đang bị
+                        sai!
+                      </span>
+                    )}
                     {/* {values.pro} */}
                     <div className="grid grid-cols-4 gap-3">
                       {values.productDetailList.map((i: any, index: number) => {
@@ -316,7 +462,22 @@ const StoreProductUpdatePage = () => {
                             <div className="w-full h-48 shrink-0">
                               <input
                                 type="file"
-                                name={`productDetailList[${index}].image`}
+                                onChange={(e) => {
+                                  setFieldValue(
+                                    "productDetailList",
+                                    values.productDetailList.map((j, jndex) => {
+                                      if (jndex == index) {
+                                        j.newImage = e.target.files
+                                          ? e.target.files[0]
+                                          : null;
+                                        j.image = e.target.files
+                                          ? e.target.files[0].name
+                                          : "";
+                                      }
+                                      return j;
+                                    })
+                                  );
+                                }}
                                 id={"imageDetail" + index}
                                 className="hidden"
                               />
@@ -325,17 +486,29 @@ const StoreProductUpdatePage = () => {
                                 htmlFor={"imageDetail" + index}
                               >
                                 <img
-                                  src={""}
+                                  src={
+                                    values.productDetailList[index]
+                                      .newImage instanceof File
+                                      ? URL.createObjectURL(
+                                          values.productDetailList[index]
+                                            .newImage as File
+                                        )
+                                      : values.productDetailList[index].image
+                                      ? (values.productDetailList[index]
+                                          .image as string)
+                                      : "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                                  }
                                   alt=""
-                                  className="w-full h-full"
+                                  className="w-full h-full object-cover object-center"
                                 />
                               </label>
                             </div>
-                            <div className="flex-auto">
+                            <div className="flex-auto mt-3 flex flex-col gap-y-2">
                               <InputFormikForm
                                 label={"Tên biến thể"}
                                 name={`productDetailList[${index}].name`}
                                 placeholder={`Nhập tên biến thể...`}
+                                disabled={true}
                               ></InputFormikForm>
 
                               <NumberFormikForm
@@ -344,6 +517,7 @@ const StoreProductUpdatePage = () => {
                                 placeholder={`Nhập giá biến thể...`}
                                 important={true}
                                 disabled={false}
+                                unit="VNĐ"
                               ></NumberFormikForm>
 
                               <NumberFormikForm
@@ -352,6 +526,7 @@ const StoreProductUpdatePage = () => {
                                 placeholder={`Nhập số lượng biến thể...`}
                                 important={true}
                                 disabled={false}
+                                unit="Cái"
                               ></NumberFormikForm>
                               <SelectFormikForm
                                 name={`productDetailList[${index}].discountCode`}
@@ -370,10 +545,10 @@ const StoreProductUpdatePage = () => {
                   </div>{" "}
                 </div>
               </div>
-            </Form>
-          )}
-        </Formik>
-      </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 };

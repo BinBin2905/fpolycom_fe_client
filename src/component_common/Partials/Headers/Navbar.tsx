@@ -27,7 +27,7 @@ export default function Navbar() {
   }, [categoryToggle]);
 
   return (
-    <div className="nav-widget-wrapper w-full  h-[60px] relative z-30 bg-qyellow">
+    <div className="nav-widget-wrapper w-full hidden lg:block  h-[60px] relative z-30 bg-qyellow">
       <div className="container-x mx-auto h-full">
         <div className="w-full h-full relative">
           <div className="w-full h-full flex justify-between items-center">

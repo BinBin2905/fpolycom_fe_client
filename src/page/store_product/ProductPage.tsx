@@ -42,7 +42,7 @@ const ProductPage = () => {
   const queryClient = useQueryClient();
   const [openDialogDelete, setOpentDialogDelete] = useState(false);
   const { data, isLoading, isFetching, error, isSuccess, refetch } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["store_products"],
     queryFn: () =>
       postDataStore(
         { storeCode: currentStore?.storeCode },

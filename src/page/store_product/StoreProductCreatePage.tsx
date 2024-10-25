@@ -1,16 +1,31 @@
-import { fetchDataCommon, postData, postDataCommon } from "@/api/commonApi";
+import {
+  fetchDataCommon,
+  postData,
+  postDataCommon,
+  postDataStore,
+  uploadImage,
+} from "@/api/commonApi";
 import {
   BreadcrumbCustom,
   ButtonForm,
   InputFormikForm,
   SelectFormikForm,
+  SpinnerLoading,
 } from "@/component_common";
 import NumberFormikForm from "@/component_common/commonForm/NumberFormikForm";
 import TextareaFormikForm from "@/component_common/commonForm/TextareaFormikForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useStoreStore, useUserStore } from "@/store";
 import { ProductCreateObject } from "@/type/TypeCommon";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form, Formik } from "formik";
+import { TrendingUpDownIcon } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
@@ -30,6 +45,10 @@ const breadBrumb = [
 ];
 
 const StoreProductCreatePage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [infoLoading, setInfoLoading] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const queryClient = useQueryClient();
   const { currentStore } = useStoreStore();
   const navigate = useNavigate();
   const {
@@ -60,11 +79,25 @@ const StoreProductCreatePage = () => {
       postDataCommon(body, "/common/type-good-attr/all"),
     onSuccess: async (data, variables) => {},
   });
-  const handleRegister = useMutation({
-    mutationFn: (body: any) => postData(body, "/store/product/new"),
-    // onSuccess: (data) => {
-    //   // setCurrentUser(data);
-    // },
+  const handlePost = useMutation({
+    mutationFn: (body: { [key: string]: any }) =>
+      postDataStore(body, "/store/product/new"),
+    onSuccess: (data: ProductCreateObject) => {
+      if (queryClient.getQueryData(["store_products"])) {
+        queryClient.setQueryData(
+          ["store_products"],
+          (oldData: ProductCreateObject[]) => {
+            const resultData = data;
+            console.log(resultData);
+            return [resultData, ...oldData];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "store_products",
+        });
+      }
+    },
   });
 
   const validationSchema = Yup.object().shape({
@@ -115,38 +148,123 @@ const StoreProductCreatePage = () => {
     productDetailList: [],
   };
 
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const handleSubmit = async (values: ProductCreateObject) => {
+    setIsLoading(true);
+    setOpenDialog(true);
+    const body: ProductCreateObject = { ...values };
+    console.log(body);
+    setInfoLoading("Đang tải hình ảnh...");
+    if (values.newImage != null) {
+      const url = await uploadImage(values.newImage, "banner");
+      body.image = url != undefined ? url : "";
+    }
+    await Promise.all(
+      body.productDetailList.map(async (item) => {
+        if (item.newImage) {
+          const url = await uploadImage(item.newImage, "common");
+          item.image = url ? url : "";
+        }
+      })
+    );
+    setInfoLoading("Đang lưu dữ liệu...");
+    await handlePost.mutate(body);
+    setInfoLoading("Hoàn thành");
   };
   return (
     <>
-      <div className="flex flex-col gap-y-2">
-        {/* <Progress value={progress} className="w-[60%]" />
-      <Button
-        onClick={() => {
-          setProgress(50);
+      <Formik
+        key={"formLogin"}
+        initialValues={initialValue}
+        enableReinitialize={true}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          console.log(values);
+          handleSubmit(values);
         }}
-      ></Button> */}
-        <div className="mb-3">
-          <BreadcrumbCustom
-            linkList={breadBrumb}
-            itemName={"itemName"}
-            itemLink={"itemLink"}
-          ></BreadcrumbCustom>
-        </div>
+      >
+        {({
+          setFieldValue,
+          handleChange,
+          values,
+          errors,
+          touched,
+          resetForm,
+        }) => (
+          <Form id="formCreateProduct">
+            <Dialog
+              open={openDialog}
+              onOpenChange={() => {
+                if (!handlePost.isPending) {
+                  setOpenDialog(false);
+                  setTimeout(() => {
+                    handlePost.reset();
+                    resetForm();
+                  }, 500);
+                }
+              }}
+            >
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Thông báo</DialogTitle>
+                  <div className="w-full overflow-hidden">
+                    <div
+                      className={`${
+                        handlePost.isSuccess
+                          ? "-translate-x-1/2"
+                          : "translate-x-0"
+                      } w-[200%] grid grid-cols-2 transition-transform`}
+                    >
+                      <div className="flex flex-col">
+                        <DialogDescription className="flex flex-auto items-center mb-5 justify-center gap-x-2 py-6">
+                          <SpinnerLoading className="w-6 h-6 fill-primary"></SpinnerLoading>
+                          <span className="text-gray-700 text-base">
+                            {infoLoading}
+                          </span>
+                        </DialogDescription>
+                      </div>
+                      <div className="flex flex-col">
+                        <DialogDescription className="flex items-center mb-5 justify-center gap-x-2 py-6">
+                          <i className="ri-checkbox-line text-gray-700 text-xl"></i>{" "}
+                          <span className="text-gray-700 text-base">
+                            Thêm sản phẩm thành công!
+                          </span>
+                        </DialogDescription>
+                        <div className="flex gap-x-2 justify-end">
+                          <ButtonForm
+                            type="button"
+                            className="!w-32 bg-secondary"
+                            label="Xem danh sách"
+                            onClick={() => navigate("/product")}
+                          ></ButtonForm>
 
-        <Formik
-          key={"formLogin"}
-          initialValues={initialValue}
-          enableReinitialize={true}
-          validationSchema={validationSchema}
-          onSubmit={(values) => {
-            console.log(values);
-            handleSubmit(values);
-          }}
-        >
-          {({ setFieldValue, handleChange, values, errors, touched }) => (
-            <Form id="formCreateProduct">
+                          <ButtonForm
+                            type="button"
+                            className="!w-28 !bg-primary"
+                            label="Thêm mới"
+                            onClick={() => {
+                              setOpenDialog(false);
+                              setTimeout(() => {
+                                handlePost.reset();
+                                resetForm();
+                              }, 500);
+                            }}
+                          ></ButtonForm>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+            <div className="flex flex-col gap-y-2">
+              <div className="mb-3">
+                <BreadcrumbCustom
+                  linkList={breadBrumb}
+                  itemName={"itemName"}
+                  itemLink={"itemLink"}
+                ></BreadcrumbCustom>
+              </div>
+
               {/* Action  */}
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-end gap-x-2">
@@ -358,7 +476,7 @@ const StoreProductCreatePage = () => {
                                 />
                               </label>
                             </div>
-                            <div className="flex-auto">
+                            <div className="flex-auto mt-3 flex flex-col gap-y-2">
                               <InputFormikForm
                                 label={"Tên biến thể"}
                                 name={`productDetailList[${index}].name`}
@@ -370,6 +488,7 @@ const StoreProductCreatePage = () => {
                                 name={`productDetailList[${index}].price`}
                                 placeholder={`Nhập giá biến thể...`}
                                 important={true}
+                                unit="VNĐ"
                                 disabled={false}
                               ></NumberFormikForm>
 
@@ -378,6 +497,7 @@ const StoreProductCreatePage = () => {
                                 name={`productDetailList[${index}].quantity`}
                                 placeholder={`Nhập số lượng biến thể...`}
                                 important={true}
+                                unit="Cái"
                                 disabled={false}
                               ></NumberFormikForm>
                               <SelectFormikForm
@@ -397,10 +517,10 @@ const StoreProductCreatePage = () => {
                   </div>{" "}
                 </div>
               </div>
-            </Form>
-          )}
-        </Formik>
-      </div>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 };
