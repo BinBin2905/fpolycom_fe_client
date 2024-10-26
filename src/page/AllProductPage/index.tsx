@@ -5,12 +5,24 @@ import Layout from "@/component_common/Partials/Headers/Layout";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import DataIteration from "@/component_common/Helpers/DataIteration";
 import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
+import { useQuery } from "@tanstack/react-query";
+import { fetchDataCommon } from "@/api/commonApi";
+import { PageTitle } from "@/component_common";
 
 type FilterState = {
   [key: string]: boolean;
 };
 
 export default function AllProductPage() {
+  const {
+    data: dataProducts,
+    isSuccess: isSuccessProducts,
+    isError: isErrorProducts,
+    isFetching: isFetchingProducts,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetchDataCommon("/common/product/all"),
+  });
   const [filters, setFilter] = useState<FilterState>({
     mobileLaptop: false,
     gaming: false,
@@ -60,8 +72,14 @@ export default function AllProductPage() {
     <>
       {/* <Layout> */}
       <div className="products-page-wrapper w-full">
+        {/* <PageTitle
+          title="Mua sắm"
+          breadcrumb={[
+            { name: "Trang chủ", path: "/" },
+            { name: "Cửa hàng", path: "/Mua sắm" },
+          ]}
+        /> */}
         <div className="container-x mx-auto">
-          <BreadcrumbCom />
           <div className="w-full lg:flex lg:space-x-[30px]">
             <div className="lg:w-[270px]">
               <ProductsFilter
@@ -86,11 +104,10 @@ export default function AllProductPage() {
             </div>
 
             <div className="flex-1">
-              <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 space-y-5 md:justify-between md:items-center p-[30px] mb-[40px]">
+              <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 md:justify-between md:items-center">
                 <div>
                   <p className="font-400 text-[13px]">
-                    <span className="text-qgray"> Showing</span> 1–16 of 66
-                    results
+                    {dataProducts && dataProducts.length} Sản phẩm
                   </p>
                 </div>
                 <div className="flex space-x-3 items-center">
@@ -133,16 +150,30 @@ export default function AllProductPage() {
                   </svg>
                 </button>
               </div>
-              <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[40px]">
-                <DataIteration datas={products} startLength={0} endLength={6}>
-                  {({ datas }) => (
-                    <div data-aos="fade-up" key={datas.id}>
-                      <ProductCardStyleOne datas={datas} />
-                    </div>
-                  )}
-                </DataIteration>
+              <div className="grid grid-cols-3 gap-[30px]">
+                {dataProducts &&
+                  dataProducts?.length > 0 &&
+                  dataProducts?.slice(0, 6).map((item: any, index: number) => {
+                    return (
+                      <ProductCardStyleOne
+                        key={item.id || index}
+                        item={item}
+                        id={"productCode"}
+                        name={"name"}
+                        image={"image"}
+                        pointEvaluate={"pointEvaluate"}
+                        minPrice={"minPrice"}
+                        maxPrice={"maxPrice"}
+                        typeGoodName={"typeGoodName"}
+                        typeGoodCode={"typeGoodCode"}
+                        numberOfEvaluates={"numberOfEvaluates"}
+                        numberOfLikes={"numberOfLikes"}
+                        provinceName={"provinceName"}
+                        provinceCode={"provinceCode"}
+                      />
+                    );
+                  })}
               </div>
-
               <div className="w-full h-[164px] overflow-hidden mb-[40px]">
                 <img
                   src={`/assets/images/ads-6.png`}
@@ -150,14 +181,29 @@ export default function AllProductPage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5 mb-[40px]">
-                <DataIteration datas={products} startLength={6} endLength={15}>
-                  {({ datas }) => (
-                    <div data-aos="fade-up" key={datas.id}>
-                      <ProductCardStyleOne datas={datas} />
-                    </div>
-                  )}
-                </DataIteration>
+              <div className="grid grid-cols-3 gap-[30px]">
+                {dataProducts &&
+                  dataProducts?.length > 0 &&
+                  dataProducts?.slice(6).map((item: any, index: number) => {
+                    return (
+                      <ProductCardStyleOne
+                        key={item.id || index}
+                        item={item}
+                        id={"productCode"}
+                        name={"name"}
+                        image={"image"}
+                        pointEvaluate={"pointEvaluate"}
+                        minPrice={"minPrice"}
+                        maxPrice={"maxPrice"}
+                        typeGoodName={"typeGoodName"}
+                        typeGoodCode={"typeGoodCode"}
+                        numberOfEvaluates={"numberOfEvaluates"}
+                        numberOfLikes={"numberOfLikes"}
+                        provinceName={"provinceName"}
+                        provinceCode={"provinceCode"}
+                      />
+                    );
+                  })}
               </div>
             </div>
           </div>

@@ -201,6 +201,48 @@ export default function SallerPage() {
       });
     }
   };
+
+  const [filters, setFilter] = useState<FilterState>({
+    mobileLaptop: false,
+    gaming: false,
+    imageVideo: false,
+    vehicles: false,
+    furnitures: false,
+    sport: false,
+    foodDrinks: false,
+    fashion: false,
+    toilet: false,
+    makeupCorner: false,
+    babyItem: false,
+    apple: false,
+    samsung: false,
+    walton: false,
+    oneplus: false,
+    vivo: false,
+    oppo: false,
+    xiomi: false,
+    others: false,
+    sizeS: false,
+    sizeM: false,
+    sizeL: false,
+    sizeXL: false,
+    sizeXXL: false,
+    sizeFit: false,
+  });
+  const checkboxHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    setFilter((prevState) => ({
+      ...prevState,
+      [name]: !prevState[name],
+    }));
+  };
+  const [volume, setVolume] = useState<number[]>([200, 500]);
+
+  const [storage, setStorage] = useState<string | null>(null);
+  const filterStorage = (value: string) => {
+    setStorage(value);
+  };
+  const [filterToggle, setToggle] = useState(false);
   return (
     <>
       <div className="products-page-wrapper w-full">
@@ -285,7 +327,7 @@ export default function SallerPage() {
             </div>
           </div>
 
-          {handleFetchBanner.data &&
+          {/* {handleFetchBanner.data &&
             handleFetchBanner.data
               .filter((item: any) => item.bannerPosition == "top")
               .slice(0, 1)
@@ -299,10 +341,10 @@ export default function SallerPage() {
                     />
                   </NavLink>
                 );
-              })}
+              })} */}
 
           <div className="grid grid-cols-[1fr_4fr] gap-[30px] mt-10">
-            <div className="!bg-white border-r border-gray-200">
+            {/* <div className="!bg-white border-r border-gray-200">
               <h5 className="text-gray-700 mb-3">Loại hàng</h5>
               <div>
                 {fetchTypeGood.data &&
@@ -320,13 +362,30 @@ export default function SallerPage() {
                     );
                   })}
               </div>
-            </div>
-            <div className="flex flex-col gap-[20px]">
-              <div>
-                <h5 className="text-gray-600 font-medium text-xl">
-                  Danh sách sản phẩm
-                </h5>
+            </div> */}
+            <div className="lg:w-[270px]">
+              <ProductsFilter
+                filterToggle={filterToggle}
+                filterToggleHandler={() => setToggle(!filterToggle)}
+                filters={filters}
+                checkboxHandler={checkboxHandler}
+                volume={volume}
+                volumeHandler={(value: number[]) => setVolume(value)}
+                storage={storage}
+                filterstorage={filterStorage}
+                className="mb-[30px]"
+              />
+              {/* ads */}
+              <div className="w-full hidden lg:block h-[295px]">
+                <img
+                  src={`/assets/images/ads-5.png`}
+                  alt=""
+                  className="w-full h-full object-contain"
+                />
               </div>
+            </div>
+
+            <div className="flex flex-col gap-[20px]">
               <div className="grid grid-cols-3 gap-[30px]">
                 {handleFetchProduct.data &&
                   handleFetchProduct.data?.length > 0 &&
