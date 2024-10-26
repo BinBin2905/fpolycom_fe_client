@@ -99,10 +99,10 @@ export default function Banner({ className }: { className?: string }) {
                   </div>
                   <div>
                     <p className="text-black text-[15px] font-700 tracking-wide mb-1">
-                      Free Shipping
+                      Miễn phí ship
                     </p>
                     <p className="text-sm text-qgray">
-                      When ordering over $100
+                      Đơn hàng ở trong khu vực
                     </p>
                   </div>
                 </div>
@@ -136,11 +136,9 @@ export default function Banner({ className }: { className?: string }) {
                   </div>
                   <div>
                     <p className="text-black text-[15px] font-700 tracking-wide mb-1">
-                      Free Return
+                      Hoản trả
                     </p>
-                    <p className="text-sm text-qgray">
-                      Get Return within 30 days
-                    </p>
+                    <p className="text-sm text-qgray">Hoàn trả trong 7 ngày</p>
                   </div>
                 </div>
               </div>
@@ -181,11 +179,9 @@ export default function Banner({ className }: { className?: string }) {
                   </div>
                   <div>
                     <p className="text-black text-[15px] font-700 tracking-wide mb-1">
-                      Secure Payment
+                      Thanh toán tức thời
                     </p>
-                    <p className="text-sm text-qgray">
-                      100% Secure Online Payment
-                    </p>
+                    <p className="text-sm text-qgray">Thông qua QR CODE</p>
                   </div>
                 </div>
               </div>
@@ -237,10 +233,10 @@ export default function Banner({ className }: { className?: string }) {
                   </div>
                   <div>
                     <p className="text-black text-[15px] font-700 tracking-wide mb-1">
-                      Best Quality
+                      Chất lượng tốt
                     </p>
                     <p className="text-sm text-qgray">
-                      Original Product Guarenteed
+                      Luôn đảm bảo chất lượng
                     </p>
                   </div>
                 </div>

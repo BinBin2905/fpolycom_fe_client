@@ -7,7 +7,7 @@ import { postData, postDataCommon } from "@/api/commonApi";
 import { ButtonForm, SectionStyleOne } from "@/component_common";
 import { toast } from "sonner";
 import { useCartStore } from "@/store/cartStore";
-import { CartObject } from "@/type/TypeCommon";
+import { CartObject, WishListObject } from "@/type/TypeCommon";
 type ProductDetailObject = {
   productDetailCode: number;
   name: string;
@@ -47,7 +47,6 @@ type ProductObject = {
   productAttrList: ProductAttrObject[];
 };
 
-
 export default function SingleProductPage() {
   const queryClient = useQueryClient();
 
@@ -64,12 +63,11 @@ export default function SingleProductPage() {
     onSuccess: (data, variables) => {},
   });
 
-
   const handleFetchStore = useMutation({
     mutationFn: (body: any) => postDataCommon(body, "/common/store/detail"),
     onSuccess: (data, variables) => {},
   });
-  
+
   const handleAddNewCart = useMutation({
     mutationFn: (body: any) => postData(body, "/user/cart/new"),
     onSuccess: (data, variables) => {
@@ -91,11 +89,20 @@ export default function SingleProductPage() {
 
   const handlePostLikeProduct = useMutation({
     mutationFn: (body: any) => postData(body, "/user/product/liked"),
-    onSuccess: (data, variables) => {
+    onSuccess: (data: WishListObject, variables) => {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: true });
       }
-      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      if (queryClient.getQueryData(["wishlists"])) {
+        queryClient.setQueryData(["wishlists"], (oldData: WishListObject[]) => {
+          const resultData = data;
+          return [resultData, ...oldData];
+        });
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "wishlists",
+        });
+      }
       toast.success("Đã thêm vào danh sách thích", {
         className: "p-4",
       });
@@ -109,11 +116,23 @@ export default function SingleProductPage() {
 
   const handlePostUnLikeProduct = useMutation({
     mutationFn: (body: any) => postData(body, "/user/product/unliked"),
-    onSuccess: (data, variables) => {
+    onSuccess: (data: WishListObject, variables) => {
       if (productDetail) {
         setProductDetail({ ...productDetail, liked: false });
       }
-      queryClient.invalidateQueries({ queryKey: ["wishList"] });
+      if (queryClient.getQueryData(["wishlists"])) {
+        queryClient.setQueryData(["wishlists"], (oldData: WishListObject[]) => {
+          return [
+            ...oldData.filter(
+              (item: any) => item.productCode != data.productCode
+            ),
+          ];
+        });
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "wishlists",
+        });
+      }
       toast.info("Đã bỏ thích", {
         className: "p-4",
       });

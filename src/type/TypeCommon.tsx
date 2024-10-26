@@ -465,3 +465,35 @@ export type StoreDetailObject = {
   numberOfFollowed: number | null | undefined | string;
   numberOfLiked: number | null | undefined | string;
 };
+
+export type WishListObject = {
+  productCode: number | null | undefined;
+  productName: string | null | undefined;
+  productImage: string | null | undefined;
+  typeGoodName: string | null | undefined;
+  typeGoodCode: string | null | undefined;
+};
+
+export type StoreFollowObject = {
+  storeCode: number | null | undefined;
+  storeName: string | null | undefined;
+  storeImage: string | null | undefined;
+};
+
+export type StoreObject = {
+  storeCode: string | null | undefined;
+  image: string | null | undefined;
+  name: string | null | undefined;
+  addressDetail: string | null | undefined;
+  address: string | null | undefined;
+  phone: string | null | undefined;
+  status: string | null | undefined;
+  bannerImage: string | null | undefined;
+  email: string | null | undefined;
+  userRegister: string | null | undefined;
+  provinceName: string | null | undefined;
+  districtName: string | null | undefined;
+  wardName: string | null | undefined;
+  numberOfFollowed: string | null | undefined;
+  numberOfLiked: string | null | undefined;
+};

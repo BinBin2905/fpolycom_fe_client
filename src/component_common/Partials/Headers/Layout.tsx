@@ -4,6 +4,7 @@ import HeaderOne from ".";
 import Footer from "../Footers";
 import Drawer from "@/page/Mobile/Drawer";
 import DiscountBanner from "@/page/home/DiscountBanner";
+import TopBar from "./TopBar";
 
 export default function Layout({
   children,
@@ -16,8 +17,9 @@ export default function Layout({
   return (
     <>
       <Drawer open={drawer} action={() => setDrawer(!drawer)} />
+      <TopBar className="quomodo-shop-top-bar" />
+      <HeaderOne className="" drawerAction={() => setDrawer(!drawer)} />
       <div className="w-full overflow-x-hidden">
-        <HeaderOne className="" drawerAction={() => setDrawer(!drawer)} />
         <div className={`w-full  ${childrenClasses || "pt-[30px] pb-[60px]"}`}>
           {children && children}
         </div>
