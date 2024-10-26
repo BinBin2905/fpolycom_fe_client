@@ -14,7 +14,13 @@ export default function ProductsTable({
   data: CartObject[];
 }) {
   const [dataFilter, setDataFilter] = useState<OrderObject[]>([]);
-  const { currentCart, checkAllProduct, updateCart } = useCartStore();
+  const {
+    currentCart,
+    checkAllProduct,
+    updateCart,
+    checkFalseItem,
+    checkTrueItem,
+  } = useCartStore();
   const { currentUser } = useUserStore();
 
   const handleUpdateCart = useMutation({

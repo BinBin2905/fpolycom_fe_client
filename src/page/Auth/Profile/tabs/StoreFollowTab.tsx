@@ -1,62 +1,61 @@
 import { postData } from "@/api/commonApi";
 import InputQuantityCom from "@/component_common/Helpers/InputQuantityCom";
 import { useUserStore } from "@/store";
-import { WishListObject } from "@/type/TypeCommon";
+import { StoreFollowObject, WishListObject } from "@/type/TypeCommon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-export default function WishlistTab({ className }: { className?: string }) {
+const StoreFollowTab = () => {
   const { currentUser } = useUserStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { data, isLoading, isFetching, error } = useQuery({
-    queryKey: ["wishlists"],
+    queryKey: ["storeFollows"],
     queryFn: () =>
       postData(
         { userLogin: currentUser?.userLogin ? currentUser.userLogin : null },
-        "/user/product/liked-all"
+        "/user/store/all-follow"
       ),
     enabled: currentUser != null,
   });
-  const handlePostUnliked = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/product/unliked"),
-    onSuccess: (data: WishListObject) => {
-      if (queryClient.getQueryData(["wishlists"])) {
-        queryClient.setQueryData(["wishlists"], (oldData: WishListObject[]) => {
-          return [
-            ...oldData.filter(
-              (item: WishListObject) => item.productCode != data.productCode
-            ),
-          ];
-        });
+  const handlePostUnFollow = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/store/unfollow"),
+    onSuccess: (data: StoreFollowObject) => {
+      if (queryClient.getQueryData(["storeFollows"])) {
+        queryClient.setQueryData(
+          ["storeFollows"],
+          (oldData: StoreFollowObject[]) => {
+            return [
+              ...oldData.filter(
+                (item: StoreFollowObject) => item.storeCode != data.storeCode
+              ),
+            ];
+          }
+        );
       } else {
         queryClient.invalidateQueries({
-          predicate: (query) => query.queryKey[0] === "wishlist",
+          predicate: (query) => query.queryKey[0] === "storeFollows",
         });
       }
     },
   });
-
   return (
     <>
-      <div className={`w-full ${className || ""}`}>
+      <div className={`w-full`}>
         <div className="relative w-full overflow-x-auto border border-[#EDEDED]">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <tbody>
               {/* table heading */}
               <tr className="text-[13px] font-medium text-black bg-[#F6F6F6] whitespace-nowrap px-2 border-b default-border-bottom uppercase">
                 <td className="py-4 pl-10 block whitespace-nowrap  w-[380px]">
-                  Sản phẩm
-                </td>
-                <td className="py-4 whitespace-nowrap text-center">
-                  Loại hàng
+                  Cửa hàng
                 </td>
 
-                <td className="py-4 whitespace-nowrap text-right w-[114px] block"></td>
+                <td className="whitespace-nowrap text-right w-[200px]  bg-transparentk"></td>
               </tr>
               {/* table heading end */}
               {data && data.length > 0 ? (
-                data.map((item: any) => {
+                data.map((item: StoreFollowObject) => {
                   return (
                     <tr className="bg-white border-b hover:bg-gray-50">
                       <td className="pl-10  py-4 ">
@@ -65,39 +64,32 @@ export default function WishlistTab({ className }: { className?: string }) {
                             document
                               .getElementById("appLoginUser")
                               ?.scrollTo(0, 0);
-                            navigate("/single-product/" + item.productCode);
+                            navigate("/saller-page/" + item.storeCode);
                           }}
                           className="cursor-pointer flex space-x-6 items-center"
                         >
                           <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
                             <img
-                              src={item.productImage}
+                              src={item.storeImage ? item.storeImage : ""}
                               alt="product"
                               className="w-full h-full object-contain"
                             />
                           </div>
                           <div className="flex-1 flex flex-col">
                             <p className="font-medium text-[15px] text-qblack">
-                              {item.productName}
+                              {item.storeName}
                             </p>
                           </div>
                         </div>
                       </td>
 
                       <td className="text-right py-4">
-                        <div className="flex space-x-1 items-center justify-center">
-                          <span className="text-[15px] font-normal">
-                            {item.typeGoodName}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="text-right py-4">
                         <div
                           onClick={() => {
-                            if (currentUser && item.productCode) {
-                              handlePostUnliked.mutateAsync({
+                            if (currentUser && item.storeCode) {
+                              handlePostUnFollow.mutateAsync({
                                 userLogin: currentUser?.userLogin,
-                                productCode: item.productCode,
+                                storeCode: item.storeCode,
                               });
                             }
                           }}
@@ -123,28 +115,30 @@ export default function WishlistTab({ className }: { className?: string }) {
                   );
                 })
               ) : (
-                <div className="py-3 px-5">Không có sản phẩm yêu thích!</div>
+                <div className="py-3 px-5">Không có cửa hàng theo dõi!</div>
               )}
             </tbody>
           </table>
         </div>
       </div>
       {/* <div className="w-full mt-[30px] flex sm:justify-end justify-start">
-        <div className="sm:flex sm:space-x-[30px] items-center">
-          <button type="button">
-            <div className="w-full text-sm font-semibold text-qred mb-5 sm:mb-0">
-              Clean Wishlist
+      <div className="sm:flex sm:space-x-[30px] items-center">
+        <button type="button">
+          <div className="w-full text-sm font-semibold text-qred mb-5 sm:mb-0">
+            Clean Wishlist
+          </div>
+        </button>
+        <div className="w-[180px] h-[50px]">
+          <button type="button" className="yellow-btn">
+            <div className="w-full text-sm font-semibold">
+              Add to Cart All
             </div>
           </button>
-          <div className="w-[180px] h-[50px]">
-            <button type="button" className="yellow-btn">
-              <div className="w-full text-sm font-semibold">
-                Add to Cart All
-              </div>
-            </button>
-          </div>
         </div>
-      </div> */}
+      </div>
+    </div> */}
     </>
   );
-}
+};
+
+export default StoreFollowTab;

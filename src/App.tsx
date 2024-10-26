@@ -42,6 +42,7 @@ import StoreProductUpdatePage from "./page/store_product/StoreProductUpdatePage.
 import InfomationRegisterStore from "./page/BecomeSaller/InfomationRegisterStore.js";
 import StoreVoucherPage from "./page/store_voucher/StoreVoucherPage.js";
 import StoreBannerPage from "./page/store_banner/StoreBannerPage.js";
+import PaymentSuccessPage from "./page/CheckoutPage/PaymentSuccessPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -196,7 +197,6 @@ function App() {
             <Route path="/flash-sale" element={<FlashSale />} />
             <Route path="/saller-page/:id" element={<SallerPage />} />
             {/* <Route path="/my-Store" element={<MyStore />} /> */}
-            <Route path="/my-Store/single-product" element={<ProbView />} />
             <Route path="/sallers" element={<Sallers />} />
             <Route path="/about" element={<About />} />
             <Route path="/blogs" element={<Blogs />} />
@@ -205,6 +205,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/payment-success/:orderCode" element={<PaymentSuccessPage />} />
             {/* <Route path="/password" element={<PasswordTab />} /> */}
             <Route path="/become-saller" element={<BecomeSaller />} />
             <Route
