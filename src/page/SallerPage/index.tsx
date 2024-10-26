@@ -12,7 +12,11 @@ import { NavLink, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchDataCommon, postData, postDataCommon } from "@/api/commonApi";
 import { useUserStore } from "@/store";
-import { StoreDetailObject, VoucherObject } from "@/type/TypeCommon";
+import {
+  StoreDetailObject,
+  StoreFollowObject,
+  VoucherObject,
+} from "@/type/TypeCommon";
 import {
   Popover,
   PopoverContent,
@@ -39,9 +43,21 @@ export default function SallerPage() {
 
   const handlePostFollow = useMutation({
     mutationFn: (body: any) => postData(body, "/user/store/follow"),
-    onSuccess: () => {
+    onSuccess: (data: StoreFollowObject) => {
       if (store) {
         setStore({ ...store, followed: true });
+      }
+      if (queryClient.getQueryData(["storeFollows"])) {
+        queryClient.setQueryData(
+          ["storeFollows"],
+          (oldData: StoreFollowObject[]) => {
+            return [data, ...oldData];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "storeFollows",
+        });
       }
     },
   });
@@ -88,9 +104,25 @@ export default function SallerPage() {
 
   const handlePostUnFollow = useMutation({
     mutationFn: (body: any) => postData(body, "/user/store/unfollow"),
-    onSuccess: () => {
+    onSuccess: (data: StoreFollowObject) => {
       if (store) {
         setStore({ ...store, followed: false });
+      }
+      if (queryClient.getQueryData(["storeFollows"])) {
+        queryClient.setQueryData(
+          ["storeFollows"],
+          (oldData: StoreFollowObject[]) => {
+            return [
+              ...oldData.filter(
+                (item: StoreFollowObject) => item.storeCode != data.storeCode
+              ),
+            ];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "storeFollows",
+        });
       }
     },
   });
@@ -181,7 +213,7 @@ export default function SallerPage() {
 
           {/* /mobile */}
 
-          <div className="relative h-40 border-b border-gray-100 pb-2 mb-2">
+          <div className="relative h-40 border-b border-r border-l rounded-md shadow-md border-gray-100 pb-2 mb-2">
             <div className="size-36 rounded-full border-4 border-gray-50 shadow-lg overflow-hidden absolute -top-5 left-3">
               <img
                 src={store?.image ? store?.image : ""}
@@ -189,7 +221,7 @@ export default function SallerPage() {
                 className="w-full h-full object-cover object-center"
               />
             </div>
-            <div className="absolute right-1 top-2">
+            <div className="absolute right-2 top-2">
               {store?.followed ? (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -321,7 +353,7 @@ export default function SallerPage() {
                       );
                     })}
               </div>{" "}
-              <div>
+              <div className="grid grid-cols-2 gap-2">
                 {handleFetchVoucher.data &&
                   handleFetchVoucher.data?.slice(0, 2).map((item: any) => {
                     return (

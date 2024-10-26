@@ -438,7 +438,7 @@ export default function InfomationRegisterStore() {
                           type="submit"
                           disabled={!checked}
                           className="!bg-primary mt-2 disabled:!bg-gray-800"
-                          label="Đăng kí"
+                          label="Cập nhật thông tin đăng kí"
                         ></ButtonForm>
                       </div>
                     </div>

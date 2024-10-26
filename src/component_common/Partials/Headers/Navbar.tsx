@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Arrow from "../../Helpers/icons/Arrow";
 import { useUserStore } from "@/store/userStore";
 
 export default function Navbar() {
   const { currentUser, logoutUser } = useUserStore();
+  const navigate = useNavigate();
   const isSaller = true;
   const [categoryToggle, setToggle] = useState(false);
   const [elementsSize, setSize] = useState("0px");
@@ -193,14 +194,21 @@ export default function Navbar() {
                                   </a>
                                 </li>
                                 <li>
-                                  <a href="/all-products">
+                                  <div
+                                    onClick={() => {
+                                      document
+                                        .getElementById("appLoginUser")
+                                        ?.scrollTo(0, 0);
+                                      navigate("/sallers");
+                                    }}
+                                  >
                                     <span
                                       className={`text-qgray text-sm font-400 border-b border-transparent hover:text-qyellow hover:border-qyellow
                                       }`}
                                     >
                                       Danh sách cửa hàng
                                     </span>
-                                  </a>
+                                  </div>
                                 </li>
                               </ul>
                             </div>

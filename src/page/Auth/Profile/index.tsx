@@ -28,6 +28,7 @@ import {
 } from "./tabs";
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import Layout from "@/component_common/Partials/Headers/Layout";
+import StoreFollowTab from "./tabs/StoreFollowTab";
 
 export default function Profile() {
   // const [switchDashboard, setSwitchDashboard] = useState(false);
@@ -100,6 +101,16 @@ export default function Profile() {
                     to="/profile#support"
                     Icon={IcoSupport}
                     text="Khiếu nại & đóng góp"
+                  />
+                  <MenuItem
+                    to="/profile#wishlist"
+                    Icon={IcoLogout}
+                    text="Sản phẩm yêu thích"
+                  />
+                  <MenuItem
+                    to="/profile#store"
+                    Icon={IcoLogout}
+                    text="Cửa hàng đang theo dõi"
                   />
                   <MenuItem
                     to="/profile#profile"
@@ -178,6 +189,14 @@ export default function Profile() {
                   ) : active === "review" ? (
                     <>
                       <ReviewTab products={datas.products} />
+                    </>
+                  ) : active === "wishlist" ? (
+                    <>
+                      <WishlistTab />
+                    </>
+                  ) : active === "store" ? (
+                    <>
+                      <StoreFollowTab />
                     </>
                   ) : (
                     ""

@@ -10,7 +10,10 @@ type storeUser = {
     setCart: (cart: CartObject[]) => void;
     updateCart: (cartItem: CartObject) => void
     addNewCart: (cartItem: CartObject) => void
-    checkAllProduct: (storeCode: number, check: boolean) => void
+    checkAllProduct: (storeCode: number, check: boolean) => void,
+    checkFalseAll: () => void,
+    checkTrueItem: (productDetailCode: number) => void,
+    checkFalseItem: (productDetailCode: number) => void
     // logoutUser: () => void;
     // setCurrentUserInfo: (userInfo: userProfile) => void;
 };
@@ -37,6 +40,22 @@ export const useCartStore = create<storeUser>()(
                 console.log(check)
                 let cloneValue = current.currentCart.map(item => {
                     return { ...item, checked: item.storeCode == storeCode ? check : item.checked }
+                });
+                return { currentCart: cloneValue }
+            }), checkFalseAll: () => set((current) => {
+
+                let cloneValue = current.currentCart.map(item => {
+                    return { ...item, checked: false }
+                });
+                return { currentCart: cloneValue }
+            }), checkTrueItem: (productDetailCode: number) => set((current) => {
+                let cloneValue = current.currentCart.map(item => {
+                    return { ...item, checked: item.productDetailCode == productDetailCode ? true : item.checked }
+                });
+                return { currentCart: cloneValue }
+            }), checkFalseItem: (productDetailCode: number) => set((current) => {
+                let cloneValue = current.currentCart.map(item => {
+                    return { ...item, checked: item.productDetailCode == productDetailCode ? false : item.checked }
                 });
                 return { currentCart: cloneValue }
             })
