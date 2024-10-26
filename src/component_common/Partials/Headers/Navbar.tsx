@@ -184,14 +184,21 @@ export default function Navbar() {
                             <div className="category-items">
                               <ul className="flex flex-col space-y-2">
                                 <li>
-                                  <a href="/all-products">
+                                  <div
+                                    onClick={() => {
+                                      document
+                                        .getElementById("appLoginUser")
+                                        ?.scrollTo(0, 0);
+                                      navigate("/all-products");
+                                    }}
+                                  >
                                     <span
                                       className={`text-qgray text-sm font-400 border-b border-transparent hover:text-qyellow hover:border-qyellow
                                       }`}
                                     >
                                       Tất cả sản phẩm
                                     </span>
-                                  </a>
+                                  </div>
                                 </li>
                                 <li>
                                   <div
