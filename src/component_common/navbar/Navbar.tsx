@@ -19,6 +19,8 @@ import IconCompany from "@/assets/img/iconcompany.png";
 // import { useUserStore } from "@/store/userStore";
 import { useStoreStore } from "@/store/storeStore";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/store";
+
 const menu = [
   {
     itemName: "Dashboard",
@@ -84,6 +86,7 @@ const menu2 = [
 const Navbar = () => {
   const navigate = useNavigate();
   const { currentStore, logoutStore } = useStoreStore();
+  const { currentUserInfo } = useUserStore();
   const isMobileScreen = useMediaQuery({ query: "(max-width:1024px)" });
 
   return (
@@ -148,7 +151,14 @@ const Navbar = () => {
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="flex gap-x-3 items-center">
               <Avatar className="size-9">
-                <AvatarImage src="https://github.com/shadcn.png" />
+                {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
+                <AvatarImage
+                  src={
+                    currentUserInfo
+                      ? currentUserInfo.image
+                      : "https://github.com/shadcn.png"
+                  }
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-gray-600">

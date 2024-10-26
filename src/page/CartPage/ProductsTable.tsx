@@ -184,13 +184,6 @@ export default function ProductsTable({
                         <label
                           htmlFor={`${item?.productDetailCode}`}
                           className="flex space-x-4 items-center"
-                          onClick={() => {
-                            if (item.checked) {
-                              checkFalseItem(item.productDetailCode);
-                            } else {
-                              checkTrueItem(item.productDetailCode);
-                            }
-                          }}
                         >
                           <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center">
                             <img
@@ -266,14 +259,18 @@ export default function ProductsTable({
                     </tr>
                   );
                 })}
-                {/* <tr className="font-semibold text-gray-900">
-                    <td className="px-6 py-3"></td>
-                    <th scope="row" className="text-base text-left">Tổng giá trị hóa đơn:</th>
-                    <td className="px-6 py-3"></td>
-                    <td className="px-6 py-3"></td>
-                    <td className="py-10 font-semibold text-[16px]">{`${cartTotal.toLocaleString("en-US")} ₫`}</td>
-                    <td className="px-6 py-3"></td>
-                  </tr> */}
+                <tr className="font-semibold text-gray-900">
+                  <td className="px-6 py-3"></td>
+                  <th scope="row" className="text-base text-left">
+                    Tổng giá trị hóa đơn:
+                  </th>
+                  <td className="px-6 py-3"></td>
+                  <td className="px-6 py-3"></td>
+                  <td className="py-10 font-semibold text-[16px]">{`${cartTotal.toLocaleString(
+                    "en-US"
+                  )} ₫`}</td>
+                  <td className="px-6 py-3"></td>
+                </tr>
               </tbody>
             </table>
           </div>

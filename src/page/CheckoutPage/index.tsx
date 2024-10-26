@@ -465,17 +465,17 @@ export default function CheckoutPage() {
                                         )}{" "}
                                         <span className="font-normal">đ</span>
                                       </span>
-                                      <span className="text-[15px] text-gray-500 text-xs font-medium">
-                                        ( -
-                                        {item.totalDiscount?.toLocaleString(
-                                          "en-US",
-                                          {
-                                            style: "currency",
-                                            currency: "VND",
-                                          }
-                                        )}
-                                        )
-                                      </span>
+                                      {/* <span className="text-[15px] text-qblack font-medium">
+                                    ( -
+                                    {item.totalDiscount?.toLocaleString(
+                                      "en-US",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }
+                                    )}
+                                    )
+                                  </span> */}
                                     </div>
                                   </div>
                                 </li>
@@ -499,7 +499,7 @@ export default function CheckoutPage() {
                         <div className="mt-[10px]">
                           <div className=" flex justify-between mb-5">
                             <p className="text-[13px] font-medium text-qblack uppercase">
-                              Tổng giảm sản phẩm
+                              Giá trị được giảm
                             </p>
                             <p className="text-[15px] font-medium text-qblack uppercase">
                               -
@@ -512,11 +512,11 @@ export default function CheckoutPage() {
                         </div>
                         <div className="mt-[10px]">
                           <div className=" flex justify-between mb-5">
-                            <div className="flex-auto">
-                              <p className="text-[13px] mb-1 font-medium text-qblack uppercase">
+                            <div>
+                              <p className="text-[13px] font-medium text-qblack uppercase">
                                 Mã giảm giá
                               </p>
-                              <div className="h-fit grid grid-cols-2 gap-2">
+                              <div className="h-fit">
                                 {handleFetchVoucherUser.data &&
                                   handleFetchVoucherUser.data.length > 0 &&
                                   handleFetchVoucherUser.data
@@ -526,168 +526,52 @@ export default function CheckoutPage() {
                                     )
                                     .map((i: any) => {
                                       return (
-                                        <VoucherApply
-                                          // keySelected={}
-                                          save={
-                                            item.voucherList?.find(
-                                              (item: any) =>
+                                        <div
+                                          className={`text-xs ${
+                                            item.voucherList.find(
+                                              (item) =>
                                                 item.voucherCode ==
-                                                i.voucherCode
+                                                i?.voucherCode
                                             )
-                                              ? true
-                                              : false
-                                          }
-                                          name={"voucherName"}
-                                          priceApply={"priceApply"}
-                                          item={i}
-                                          percent={"percentDecrease"}
-                                          loading={false}
-                                          onSave={(i: any) => {
-                                            if (
-                                              item.totalAmount &&
-                                              i.priceApply > item.totalAmount
-                                            ) {
-                                              toast.warning("Thông báo", {
-                                                className: "p-3",
-                                                description: (
-                                                  <span>
-                                                    Không áp dụng với tổng giá
-                                                    trị đơn hàng dưới{" "}
-                                                    {i.priceApply}
-                                                  </span>
-                                                ),
-                                              });
-                                              return;
-                                            }
-                                            const cloneItem = item;
-                                            const findItem =
-                                              item.voucherList?.find(
-                                                (item) =>
-                                                  item.voucherCode ==
-                                                  i.voucherCode
+                                              ? "border-red-400"
+                                              : "border-gray-200"
+                                          } border px-2 py-2`}
+                                          onClick={() => {
+                                            const itemFind = item;
+                                            const findVoucher =
+                                              item.voucherList.find(
+                                                (j) =>
+                                                  j.voucherCode ==
+                                                  i?.voucherCode
                                               );
-                                            if (findItem) {
-                                              cloneItem.voucherList =
-                                                cloneItem.voucherList
-                                                  ? cloneItem.voucherList.filter(
-                                                      (item) =>
-                                                        item.voucherCode !=
-                                                        i.voucherCode
-                                                    )
-                                                  : [];
-                                              setDataFilter([
-                                                ...dataFilter.map((item) => {
-                                                  if (
-                                                    item.storeCode ==
-                                                    cloneItem.storeCode
-                                                  ) {
-                                                    return cloneItem;
-                                                  } else {
-                                                    return item;
-                                                  }
-                                                }),
-                                              ]);
+                                            if (findVoucher) {
+                                              itemFind.voucherList.filter(
+                                                (j) =>
+                                                  j.voucherCode !=
+                                                  i?.voucherCode
+                                              );
                                             } else {
-                                              cloneItem.voucherList = [];
-                                              cloneItem.voucherList?.push(i);
-                                              if (cloneItem.totalAmount) {
-                                                cloneItem.totalAmountVoucher =
-                                                  (cloneItem.totalAmount *
-                                                    i.percentDecrease) /
-                                                  100;
-                                                if (cloneItem.finalTotal) {
-                                                  cloneItem.finalTotal =
-                                                    currentCart
-                                                      .filter(
-                                                        (i) =>
-                                                          i.storeCode ==
-                                                          item.storeCode
-                                                      )
-                                                      .reduce(
-                                                        (
-                                                          accumulator,
-                                                          currentValue
-                                                        ) => {
-                                                          return (
-                                                            accumulator +
-                                                            currentValue.quantity *
-                                                              currentValue.price
-                                                          );
-                                                        },
-                                                        0
-                                                      ) -
-                                                    currentCart
-                                                      .filter(
-                                                        (i) =>
-                                                          i.storeCode ==
-                                                          item.storeCode
-                                                      )
-                                                      .reduce(
-                                                        (
-                                                          accumulator,
-                                                          currentValue
-                                                        ) => {
-                                                          return (
-                                                            accumulator +
-                                                            (currentValue.quantity *
-                                                              currentValue.price *
-                                                              currentValue.percentDecrease) /
-                                                              100
-                                                          );
-                                                        },
-                                                        0
-                                                      ) +
-                                                    (dataShippingFee && user
-                                                      ? (user?.provinceCode ==
-                                                        item.provinceCode
-                                                          ? dataShippingFee.find(
-                                                              (item: any) =>
-                                                                item?.typeShipping ==
-                                                                "inner"
-                                                            )
-                                                          : dataShippingFee.find(
-                                                              (item: any) =>
-                                                                item?.typeShipping ==
-                                                                "outer"
-                                                            )
-                                                        )?.fee
-                                                      : 0) -
-                                                    (cloneItem.totalAmount *
-                                                      i.percentDecrease) /
-                                                      100 +
-                                                    (item.totalAmountShip
-                                                      ? item.totalAmountShip
-                                                      : 0);
-                                                }
-                                              }
-                                              setDataFilter([
-                                                ...dataFilter.map((item) => {
-                                                  if (
-                                                    item.storeCode ==
-                                                    cloneItem.storeCode
-                                                  ) {
-                                                    return cloneItem;
-                                                  } else {
-                                                    return item;
-                                                  }
-                                                }),
-                                              ]);
+                                              itemFind.voucherList.push({
+                                                voucherCode: i?.voucherCode,
+                                              });
                                             }
+                                            setDataFilter([...dataFilter]);
                                           }}
-                                          dateEnd={"endDate"}
-                                        ></VoucherApply>
+                                        >
+                                          {i.voucherName}
+                                        </div>
                                       );
                                     })}
                               </div>
                             </div>
-                            <p className="text-[15px] font-medium w-56 text-end text-qblack uppercase">
+                            <p className="text-[15px] font-medium text-qblack uppercase">
                               {handleFetchVoucherUser.data &&
                               handleFetchVoucherUser.data.length > 0 &&
                               handleFetchVoucherUser.data.find(
                                 (i: any) => i.storeCode == item.storeCode
                               )
                                 ? "-" +
-                                  item.totalAmountVoucher?.toLocaleString(
+                                  item.totalAmountDiscount?.toLocaleString(
                                     "en-US"
                                   )
                                 : 0}{" "}
@@ -695,141 +579,27 @@ export default function CheckoutPage() {
                             </p>
                           </div>
                         </div>
-
                         <div className="mt-[10px]">
                           <div className=" flex justify-between mb-5">
-                            <div className="text-[13px] font-medium text-qblack uppercase">
-                              <span className="mb-1">
-                                {" "}
-                                Phí ship (
-                                {dataShippingFee && user
-                                  ? (user?.provinceCode.toString() ==
-                                    item.provinceStoreCode
-                                      ? dataShippingFee.find(
-                                          (item: any) =>
-                                            item?.typeShipping == "inner"
-                                        )
-                                      : dataShippingFee.find(
-                                          (item: any) =>
-                                            item?.typeShipping == "outer"
-                                        )
-                                    )?.typeShipping == "inner"
-                                    ? "Nội thành"
-                                    : "Ngoại thành"
-                                  : ""}
-                                )
-                              </span>
-                              <Select
-                                onValueChange={(e) => {
-                                  const cloneItem = item;
-                                  cloneItem.deliveryTypeCode =
-                                    Number.parseInt(e);
-                                  if (dataDeliveryType) {
-                                    cloneItem.totalAmountShip =
-                                      cloneItem.totalAmountShip +
-                                      dataDeliveryType.find(
+                            <p className="text-[13px] font-medium text-qblack uppercase">
+                              Phí ship (
+                              {dataShippingFee && user
+                                ? (user?.provinceCode.toString() ==
+                                  item.provinceStoreCode
+                                    ? dataShippingFee.find(
                                         (item: any) =>
-                                          item.deliveryTypeCode == e
-                                      )?.fee;
-
-                                    if (cloneItem.finalTotal) {
-                                      console.log("hello");
-                                      cloneItem.finalTotal =
-                                        currentCart
-                                          .filter(
-                                            (i) => i.storeCode == item.storeCode
-                                          )
-                                          .reduce(
-                                            (accumulator, currentValue) => {
-                                              return (
-                                                accumulator +
-                                                currentValue.quantity *
-                                                  currentValue.price
-                                              );
-                                            },
-                                            0
-                                          ) -
-                                        currentCart
-                                          .filter(
-                                            (i) => i.storeCode == item.storeCode
-                                          )
-                                          .reduce(
-                                            (accumulator, currentValue) => {
-                                              return (
-                                                accumulator +
-                                                (currentValue.quantity *
-                                                  currentValue.price *
-                                                  currentValue.percentDecrease) /
-                                                  100
-                                              );
-                                            },
-                                            0
-                                          ) +
-                                        (dataShippingFee && user
-                                          ? (user?.provinceCode ==
-                                            item.provinceCode
-                                              ? dataShippingFee.find(
-                                                  (item: any) =>
-                                                    item?.typeShipping ==
-                                                    "inner"
-                                                )
-                                              : dataShippingFee.find(
-                                                  (item: any) =>
-                                                    item?.typeShipping ==
-                                                    "outer"
-                                                )
-                                            )?.fee
-                                          : 0) -
-                                        (item.totalAmountVoucher
-                                          ? item.totalAmountVoucher
-                                          : 0) +
-                                        (cloneItem.totalAmountShip
-                                          ? cloneItem.totalAmountShip
-                                          : 0) +
-                                        dataDeliveryType.find(
-                                          (item: any) =>
-                                            item.deliveryTypeCode == e
-                                        )?.fee;
-                                    }
-                                  }
-                                  setDataFilter([
-                                    ...dataFilter.map((item) => {
-                                      if (
-                                        item.storeCode == cloneItem.storeCode
-                                      ) {
-                                        return cloneItem;
-                                      } else {
-                                        return item;
-                                      }
-                                    }),
-                                  ]);
-                                }}
-                              >
-                                <SelectTrigger className="w-[200px]">
-                                  <SelectValue
-                                    placeholder="Loại vận chuyển"
-                                    className="text-xs"
-                                  />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>
-                                      Chọn loại vận chuyển
-                                    </SelectLabel>
-                                    {dataDeliveryType &&
-                                      dataDeliveryType?.map((item: any) => {
-                                        return (
-                                          <SelectItem
-                                            value={item?.deliveryTypeCode}
-                                          >
-                                            {item.name}
-                                          </SelectItem>
-                                        );
-                                      })}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </div>
+                                          item?.typeShipping == "inner"
+                                      )
+                                    : dataShippingFee.find(
+                                        (item: any) =>
+                                          item?.typeShipping == "outer"
+                                      )
+                                  )?.typeShipping == "inner"
+                                  ? "Nội thành"
+                                  : "Ngoại thành"
+                                : ""}
+                              )
+                            </p>
                             <p className="text-[15px] font-medium text-qblack uppercase">
                               +
                               {item.totalAmountShip &&
@@ -853,88 +623,26 @@ export default function CheckoutPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="text-sm">
-                          <Textarea
-                            placeholder="Nhập ghi chú..."
-                            onBlur={(e) => {
-                              const cloneItem = item;
-                              cloneItem.noteContent = e.target.value;
-                              setDataFilter([
-                                ...dataFilter.map((item) => {
-                                  if (item.storeCode == cloneItem.storeCode) {
-                                    return cloneItem;
-                                  } else {
-                                    return item;
-                                  }
-                                }),
-                              ]);
-                            }}
-                          />
-                        </div>
                       </div>
                     );
                   })}
                 </div>
-
-                <div className="w-full px-10 py-[30px] border border-[#EDEDED] mb-5">
-                  <div className="mt-[30px]">
-                    <div className=" flex justify-between mb-5">
-                      <p className="text-[13px] font-medium text-qblack uppercase">
-                        Tổng tiền
-                      </p>
-                      <p className="text-[15px] font-medium text-qblack uppercase">
-                        {dataFilter
-                          .reduce((accumulator, currentValue) => {
-                            return (
-                              accumulator +
-                              (currentValue.finalTotal
-                                ? currentValue.finalTotal
-                                : 0)
-                            );
-                          }, 0)
-                          .toLocaleString("en-US")}{" "}
-                        <span className="font-normal lowercase">đ</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-[30px]">
-                    <div className=" flex justify-between mb-5">
-                      <p className="text-[13px] font-medium text-qblack uppercase">
-                        Loại thanh toán
-                      </p>
-                      <p className="text-[15px] font-medium text-qblack uppercase">
-                        Thanh toán bằng mã QR
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-[30px]">
-                    <div className=" flex gap-x-2 mb-5">
-                      <p className="text-[13px] font-medium text-qblack uppercase">
-                        Địa chỉ giao hàng:
-                      </p>
-                      <p className="text-[13px] font-medium text-qblack uppercase">
-                        {user && user.address}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="w-full sm:flex justify-end">
                   <div className="flex space-x-2.5 items-center">
-                    <NavLink to={"/all-products"}>
+                    <a href="#">
                       <div className="w-[220px] h-[50px] bg-[#F6F6F6] flex justify-center items-center">
                         <span className="text-sm font-semibold">
                           Tiếp tục mua sắm
                         </span>
                       </div>
-                    </NavLink>
-                    <button onClick={() => handlePayment()}>
+                    </a>
+                    <NavLink to={"/checkout"}>
                       <div className="w-[140px] h-[50px] bg-qyellow flex justify-center items-center">
                         <span className="text-sm font-semibold">
                           Thanh toán
                         </span>
                       </div>
-                    </button>
+                    </NavLink>
                   </div>
                 </div>
                 {/* <div className="w-full">
