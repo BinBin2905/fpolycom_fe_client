@@ -288,7 +288,8 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex flex-col items-end">
                                   <span className="text-[15px] text-qblack font-semibold">
-                                    {item.finalTotal?.toLocaleString("en-US")} <span className="font-normal">đ</span>
+                                    {item.finalTotal?.toLocaleString("en-US")}{" "}
+                                    <span className="font-normal">đ</span>
                                   </span>
                                   {/* <span className="text-[15px] text-qblack font-medium">
                                     ( -
@@ -316,7 +317,8 @@ export default function CheckoutPage() {
                           Tổng tiền
                         </p>
                         <p className="text-[15px] font-medium text-qblack uppercase">
-                          {item.totalAmount?.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
+                          {item.totalAmount?.toLocaleString("en-US")}{" "}
+                          <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -326,8 +328,8 @@ export default function CheckoutPage() {
                           Giá trị được giảm
                         </p>
                         <p className="text-[15px] font-medium text-qblack uppercase">
-                          -
-                          {item.totalAmountDiscount?.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
+                          -{item.totalAmountDiscount?.toLocaleString("en-US")}{" "}
+                          <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -389,10 +391,9 @@ export default function CheckoutPage() {
                             (i: any) => i.storeCode == item.storeCode
                           )
                             ? "-" +
-                              item.totalAmountDiscount?.toLocaleString(
-                                "en-US"
-                              )
-                            : 0} <span className="font-normal lowercase">đ</span>
+                              item.totalAmountDiscount?.toLocaleString("en-US")
+                            : 0}{" "}
+                          <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -418,7 +419,8 @@ export default function CheckoutPage() {
                         <p className="text-[15px] font-medium text-qblack uppercase">
                           +
                           {item.totalAmountShip &&
-                            item.totalAmountShip.toLocaleString("en-US")} <span className="font-normal lowercase">đ</span>
+                            item.totalAmountShip.toLocaleString("en-US")}{" "}
+                          <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -429,7 +431,9 @@ export default function CheckoutPage() {
                         </p>
                         <p className="text-[15px] font-semibold text-qblack uppercase ">
                           {item.finalTotal
-                            ? item.finalTotal.toLocaleString("en-US") : 0} <span className="font-normal lowercase">đ</span>
+                            ? item.finalTotal.toLocaleString("en-US")
+                            : 0}{" "}
+                          <span className="font-normal lowercase">đ</span>
                         </p>
                       </div>
                     </div>
@@ -438,21 +442,21 @@ export default function CheckoutPage() {
               })}
             </div>
             <div className="w-full sm:flex justify-end">
-                <div className="flex space-x-2.5 items-center">
-                  <a href="#">
-                    <div className="w-[220px] h-[50px] bg-[#F6F6F6] flex justify-center items-center">
-                      <span className="text-sm font-semibold">
-                        Tiếp tục mua sắm
-                      </span>
-                    </div>
-                  </a>
-                  <NavLink to={"/checkout"}>
-                    <div className="w-[140px] h-[50px] bg-qyellow flex justify-center items-center">
-                      <span className="text-sm font-semibold">Thanh toán</span>
-                    </div>
-                  </NavLink>
-                </div>
+              <div className="flex space-x-2.5 items-center">
+                <a href="#">
+                  <div className="w-[220px] h-[50px] bg-[#F6F6F6] flex justify-center items-center">
+                    <span className="text-sm font-semibold">
+                      Tiếp tục mua sắm
+                    </span>
+                  </div>
+                </a>
+                <NavLink to={"/checkout"}>
+                  <div className="w-[140px] h-[50px] bg-qyellow flex justify-center items-center">
+                    <span className="text-sm font-semibold">Thanh toán</span>
+                  </div>
+                </NavLink>
               </div>
+            </div>
             {/* <div className="w-full">
               <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-3">
                 Hóa đơn

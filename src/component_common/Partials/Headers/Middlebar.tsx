@@ -51,7 +51,14 @@ export default function Middlebar({ className }: { className?: string }) {
                     <DropdownMenuTrigger asChild className="cursor-pointer">
                       <div className="flex gap-x-3 items-center">
                         <Avatar className="size-9">
-                          <AvatarImage src="https://github.com/shadcn.png" />
+                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
+                          <AvatarImage
+                            src={
+                              currentUserInfo
+                                ? currentUserInfo.image
+                                : "https://github.com/shadcn.png"
+                            }
+                          />
                           <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col text-gray-600">
