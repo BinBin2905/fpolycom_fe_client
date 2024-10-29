@@ -21,7 +21,7 @@ type ProductDetailObject = {
 type ProductAttrObject = {
   attrValue: string;
   typeGoodAttrCode: string;
-  nameAttr: string;
+  typeGoodAttrName: string;
   productCode: string;
   productAttrCode: string;
 };
@@ -239,11 +239,15 @@ export default function SingleProductPage() {
     const findItem: CartObject | undefined = currentCart.find(
       (item) => item.productDetailCode == selected.productDetailCode
     );
-    console.log({
-      userLogin: currentUser.userLogin,
-      productDetailCode: selected.productDetailCode,
-      quantity: quantity,
-    });
+    if (quantity > selected.quantity) {
+      toast.warning("Thông báo", {
+        className: "p-3",
+        description: (
+          <span>Lượng hàng thêm vào giỏ hàng vượt quá số lượng!</span>
+        ),
+      });
+      return;
+    }
     if (findItem) {
       const data = await handleUpdateCart.mutateAsync({
         userLogin: currentUser.userLogin,
@@ -713,7 +717,7 @@ export default function SingleProductPage() {
                           return (
                             <li className="font-normal text-gray-700 leading-9 text-xs">
                               <span className="font-semibold">
-                                {item?.nameAttr}:{" "}
+                                {item?.typeGoodAttrName}:{" "}
                               </span>
                               {item?.attrValue}
                             </li>

@@ -497,3 +497,24 @@ export type StoreObject = {
   numberOfFollowed: string | null | undefined;
   numberOfLiked: string | null | undefined;
 };
+
+export type StoreUpdate = {
+  storeCode?: string;
+  name?: string;
+  image?: string;
+  addressDetail?: string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  provinceCode?: string;
+  districtCode?: string;
+  wardCode?: string;
+  bannerImage?: string;
+};
+
+export type ChangePasswordObject = {
+  storeCode?: number;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+};

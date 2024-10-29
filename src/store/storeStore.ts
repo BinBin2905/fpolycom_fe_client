@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-type storeObject = {
+export type StoreObjectInitial = {
     storeName: string;
     storeImage: string;
     storeCode: 1;
@@ -10,8 +10,8 @@ type storeObject = {
 };
 
 type storeUser = {
-    currentStore: storeObject | null;
-    setCurrentStore: (user: storeObject) => void;
+    currentStore: StoreObjectInitial | null;
+    setCurrentStore: (user: StoreObjectInitial) => void;
     logoutStore: () => void;
 };
 
@@ -27,7 +27,7 @@ export const useStoreStore = create<storeUser>()(
         }),
         {
             name: "store",
-            storage: createJSONStorage(() => localStorage),
+            storage: createJSONStorage(() => sessionStorage),
         }
     )
 );
