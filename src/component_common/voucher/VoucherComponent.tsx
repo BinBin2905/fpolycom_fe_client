@@ -17,6 +17,7 @@ const VoucherComponent = ({
   dateEnd,
   onSave,
   save = false,
+  priceApply,
 }: {
   keySelected?: number | string;
   item: ObjectCommon;
@@ -29,6 +30,7 @@ const VoucherComponent = ({
   dateEnd?: keyof ObjectCommon;
   save?: boolean;
   onSave?: (value: ObjectCommon) => void;
+  priceApply: keyof ObjectCommon;
 }) => {
   return (
     <div
@@ -70,9 +72,17 @@ const VoucherComponent = ({
         <p className="text-gray-900 font-extralight text-xs pl-2 mb-1">
           Giảm {percent ? item[percent] : "10"}%
         </p>
-
+        {priceApply && item[priceApply] && (
+          <p className="text-gray-900 font-extralight text-xs pl-2 mb-1">
+            Giá áp dụng:{" "}
+            {item[priceApply]?.toLocaleString("en-US", {
+              style: "currency",
+              currency: "VND",
+            })}
+          </p>
+        )}
         <p className="text-primary font-light text-xs pl-2">
-          Hiệu lực từ {dateBegin ? item[dateBegin] : "2024/07/01"} dến{" "}
+          Hiệu lực từ {dateBegin ? item[dateBegin] : "2024/07/01"} đến{" "}
           {dateEnd ? item[dateEnd] : "2024/07/01"}
         </p>
       </div>

@@ -112,9 +112,7 @@ export default function BecomeSaller() {
   });
   const validationSchema = Yup.object().shape({
     // userLogin: Yup.string().required("Không để trống tên đăng nhập!"),
-    password: Yup.string()
-      .required("Không để trống mật khẩu!")
-      .matches(/^\d{6}$/, "Phải bao gồm đúng 6 ký tự số"),
+    password: Yup.string().required("Không để trống mật khẩu!"),
     name: Yup.string().required("Không để trống tên người dùng!"),
     phone: Yup.string().required("Không để trống số điện thoại!"),
     addressDetail: Yup.string().required("Không để trống địa chỉ cụ thể!"),

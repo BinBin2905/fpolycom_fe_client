@@ -329,11 +329,23 @@ export type OrderDetailObject = {
   quantity: number;
   productDetailCode: number;
   discountCode: number;
+  productDetailPrice: number;
   percentDecrease: number;
   image: string;
   productName: string;
   productDetailName: string;
   price: number;
+};
+
+export type ReceiveDeliveryObject = {
+  receiveDeliveryCode?: number;
+  image?: string;
+  deliveryDate?: string;
+  typeDelivery?: string;
+  statusDelivery?: string;
+  shipperCode?: number;
+  shipperName?: string;
+  ordersCode?: number;
 };
 
 export type OrderObject = {
@@ -358,6 +370,37 @@ export type OrderObject = {
   deliveryTypeCode?: number;
   orderDetailList: OrderDetailObject[];
   voucherList?: VoucherObject[];
+};
+export type OrderInfoObject = {
+  orderStatus?: string;
+  orderCode?: string;
+  totalAmount?: number;
+  totalAmountVoucher?: number;
+  totalAmountShip?: number;
+  totalAmountDiscount?: number;
+  provinceStoreCode?: string;
+  paymentSuccess?: boolean;
+  confirmOrder?: boolean;
+  confirmPrepare?: boolean;
+  orderDate?: string;
+  confirmDelivery?: boolean;
+  confirmPickup?: boolean;
+  finalTotal?: number;
+  orderBillCode?: string;
+  noteContent?: string;
+  addressDetail?: string;
+  address?: string;
+  shippingFeeCode?: number;
+  storeCode?: number;
+  storeName?: string;
+  paymentTypeCode?: number;
+  provinceCode?: number;
+  districtCode?: number;
+  wardCode?: number;
+  deliveryTypeCode?: number;
+  orderDetailList: OrderDetailObject[];
+  voucherList?: VoucherObject[];
+  receiveDeliveryList?: ReceiveDeliveryObject[];
 };
 
 export type WishListProps = {
@@ -496,4 +539,54 @@ export type StoreObject = {
   wardName: string | null | undefined;
   numberOfFollowed: string | null | undefined;
   numberOfLiked: string | null | undefined;
+};
+
+export type StoreUpdate = {
+  storeCode?: string;
+  name?: string;
+  image?: string;
+  addressDetail?: string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  provinceCode?: string;
+  districtCode?: string;
+  wardCode?: string;
+  bannerImage?: string;
+};
+
+export type ChangePasswordObject = {
+  storeCode?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+};
+
+export type OrderListObject = {
+  orderCode: string;
+  storeName: string;
+  storeImage: string;
+  orderStatus: string;
+  confirmOrder: boolean;
+  confirmDelivery: boolean;
+  confirmPickup: boolean;
+  pickupDate: string;
+  deliveryDate: string;
+  totalAmount: number;
+  paymentTypeName: string;
+  totalAmountVoucher: number;
+  totalAmountShip: number;
+  finalTotal: number;
+  deliveryType: string;
+  paymentSuccess: boolean;
+};
+
+export type UserNotifyObject = {
+  notifyUserCode?: number;
+  title?: string;
+  content?: string;
+  image?: string;
+  linkContent?: string;
+  readed?: boolean;
+  typeNotifycation?: string;
 };

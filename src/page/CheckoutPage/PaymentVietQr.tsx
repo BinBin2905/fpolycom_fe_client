@@ -43,8 +43,7 @@ const PaymentVietQr = ({
     CHECKOUT_URL: infoPayemnt?.checkoutUrl, // required
     embedded: false, // Nếu dùng giao diện nhúng
     onSuccess: (event: any) => {
-      console.log(event, "event");
-      checkFalseAll();
+      console.log(event, "event");  
       document.getElementById("appLoginUser")?.scrollTo(0, 0);
       navigate("/payment-success/" + infoPayemnt.orderCode);
     },

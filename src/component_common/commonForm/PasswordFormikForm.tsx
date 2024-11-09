@@ -9,7 +9,7 @@ const PasswordFormikForm = ({
   name,
   ...props
 }: {
-  label: string;
+  label?: string;
   name: string;
   disabled?: boolean;
   important?: boolean;
@@ -19,10 +19,12 @@ const PasswordFormikForm = ({
   const [show, setShow] = useState(false);
   return (
     <div className="flex flex-col gap-y-1 w-full">
-      <label htmlFor="">
-        <span className="text-gray-700 font-medium text-sm">{label} </span>{" "}
-        {important && <span className="text-red-500">*</span>}
-      </label>
+      {label && (
+        <label htmlFor="">
+          <span className="text-gray-700 font-medium text-sm">{label} </span>{" "}
+          {important && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div
         className={`${
           meta.error && meta.touched ? "border-red-500" : "border-gray-200"

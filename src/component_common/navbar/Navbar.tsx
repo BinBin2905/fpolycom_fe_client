@@ -19,8 +19,8 @@ import IconCompany from "@/assets/img/iconcompany.png";
 // import { useUserStore } from "@/store/userStore";
 import { useStoreStore } from "@/store/storeStore";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "@/store";
-
+import ChangePasswordDialog from "./component/ChangePasswordDialog";
+import { useState } from "react";
 const menu = [
   {
     itemName: "Dashboard",
@@ -85,125 +85,147 @@ const menu2 = [
 ];
 const Navbar = () => {
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
   const { currentStore, logoutStore } = useStoreStore();
   const { currentUserInfo } = useUserStore();
   const isMobileScreen = useMediaQuery({ query: "(max-width:1024px)" });
 
   return (
-    <div className="sticky  shrink-0 top-0 z-10 bg-white shadow-lg border-b h-20 border-gray-200 px-5 py-4 flex justify-between items-center">
-      <div className="flex items-center gap-x-2">
-        {isMobileScreen && (
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="outline-none">
-                <i className="ri-menu-line"></i>
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side={"left"}
-              className="flex flex-col justify-between px-0"
-            >
-              <div
-                className={`flex items-center justify-center px-5 bg-white w-fit rounded-full`}
+    <>
+      <ChangePasswordDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+      ></ChangePasswordDialog>
+      <div className="sticky  shrink-0 top-0 z-10 bg-white shadow-lg border-b h-20 border-gray-200 px-5 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-x-2">
+          {isMobileScreen && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="outline-none">
+                  <i className="ri-menu-line"></i>
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side={"left"}
+                className="flex flex-col justify-between px-0"
               >
-                <img src={IconCompany} alt="" className="w-full max-w-24" />
-              </div>
-              <div
-                className={`flex-auto border-b w-full px-5 border-slate-100 ${"custom-scrollbar overflow-y-scroll overflow-x-hidden"}`}
-              >
-                <div className={`pt-5`}>
+                <div
+                  className={`flex items-center justify-center px-5 bg-white w-fit rounded-full`}
+                >
+                  <img src={IconCompany} alt="" className="w-full max-w-24" />
+                </div>
+                <div
+                  className={`flex-auto border-b w-full px-5 border-slate-100 ${"custom-scrollbar overflow-y-scroll overflow-x-hidden"}`}
+                >
+                  <div className={`pt-5`}>
+                    <Menu
+                      linkName={"link"}
+                      compact={false}
+                      list={menu}
+                      levelBegin={1}
+                      iconName={"itemIcon"}
+                      listName={"itemList"}
+                      name={"itemName"}
+                    ></Menu>
+                  </div>
+                </div>
+
+                <div className={`pt-1 pb-6 px-5`}>
                   <Menu
                     linkName={"link"}
                     compact={false}
-                    list={menu}
-                    levelBegin={1}
+                    list={menu2}
+                    levelBegin={2}
                     iconName={"itemIcon"}
                     listName={"itemList"}
                     name={"itemName"}
                   ></Menu>
                 </div>
-              </div>
+              </SheetContent>
+            </Sheet>
+          )}
 
-              <div className={`pt-1 pb-6 px-5`}>
-                <Menu
-                  linkName={"link"}
-                  compact={false}
-                  list={menu2}
-                  levelBegin={2}
-                  iconName={"itemIcon"}
-                  listName={"itemList"}
-                  name={"itemName"}
-                ></Menu>
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
-
-        <SearchComponent></SearchComponent>
-      </div>
-      <div className="flex gap-x-5 items-center">
-        <div className="flex gap-x-5">
-          <MessageComponent></MessageComponent>
-          <NotificationComponent></NotificationComponent>
+          <SearchComponent></SearchComponent>
         </div>
+        <div className="flex gap-x-5 items-center">
+          <div className="flex gap-x-5">
+            <MessageComponent></MessageComponent>
+            <NotificationComponent></NotificationComponent>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="cursor-pointer">
+              <div className="flex gap-x-3 items-center">
+                <Avatar className="size-9">
+                  <AvatarImage
+                    src={
+                      currentStore?.storeImage
+                        ? currentStore.storeImage
+                        : "https://github.com/shadcn.png"
+                    }
+                    className="object-cover object-center"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col text-gray-600">
+                  <span className="font-semibold text-gray-800">
+                    {currentStore?.storeName}
+                  </span>
+                  <span
+                    className={`
+                   ${
+                     currentStore?.status == "active"
+                       ? "text-green-800"
+                       : "text-red-500"
+                   }
+                   text-xs`}
+                  >
+                    {currentStore?.status == "active"
+                      ? "Đang hoạt động"
+                      : "Ngưng hoạt động"}
+                  </span>
+                </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="cursor-pointer">
-            <div className="flex gap-x-3 items-center">
-              <Avatar className="size-9">
-                {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                <AvatarImage
-                  src={
-                    currentUserInfo
-                      ? currentUserInfo.image
-                      : "https://github.com/shadcn.png"
-                  }
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col text-gray-600">
-                <span className="font-medium">{currentStore?.storeName}</span>
               </div>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" side="bottom">
-            <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => {
-                  navigate("/profile");
-                }}
-              >
-                Thông tin tài khoản
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => {
-                  navigate("/profile#password");
-                }}
-              >
-                Đổi mật khẩu
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                Cài đặt
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" side="bottom">
+              <DropdownMenuLabel>Cửa hàng của tôi</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => {
+                    navigate("/store/infomation");
+                  }}
+                >
+                  Thông tin cửa hàng
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setOpenDialog(true);
+                  }}
+                >
+                  Đổi mật khẩu
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Cài đặt
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
 
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => {
-                logoutStore();
-                navigate("/");
-              }}
-            >
-              Đăng xuất
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  logoutStore();
+                  navigate("/");
+                }}
+              >
+                Đăng xuất
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

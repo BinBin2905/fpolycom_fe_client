@@ -64,14 +64,14 @@ const menu: any[] = [
         link: "/store/banner",
       },
       {
-        itemName: "Bài viết",
+        itemName: "Đơn hàng",
         itemIcon: <i className="ri-newspaper-line"></i>,
-        link: "/post",
+        link: "/store/order",
       },
       {
-        itemName: "Khuyến mãi",
+        itemName: "Ví cửa hàng",
         itemIcon: <i className="ri-ticket-2-line"></i>,
-        link: "/promotion",
+        link: "/store/wallet",
       },
       {
         itemName: "Tin nhắn",

@@ -1,6 +1,7 @@
 import { fetchDataCommon, postDataCommon } from "@/api/commonApi";
 import { ButtonForm, SpinnerLoading } from "@/component_common";
 import { Textarea } from "@/components/ui/textarea";
+import { useCartStore } from "@/store/cartStore";
 import { OrderObject } from "@/type/TypeCommon";
 import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -14,11 +15,14 @@ const PaymentSuccessPage = () => {
     mutationFn: (body: any) =>
       postDataCommon({}, "/order-confirm/" + orderCode),
   });
+  const {checkFalseAll}=useCartStore();
   useEffect(() => {
     const fetchData = async () => {
       const data = await hanldeFetchConfirm.mutateAsync(orderCode);
       if (data) {
         setDataFilter(data);
+        checkFalseAll();
+        
       }
     };
     if (orderCode) {

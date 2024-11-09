@@ -118,7 +118,7 @@ const ForgotPasswordDialog = ({
                     <ButtonForm
                       label="Xác nhận"
                       type="submit"
-                      className="!w-24 px-4"
+                      className="!w-24 px-4 !bg-primary"
                       loading={handlePost.isPending}
                     ></ButtonForm>
                     <ButtonForm

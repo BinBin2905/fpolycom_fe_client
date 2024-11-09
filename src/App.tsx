@@ -43,6 +43,9 @@ import InfomationRegisterStore from "./page/BecomeSaller/InfomationRegisterStore
 import StoreVoucherPage from "./page/store_voucher/StoreVoucherPage.js";
 import StoreBannerPage from "./page/store_banner/StoreBannerPage.js";
 import PaymentSuccessPage from "./page/CheckoutPage/PaymentSuccessPage.js";
+import StoreInformationPage from "./page/store_infomation/StoreInformationPage.js";
+import StoreOrderPage from "./page/store_order/StoreOrderPage.js";
+import StoreWalletPage from "./page/store_wallet/StoreWalletPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -130,6 +133,36 @@ function App() {
                 !currentStore ? (
                   <Navigate to={"/store"}></Navigate>
                 ) : (
+                  <StoreInformationPage></StoreInformationPage>
+                )
+              }
+              path="/store/infomation"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreOrderPage></StoreOrderPage>
+                )
+              }
+              path="/store/order"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
+                  <StoreWalletPage></StoreWalletPage>
+                )
+              }
+              path="/store/wallet"
+            ></Route>
+            <Route
+              element={
+                !currentStore ? (
+                  <Navigate to={"/store"}></Navigate>
+                ) : (
                   <DashboardRevenuePage></DashboardRevenuePage>
                 )
               }
@@ -205,7 +238,10 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<Faq />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/payment-success/:orderCode" element={<PaymentSuccessPage />} />
+            <Route
+              path="/payment-success/:orderCode"
+              element={<PaymentSuccessPage />}
+            />
             {/* <Route path="/password" element={<PasswordTab />} /> */}
             <Route path="/become-saller" element={<BecomeSaller />} />
             <Route
