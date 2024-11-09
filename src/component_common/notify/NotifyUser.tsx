@@ -148,7 +148,7 @@ const NotifyUser = () => {
               Đánh dấu đã đọc
             </span>
           </div>
-          <div className="w-full h-[400px] custom-scrollbar-wider">
+          <div className="w-full h-[400px] custom-scrollbar-wider overflow-y-scroll">
             {fetchNotify.data &&
               (fetchNotify.data.length > 0 ? (
                 fetchNotify.data.map((item: UserNotifyObject) => {
