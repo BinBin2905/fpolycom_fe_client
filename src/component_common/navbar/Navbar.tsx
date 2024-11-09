@@ -87,6 +87,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const { currentStore, logoutStore } = useStoreStore();
+  const { currentUserInfo } = useUserStore();
   const isMobileScreen = useMediaQuery({ query: "(max-width:1024px)" });
 
   return (
@@ -151,7 +152,6 @@ const Navbar = () => {
             <MessageComponent></MessageComponent>
             <NotificationComponent></NotificationComponent>
           </div>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="cursor-pointer">
               <div className="flex gap-x-3 items-center">
@@ -184,6 +184,7 @@ const Navbar = () => {
                       : "Ngưng hoạt động"}
                   </span>
                 </div>
+
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" side="bottom">
