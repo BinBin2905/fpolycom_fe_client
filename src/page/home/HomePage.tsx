@@ -1,5 +1,6 @@
 import { loginStore } from "@/api/authApi";
 import { ButtonForm } from "@/component_common";
+import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
 import {
   Dialog,
   DialogContent,
@@ -22,13 +23,11 @@ import { useState } from "react";
 import * as Yup from "yup";
 
 const HomePage = () => {
-  const [openLogin, setOpenLogin] = useState(true);
-  const { currentUser, setCurrentUser } = useUserStore();
   const { currentStore, setCurrentStore } = useStoreStore();
+  const [openLogin, setOpenLogin] = useState(currentStore ? false : true);
+  const { currentUser, setCurrentUser } = useUserStore();
   const validationSchema = Yup.object().shape({
-    password: Yup.string()
-      .required("Không để trống mật khẩu!")
-      .min(6, "Giá trị mặc định là 6 kí tự!"),
+    password: Yup.string().required("Không để trống mật khẩu!"),
   });
 
   const handleLoginStore = useMutation({
@@ -64,35 +63,17 @@ const HomePage = () => {
                 handleSubmit(values);
               }}
             >
-              {({ setFieldValue, values, errors, touched }) => (
+              {({}) => (
                 <Form
                   id="formLoginStore"
                   className=" flex flex-col gap-y-4 items-center"
                 >
-                  <InputOTP
-                    maxLength={6}
-                    value={values.password}
-                    onChange={(value) => setFieldValue("password", value)}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                  {errors.password && touched.password && (
-                    <span className="error text-xs text-red-500">
-                      {errors?.password}
-                    </span>
-                  )}
-                  {handleLoginStore.isError && (
-                    <span className="error text-xs text-red-500">
-                      {handleLoginStore.error.message}
-                    </span>
-                  )}
+                  <PasswordFormikForm
+                    name="password"
+                    placeholder="Nhập mật khẩu..."
+                    important={true}
+                    // disabled={handlePostProvince.isPending}
+                  ></PasswordFormikForm>
                   <ButtonForm
                     label="Xác nhận"
                     type="submit"

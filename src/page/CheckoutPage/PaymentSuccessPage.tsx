@@ -22,6 +22,7 @@ const PaymentSuccessPage = () => {
       if (data) {
         setDataFilter(data);
         checkFalseAll();
+        
       }
     };
     if (orderCode) {

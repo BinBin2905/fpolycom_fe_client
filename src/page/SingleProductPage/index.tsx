@@ -433,7 +433,7 @@ export default function SingleProductPage() {
                             )}
                           {productDetail &&
                             productDetail.maxPrice > productDetail.minPrice && (
-                              <>
+                              <div className="flex gap-x-2">
                                 <span className="offer-price  font-600 ">
                                   {new Intl.NumberFormat("vi-VN", {
                                     style: "currency",
@@ -447,7 +447,7 @@ export default function SingleProductPage() {
                                     currency: "VND",
                                   }).format(productDetail.maxPrice)}
                                 </span>
-                              </>
+                              </div>
                             )}
                         </div>
                       )}

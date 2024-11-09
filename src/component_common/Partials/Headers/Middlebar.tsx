@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import NotifyUser from "@/component_common/notify/NotifyUser";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, currentUserInfo, logoutUser } = useUserStore();
@@ -40,10 +41,11 @@ export default function Middlebar({ className }: { className?: string }) {
               <SearchBox className="search-com" />
             </div>
             <div className="flex space-x-6 items-center">
-              <div className="cart-wrapper group relative py-4">
+              <div className="cart-wrapper relative py-4 items-center flex gap-x-4">
                 {/* <div className="fixed left-0 top-0 w-full h-full z-40"></div> */}
                 {/* hidden group-hover:block" */}
                 <Cart />
+                <NotifyUser></NotifyUser>
               </div>
               <div>
                 {currentUser ? (

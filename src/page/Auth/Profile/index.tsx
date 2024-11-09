@@ -29,6 +29,8 @@ import {
 import BreadcrumbCom from "@/component_common/BreadcrumbCom";
 import Layout from "@/component_common/Partials/Headers/Layout";
 import StoreFollowTab from "./tabs/StoreFollowTab";
+import VoucherTab from "./tabs/VoucherTab";
+import PaymentTab from "./tabs/PaymentTab";
 
 export default function Profile() {
   // const [switchDashboard, setSwitchDashboard] = useState(false);
@@ -113,10 +115,20 @@ export default function Profile() {
                     text="Cửa hàng đang theo dõi"
                   />
                   <MenuItem
+                    to="/profile#voucher"
+                    Icon={IcoLogout}
+                    text="Voucher đã lưu"
+                  />{" "}
+                  <MenuItem
+                    to="/profile#payment"
+                    Icon={IcoLogout}
+                    text="Ví của bạn"
+                  />
+                  <MenuItem
                     to="/profile#profile"
                     Icon={IcoLogout}
                     text="Đăng xuất"
-                  />
+                  />{" "}
                 </div>
               </div>
 
@@ -197,6 +209,14 @@ export default function Profile() {
                   ) : active === "store" ? (
                     <>
                       <StoreFollowTab />
+                    </>
+                  ) : active === "voucher" ? (
+                    <>
+                      <VoucherTab />
+                    </>
+                  ) : active === "payment" ? (
+                    <>
+                      <PaymentTab />
                     </>
                   ) : (
                     ""

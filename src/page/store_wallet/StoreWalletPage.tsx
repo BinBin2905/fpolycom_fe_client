@@ -31,22 +31,30 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import StoreWalletLoginDialog from "./component/StoreWalletLoginDialog";
+import { toast } from "sonner";
+import StoreWalletCreatePasswordDialog from "./component/StoreWalletCreatePasswordDialog";
 
-const ProductPage = () => {
-  const [openNew, setOpenNew] = useState(false);
-  const [openUpdate, setOpenUpdate] = useState(false);
+const StoreWalletPage = () => {
+  const { currentStore } = useStoreStore();
+  const [openLogin, setOpenLogin] = useState<boolean>(false);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [openCreatePassword, setOpenCreatePassword] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ProductObject | null>(null);
-  const { currentStore } = useStoreStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [openDialogDelete, setOpentDialogDelete] = useState(false);
+  const fetchPaymentWallet = useMutation({
+    mutationFn: (body: any) => postDataStore(body, "/store/store-wallet/get"),
+  });
+
   const { data, isLoading, isFetching, error, isSuccess, refetch } = useQuery({
-    queryKey: ["store_products"],
+    queryKey: ["store_transaction"],
     queryFn: () =>
       postDataStore(
         { storeCode: currentStore?.storeCode },
-        "/store/product/all"
+        "/store/store-transaction/all"
       ),
     enabled: currentStore != null,
   });
@@ -85,8 +93,8 @@ const ProductPage = () => {
       itemName: "Quản lí chung",
     },
     {
-      itemName: "Danh sách sản phẩm",
-      itemLink: "/product",
+      itemName: "Ví cửa hàng",
+      itemLink: "/store/wallet",
     },
   ];
   const columns: ColumnDef<ProductObject>[] = [
@@ -113,15 +121,15 @@ const ProductPage = () => {
       enableHiding: false,
     },
     {
-      accessorKey: "productCode",
-      meta: "Mã sản phẩm",
+      accessorKey: "storeTransactionCode",
+      meta: "Mã giao dịch",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Mã sản phẩm
+            Mã giao dịch
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -131,20 +139,22 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">#{row.getValue("productCode")}</div>
+        <div className="capitalize">
+          #{row.getValue("storeTransactionCode")}
+        </div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "name",
-      meta: "Tên sản phẩm",
+      accessorKey: "totalAmount",
+      meta: "Tổng tiền giao dịch",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Tên sản phẩm
+            Tổng tiền giao dịch
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -154,37 +164,18 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
-      enableHiding: true,
-    },
-
-    {
-      accessorKey: "typeGoodName",
-      meta: "Loại hàng",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Loại hàng
-            {column.getIsSorted() === "asc" ? (
-              <i className="ri-arrow-up-line"></i>
-            ) : (
-              <i className="ri-arrow-down-line"></i>
-            )}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("typeGoodName")}</div>
+        <div className="capitalize">
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(row.getValue("totalAmount"))}
+        </div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "typeGoodCode",
-      meta: "Mã loại hàng",
+      accessorKey: "bankName",
+      meta: "Ngân hàng",
       header: ({ column }) => {
         return (
           <Button
@@ -192,7 +183,7 @@ const ProductPage = () => {
             className="hidden"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Mã loại hàng
+            Ngân hàng
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -202,20 +193,20 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize hidden">{row.getValue("typeGoodCode")}</div>
+        <div className="capitalize hidden">{row.getValue("bankName")}</div>
       ),
       enableHiding: false,
     },
     {
-      accessorKey: "numberOfLikes",
-      meta: "Lượt thích",
+      accessorKey: "bankBranchName",
+      meta: "Chi nhánh",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Lượt thích
+            Chi nhánh
             {column.getIsSorted() === "asc" ? (
               <i className="ri-arrow-up-line"></i>
             ) : (
@@ -225,12 +216,12 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("numberOfLikes")}</div>
+        <div className="capitalize">{row.getValue("bankBranchName")}</div>
       ),
       enableHiding: true,
     },
     {
-      accessorKey: "status",
+      accessorKey: "transactionStatus",
       meta: "Trạng thại",
       header: ({ column }) => {
         return (
@@ -248,7 +239,13 @@ const ProductPage = () => {
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
+        <div>
+          {row.getValue("transactionStatus") == "pending"
+            ? "Đang rút tiền"
+            : row.getValue("transactionStatus") == "complete"
+            ? "Hoàn thành"
+            : "Từ chối"}
+        </div>
       ),
       enableHiding: true,
     },
@@ -292,104 +289,36 @@ const ProductPage = () => {
       },
     },
   ];
-  console.log(data);
 
+  useEffect(() => {
+    if (fetchPaymentWallet.data && fetchPaymentWallet.isSuccess && !signedIn) {
+      if (fetchPaymentWallet.data?.setPassword) {
+        setOpenLogin(true);
+      } else {
+        setOpenCreatePassword(true);
+      }
+    }
+  }, [fetchPaymentWallet.isSuccess]);
+
+  useEffect(() => {
+    fetchPaymentWallet.mutateAsync({ storeCode: currentStore?.storeCode });
+  }, []);
   return (
     <>
-      <Dialog
-        open={openDialogDelete}
-        onOpenChange={() => {
-          if (!handleDelete.isPending) {
-            setOpentDialogDelete(false);
-          }
+      <StoreWalletCreatePasswordDialog
+        open={openCreatePassword}
+        onClose={() => {
+          setOpenCreatePassword(false);
+          setOpenLogin(true);
         }}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Thông báo</DialogTitle>
-            <div className="w-full overflow-hidden">
-              <div
-                className={`${
-                  handleDelete.isSuccess ? "-translate-x-1/2" : "translate-x-0"
-                } w-[200%] grid grid-cols-2 transition-transform`}
-              >
-                <div className="flex flex-col">
-                  <DialogDescription className="flex items-center mb-5 justify-center gap-x-2 py-6">
-                    {handleDelete.isPending ? (
-                      <>
-                        <SpinnerLoading className="w-6 h-6 fill-primary"></SpinnerLoading>
-                        <span className="text-gray-700 text-base">
-                          Đang xóa sản phẩm...
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <i className="ri-delete-bin-line text-gray-700 text-xl"></i>
-                        <span className="text-gray-700 text-base">
-                          Bạn có muốn xóa quảng cáo{" "}
-                          <b className="text-gray-500">
-                            {" "}
-                            {selectedItem?.productCode}
-                          </b>{" "}
-                          ?
-                        </span>
-                      </>
-                    )}
-                  </DialogDescription>
-                  <div className="flex gap-x-2 justify-end">
-                    <ButtonForm
-                      type="button"
-                      className="!w-28 !bg-secondary"
-                      label="Xác nhận"
-                      // onClick={async () => {
-                      //   if (objectDelete != null)
-                      //     handleDelete.mutateAsync({
-                      //       DCMNCODE: "inpProduct",
-                      //       KEY_CODE: objectDelete?.KKKK0000,
-                      //     });
-                      // }}
-                    ></ButtonForm>
-                    <ButtonForm
-                      type="button"
-                      className="!w-28 !bg-red-500"
-                      label="Đóng"
-                      onClick={() => {
-                        setOpentDialogDelete(false);
-                      }}
-                    ></ButtonForm>
-                  </div>
-                </div>
-                <div className="flex flex-col">
-                  <DialogDescription className="flex items-center mb-5 justify-center gap-x-2 py-6">
-                    <i className="ri-checkbox-line text-gray-700 text-xl"></i>{" "}
-                    <span className="text-gray-700 text-base">
-                      Xóa thành công!
-                    </span>
-                  </DialogDescription>
-                  <div className="flex gap-x-2 justify-end">
-                    <ButtonForm
-                      type="button"
-                      className="!w-28 !bg-secondary"
-                      label="Thêm mới"
-                      onClick={() => {
-                        navigate("/create_product");
-                      }}
-                    ></ButtonForm>
-                    <ButtonForm
-                      type="button"
-                      className="!w-28 !bg-red-500"
-                      label="Đóng"
-                      onClick={() => {
-                        setOpentDialogDelete(false);
-                      }}
-                    ></ButtonForm>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      ></StoreWalletCreatePasswordDialog>
+      <StoreWalletLoginDialog
+        open={openLogin}
+        onClose={() => {
+          setSignedIn(true);
+          setOpenLogin(false);
+        }}
+      ></StoreWalletLoginDialog>
       <div className="flex flex-col gap-y-2">
         <div className="mb-3">
           <BreadcrumbCustom
@@ -401,9 +330,7 @@ const ProductPage = () => {
 
         {/* Action  */}
         <div className="flex justify-between items-center">
-          <h4 className="text-xl font-medium text-gray-600">
-            Danh sách sản phẩm
-          </h4>
+          <h4 className="text-xl font-medium text-gray-600">Thông tin ví</h4>
           <div className="flex gap-x-2">
             <ButtonForm
               className="!bg-primary !w-28"
@@ -416,13 +343,30 @@ const ProductPage = () => {
               type="button"
               icon={<i className="ri-file-add-line"></i>}
               onClick={() => navigate("/store/create_product")}
-              label="Thêm mới"
+              label="Rút tiền"
             ></ButtonForm>
+          </div>
+        </div>
+
+        <div className="rounded-md p-5 bg-white border-gray-200 border shadow-md">
+          <div>
+            <p className="flex items-center gap-x-1">
+              <span className="text-base text-gray-700 font-medium">
+                Số dư ví:
+              </span>
+              <span>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(fetchPaymentWallet.data?.balance)}
+              </span>
+            </p>
           </div>
         </div>
 
         {/* table */}
         <div className="rounded-md p-5 bg-white border-gray-200 border shadow-md">
+          <h5 className="mb-3">Danh sách giao dịch</h5>
           <TableCustom
             data={isSuccess ? data : []}
             columns={columns}
@@ -441,9 +385,9 @@ const ProductPage = () => {
             isLoading={isFetching}
           ></TableCustom>
         </div>
-      </div>
+      </div>{" "}
     </>
   );
 };
 
-export default ProductPage;
+export default StoreWalletPage;

@@ -67,12 +67,14 @@ export default function OrderDetail() {
   const orderDetail = useQuery({
     queryKey: ["orderDetail"],
     queryFn: async () => await orderDetails({ orderCode: orderCode }),
+    enabled: orderCode != null && orderCode != "",
   });
 
   useEffect(() => {
-    if (orderDetail.data) {
+    if (orderCode) {
+      orderDetail.refetch();
     }
-  }, [orderDetail.data]);
+  }, [orderCode]);
 
   return (
     <div

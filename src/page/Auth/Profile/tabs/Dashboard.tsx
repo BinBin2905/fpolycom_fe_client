@@ -174,9 +174,7 @@ export default function Dashboard() {
                           Trạng thái:
                         </dt>
                         <dd
-                          className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium ${
-                            statusMap.get(order.orderStatus)!.background
-                          } `}
+                          className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium`}
                         >
                           <svg
                             className="me-1 h-3 w-3"
@@ -192,12 +190,9 @@ export default function Dashboard() {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth="2"
-                              d={statusMap.get(order.orderStatus)!.icon}
+                              // d={statusMap.get(order.orderStatus)!.icon}
                             />
                           </svg>
-                          {statusMap
-                            .get(order.orderStatus)!
-                            .title.toUpperCase()}
                         </dd>
                       </dl>
 
