@@ -14,7 +14,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-const BarChartCustom = () => {
+type BarObject = {
+  [key: string]: any;
+};
+const BarChartCustom = ({
+  list,
+  labelKey,
+  itemKeyOne,
+  itemKeyTwo,
+}: {
+  list: any[];
+  labelKey?: string;
+  itemKeyOne?: string;
+  itemKeyTwo?: string;
+}) => {
   const chartData = [
     { month: "January", desktop: 186, laptop: 186 },
     { month: "February", desktop: 305, laptop: 186 },
@@ -27,21 +40,30 @@ const BarChartCustom = () => {
   ];
 
   const chartConfig = {
-    desktop: {
-      label: "Desktop",
-      color: "hsl(var(--chart-1))",
-    },
-    laptop: {
-      label: "laptop",
+    [itemKeyOne as string]: {
+      label: "Doanh thu",
       color: "#09B291",
     },
   } satisfies ChartConfig;
+  const tickFormatter = (value: any) => {
+    if (typeof value === "string" || Array.isArray(value)) {
+      return value.slice(0, 3); // Giới hạn độ dài nếu là chuỗi/mảng
+    }
+    return String(value); // Chuyển các giá trị khác thành chuỗi
+  };
+  console.log(list);
+  const currencyFormatter = (value: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(value);
+  };
   return (
     <div className="w-full h-80">
       <ChartContainer config={chartConfig} className="h-full w-full">
         <BarChart
           accessibilityLayer
-          data={chartData}
+          data={list}
           margin={{
             top: 20,
           }}
@@ -50,41 +72,48 @@ const BarChartCustom = () => {
         >
           <CartesianGrid vertical={false} />
           <XAxis
-            dataKey="month"
+            dataKey={labelKey ? labelKey : ""}
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
+            // tickFormatter={tickFormatter}
           />
           <YAxis
             label={{
-              value: "(Số lượng)",
+              value: "(Doanh thu)",
               angle: -90,
-              position: "insideLeft",
+              position: "insideMiddle",
             }}
+            tickFormatter={currencyFormatter}
             axisLine={false}
           ></YAxis>
           <ChartTooltip
             cursor={false}
+            formatter={currencyFormatter}
             content={<ChartTooltipContent hideLabel />}
           />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+          <Bar dataKey={itemKeyOne ? itemKeyOne : ""} fill="#b14719" radius={8}>
             <LabelList
+              formatter={currencyFormatter}
               position="top"
               offset={12}
               className="text-gray-600"
               fontSize={12}
             />
           </Bar>
-          <Bar dataKey="laptop" fill="var(--color-laptop)" radius={8}>
+          {/* <Bar
+            dataKey={itemKeyTwo ? itemKeyTwo : ""}
+            fill="var(--color-laptop)"
+            radius={8}
+          >
             <LabelList
               position="top"
               offset={12}
               className="text-gray-600"
               fontSize={12}
             />
-          </Bar>
+          </Bar> */}
         </BarChart>
       </ChartContainer>
     </div>

@@ -1,5 +1,4 @@
 // import { Link } from "react-router-dom";
-import ThinBag from "../../Helpers/icons/ThinBag";
 import ThinPeople from "../../Helpers/icons/ThinPeople";
 import SearchBox from "../../Helpers/SearchBox";
 import Cart from "@/page/Cart";
@@ -17,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import NotifyUser from "@/component_common/notify/NotifyUser";
+import MessageUser from "./MessageUser";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, currentUserInfo, logoutUser } = useUserStore();
@@ -46,6 +46,7 @@ export default function Middlebar({ className }: { className?: string }) {
                 {/* hidden group-hover:block" */}
                 <Cart />
                 <NotifyUser></NotifyUser>
+                <MessageUser></MessageUser>
               </div>
               <div>
                 {currentUser ? (
@@ -53,7 +54,7 @@ export default function Middlebar({ className }: { className?: string }) {
                     <DropdownMenuTrigger asChild className="cursor-pointer">
                       <div className="flex gap-x-3 items-center">
                         <Avatar className="size-9">
-                          <AvatarImage src="https://github.com/shadcn.png" />
+                          <AvatarImage src={currentUser.userImage} />
                           <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col text-gray-600">
@@ -111,7 +112,9 @@ export default function Middlebar({ className }: { className?: string }) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <ThinPeople />
+                  <div className="cursor-pointer py-4" onClick={() => navigate("/login")}>
+                    <ThinPeople />
+                  </div>
                 )}
 
                 {/* <Link to="/profile">

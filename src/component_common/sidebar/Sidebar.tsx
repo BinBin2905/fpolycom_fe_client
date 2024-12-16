@@ -12,15 +12,15 @@ const menu: any[] = [
         link: "/",
         itemList: [
           {
-            itemName: "Sản phẩm",
+            itemName: "Doanh thu",
             itemIcon: <i className="ri-instance-line"></i>,
             link: "/store/dashboard_product",
           },
-          {
-            itemName: "Doanh thu",
-            itemIcon: <i className="ri-advertisement-line"></i>,
-            link: "/store/dashboard_revenue",
-          },
+          // {
+          //   itemName: "Doanh thu",
+          //   itemIcon: <i className="ri-advertisement-line"></i>,
+          //   link: "/store/dashboard_revenue",
+          // },
         ],
       },
       {

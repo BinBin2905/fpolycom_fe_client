@@ -1,3 +1,4 @@
+import ComponentFrameMessageUser from "@/component_common/message/ComponentFrameMessageUser";
 import { Outlet } from "react-router-dom";
 
 const AppLogin = () => {

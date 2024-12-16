@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchDataCommon, postData, postDataCommon } from "@/api/commonApi";
 import { useUserStore } from "@/store";
 import {
+  GroupMessageObject,
   StoreDetailObject,
   StoreFollowObject,
   VoucherObject,
@@ -26,6 +27,7 @@ import { ButtonForm } from "@/component_common";
 import { toast } from "sonner";
 import VoucherComponent from "@/component_common/voucher/VoucherComponent";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MessageObject, useMessageUserStore } from "@/store/messageUserStore";
 
 type FilterState = {
   [key: string]: boolean;
@@ -34,6 +36,8 @@ type FilterState = {
 export default function SallerPage() {
   const queryClient = useQueryClient();
   const { currentUser } = useUserStore();
+  const { messages, addFrameMessage, openFrameMessage, setMessages } =
+    useMessageUserStore();
   const [store, setStore] = useState<StoreDetailObject | null>(null);
 
   const { id } = useParams();
@@ -124,6 +128,39 @@ export default function SallerPage() {
           predicate: (query) => query.queryKey[0] === "storeFollows",
         });
       }
+    },
+  });
+
+  const handleCreateGroup = useMutation({
+    mutationFn: (body: any) => postData(body, "/user/message/create-group"),
+    onSuccess: (data: GroupMessageObject) => {
+      const message: MessageObject = {
+        id: data.groupCode,
+        image: data.storeImage,
+        minimizeFrame: true,
+        name: data.storeName,
+        idReceive: data.storeCode,
+      };
+      setMessages([...messages, message]);
+      // if (store) {
+      //   setStore({ ...store, followed: false });
+      // }
+      // if (queryClient.getQueryData(["storeFollows"])) {
+      //   queryClient.setQueryData(
+      //     ["storeFollows"],
+      //     (oldData: StoreFollowObject[]) => {
+      //       return [
+      //         ...oldData.filter(
+      //           (item: StoreFollowObject) => item.storeCode != data.storeCode
+      //         ),
+      //       ];
+      //     }
+      //   );
+      // } else {
+      //   queryClient.invalidateQueries({
+      //     predicate: (query) => query.queryKey[0] === "storeFollows",
+      //   });
+      // }
     },
   });
 
@@ -243,6 +280,19 @@ export default function SallerPage() {
     setStorage(value);
   };
   const [filterToggle, setToggle] = useState(false);
+  const handleSendMessage = () => {
+    const findItem = messages.find(
+      (item: MessageObject) => item.idReceive == store?.storeCode
+    );
+    if (findItem) {
+      openFrameMessage(findItem.id);
+    } else {
+      handleCreateGroup.mutateAsync({
+        userCode: currentUser?.userId,
+        storeCode: store?.storeCode,
+      });
+    }
+  };
   return (
     <>
       <div className="products-page-wrapper w-full">
@@ -263,7 +313,7 @@ export default function SallerPage() {
                 className="w-full h-full object-cover object-center"
               />
             </div>
-            <div className="absolute right-2 top-2">
+            <div className="absolute right-2 top-2 flex gap-x-2">
               {store?.followed ? (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -298,6 +348,13 @@ export default function SallerPage() {
                   className="bg-primary !w-24 rounded-sm"
                 ></ButtonForm>
               )}
+              <ButtonForm
+                label="Nhắn tin"
+                loading={handlePostFollow.isPending}
+                type="button"
+                onClick={() => handleSendMessage()}
+                className="bg-gray-400 !w-24 rounded-sm"
+              ></ButtonForm>
             </div>
             <div className="pl-44 py-2 text-slate-700 w-full pt-5">
               <h5 className="text-3xl font-medium mb-2">{store?.name}</h5>
@@ -417,6 +474,7 @@ export default function SallerPage() {
                   handleFetchVoucher.data?.slice(0, 2).map((item: any) => {
                     return (
                       <VoucherComponent
+                        priceApply={"priceApply"}
                         item={item}
                         onSave={(value) => {
                           handleSaveVoucher(value);

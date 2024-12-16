@@ -3,18 +3,21 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type MessageObject = {
-  id: string;
+  id: number;
   name: string;
   image: string;
   minimizeFrame: boolean;
+  idReceive?: number;
 };
+
 
 type MessageStoreObject = {
   messages: MessageObject[];
-  minimizeFrameMessage: (id: string) => void;
-  deleteFrameMessage: (id: string) => void;
+  minimizeFrameMessage: (id: number) => void;
+  deleteFrameMessage: (id: number) => void;
   addFrameMessage: (data: MessageObject) => void;
-  openFrameMessage: (id: string) => void;
+  setMessages: (data: MessageObject[]) => void;
+  openFrameMessage: (id: number) => void;
 };
 
 export const useMessageStore = create<MessageStoreObject>()((set) => ({
@@ -57,6 +60,10 @@ export const useMessageStore = create<MessageStoreObject>()((set) => ({
   deleteFrameMessage: (id) =>
     set((state) => ({
       messages: [...state.messages.filter((item) => item.id != id)],
+    })),
+  setMessages: (data) =>
+    set((state) => ({
+      messages: [...data],
     })),
   addFrameMessage: (data) =>
     set((state) => {

@@ -165,7 +165,9 @@ const NotifyUser = () => {
                           navigate(
                             item.typeNotifycation == "order"
                               ? "/order-detail/" + item.linkContent
-                              : "/home"
+                              : item.typeNotifycation == "store"
+                              ? "/infomation-store"
+                              : "/"
                           );
                         }
                       }}

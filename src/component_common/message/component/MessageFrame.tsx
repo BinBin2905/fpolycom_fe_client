@@ -1,7 +1,12 @@
+import { postDataStore, uploadImage } from "@/api/commonApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useStoreStore, useUserStore } from "@/store";
 import { useMessageStore } from "@/store/messageStore";
-import { useState } from "react";
+
+import { MessObject, MessageRequestObject } from "@/type/TypeCommon";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 type MessageObject = {
   [key: string]: any;
 };
@@ -10,19 +15,131 @@ const MessageFrame = ({
   messageObject,
   name,
   id,
+  idReceive,
   image,
 }: {
   messageObject: MessageObject;
   name: keyof MessageObject;
   id: keyof MessageObject;
+  idReceive: keyof MessageObject;
   image: keyof MessageObject;
 }) => {
+  const { currentStore } = useStoreStore();
+  const refMessage = useRef<HTMLInputElement | null>(null);
+  const queryClient = useQueryClient();
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const fetchMessage = useQuery({
+    queryKey: [`store_group_message_${messageObject[id]}`],
+    queryFn: () =>
+      postDataStore({ groupCode: messageObject[id] }, "/store/message/all"),
+    enabled: messageObject[id] != null,
+  });
   const [fileItem, setFileItem] = useState<File[]>([]);
   const { deleteFrameMessage, minimizeFrameMessage } = useMessageStore();
+
+  const hanldePostMessage = useMutation({
+    mutationFn: (body: MessageRequestObject[]) =>
+      postDataStore(body, "/store/message/send"),
+    onSuccess: (data: MessObject[]) => {
+      if (queryClient.getQueryData(["store_messages"])) {
+        queryClient.setQueryData(
+          ["store_messages"],
+          (oldData: MessObject[]) => {
+            console.log(data);
+            return [
+              data.slice(-1)[0],
+              ...oldData.filter(
+                (item: MessObject) =>
+                  item.groupMessageCode != data[0].groupMessageCode
+              ),
+            ];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) => query.queryKey[0] === "store_messages",
+        });
+      }
+      if (
+        queryClient.getQueryData([
+          `store_group_message_${data[0].groupMessageCode}`,
+        ])
+      ) {
+        queryClient.setQueryData(
+          [`store_group_message_${data[0].groupMessageCode}`],
+          (oldData: MessObject[]) => {
+            console.log(data);
+            return [...oldData, ...data];
+          }
+        );
+      } else {
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey[0] ===
+            `store_group_message_${data[0].groupMessageCode}`,
+        });
+      }
+      if (refMessage.current?.value) {
+        refMessage.current.value = "";
+      }
+      setFileItem([]);
+    },
+  });
+
+  useEffect(() => {
+    if (fetchMessage.isSuccess && chatEndRef.current) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      console.log("Hello");
+    }
+    console.log("hello");
+  }, [
+    fetchMessage.isSuccess,
+    queryClient.getQueryData([`store_group_message_${messageObject[id]}`]),
+  ]);
+
+  const handleSendMessage = async () => {
+    if (refMessage.current?.value == "" && fileItem.length == 0) {
+      return;
+    }
+    const body: MessageRequestObject[] = [];
+    if (fileItem.length > 0) {
+      await Promise.all(
+        fileItem.map(async (item: File) => {
+          const url = await uploadImage(item, "common");
+          body.push({
+            message: url ? url : "",
+            typeMessage: "image",
+            idSender:
+              currentStore && currentStore?.storeCode
+                ? currentStore?.storeCode
+                : 0,
+            groupMessageCode: messageObject[id],
+            typeSender: "store",
+            userCode: messageObject[idReceive],
+          });
+        })
+      );
+    }
+    if (refMessage.current?.value) {
+      body.push({
+        message: refMessage.current.value,
+        typeMessage: "text",
+        idSender:
+          currentStore && currentStore?.storeCode ? currentStore?.storeCode : 0,
+        groupMessageCode: messageObject[id],
+        typeSender: "store",
+        userCode: messageObject[idReceive],
+      });
+    }
+    if (body) {
+      await hanldePostMessage.mutateAsync(body);
+    }
+    console.log("Hello");
+  };
   return (
     <div>
-      <div className="w-96 h-[400px] border border-gray-200 flex flex-col">
-        <div className="text-white bg-secondary flex items-center px-3 py-2 justify-between">
+      <div className="w-80 h-[400px] border border-gray-200 flex flex-col">
+        <div className="text-white bg-qyellow flex items-center px-3 py-2 justify-between">
           <div className="flex items-center gap-x-2">
             <div className="relative cursor-pointer ">
               <div className="absolute top-0 -right-1 z-10 h-3 w-3 rounded-full bg-green-500 border border-white"></div>
@@ -55,36 +172,49 @@ const MessageFrame = ({
           </div>
         </div>
         <ScrollArea className="flex-auto w-full  rounded-md py-2 px-1 bg-gray-100">
-          <div className="flex flex-col gap-y-1">
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Hello
+          {fetchMessage.data && fetchMessage.isSuccess ? (
+            <div className="flex flex-col gap-y-2 px-2">
+              {fetchMessage.data.map((item: MessObject) => (
+                <>
+                  {item.typeMessage == "text" ? (
+                    <div
+                      className={`border break-words bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 ${
+                        item.typeSender == "store" ? "self-end" : "self-start"
+                      }`}
+                    >
+                      {item.message.indexOf("https") >= 0 ||
+                      item.message.indexOf("http") >= 0 ? (
+                        <a
+                          href={`${item.message}`}
+                          target="_blank"
+                          className="underline text-primary"
+                        >
+                          {item.message}
+                        </a>
+                      ) : (
+                        <span> {item.message}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      className={`w-40 h-28 ${
+                        item.typeSender == "store" ? "self-end" : "self-start"
+                      }`}
+                    >
+                      <img
+                        src={item.message}
+                        className="h-full w-full object-cover object-center"
+                        alt=""
+                      />
+                    </div>
+                  )}
+                </>
+              ))}
+              <div ref={chatEndRef} />
             </div>
-
-            <div className="border border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-end bg-white">
-              Tôi cần giúp đỡ. Tôi có một đơn hàng đang chờ xử lí
-            </div>
-
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Đang có một đơn hàng đang giao tới bạn. Vui lòng chờ điện thoại để
-              ship có thể liên hệ khi đơn hàng tới nơi!
-            </div>
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Đang có một đơn hàng đang giao tới bạn. Vui lòng chờ điện thoại để
-              ship có thể liên hệ khi đơn hàng tới nơi!
-            </div>
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Đang có một đơn hàng đang giao tới bạn. Vui lòng chờ điện thoại để
-              ship có thể liên hệ khi đơn hàng tới nơi!
-            </div>
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Đang có một đơn hàng đang giao tới bạn. Vui lòng chờ điện thoại để
-              ship có thể liên hệ khi đơn hàng tới nơi!
-            </div>
-            <div className="border bg-gray-50 border-gray-200 shadow-sm w-fit max-w-52 rounded-lg p-2 px-3 text-sm text-gray-700 self-start ">
-              Đang có một đơn hàng đang giao tới bạn. Vui lòng chờ điện thoại để
-              ship có thể liên hệ khi đơn hàng tới nơi!
-            </div>
-          </div>
+          ) : (
+            <div>Không có tin nhắn.</div>
+          )}
         </ScrollArea>
         <div className="bg-white border-t border-gray-200 py-1 px-3 flex-col items-center gap-y-10 shrink-0">
           {fileItem.length >= 1 && (
@@ -154,9 +284,10 @@ const MessageFrame = ({
                 type="file"
                 id={messageObject[id] + "files"}
                 hidden
+                multiple
                 onChange={(e) => {
                   if (e.target.files && e.target.files?.length > 0) {
-                    setFileItem([...fileItem, e.target.files[0]]);
+                    setFileItem([...Array.from(e.target.files)]);
                   }
                 }}
               />
@@ -168,11 +299,26 @@ const MessageFrame = ({
               </label>
             </div>
             <input
+              ref={refMessage}
               type="text"
               placeholder="Nhập tin nhắn..."
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  handleSendMessage();
+                }
+              }}
               className="text-sm outline-none flex-auto text-gray-600"
             />
-            <div className="text-secondary">
+            <div
+              className={`cursor-pointer ${
+                hanldePostMessage.isPending ? "text-gray-500" : "text-primary"
+              }`}
+              onClick={() => {
+                if (!hanldePostMessage.isPending) {
+                  handleSendMessage();
+                }
+              }}
+            >
               <i className="ri-send-plane-fill text-xl"></i>
             </div>
           </div>

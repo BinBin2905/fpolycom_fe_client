@@ -322,19 +322,19 @@ export type CommonProductAll = {
 };
 
 export type OrderDetailObject = {
-  totalAmount: number;
-  totalDiscount: number;
-  checked: boolean;
-  finalTotal: number;
-  quantity: number;
-  productDetailCode: number;
-  discountCode: number;
-  productDetailPrice: number;
-  percentDecrease: number;
-  image: string;
-  productName: string;
-  productDetailName: string;
-  price: number;
+  totalAmount?: number;
+  totalDiscount?: number;
+  checked?: boolean;
+  finalTotal?: number;
+  quantity?: number;
+  productDetailCode?: number;
+  discountCode?: number;
+  productDetailPrice?: number;
+  percentDecrease?: number;
+  image?: string;
+  productName?: string;
+  productDetailName?: string;
+  price?: number;
 };
 
 export type ReceiveDeliveryObject = {
@@ -349,6 +349,7 @@ export type ReceiveDeliveryObject = {
 };
 
 export type OrderObject = {
+  orderCode?: string;
   userLogin?: string;
   totalAmount?: number;
   totalAmountVoucher?: number;
@@ -589,4 +590,61 @@ export type UserNotifyObject = {
   linkContent?: string;
   readed?: boolean;
   typeNotifycation?: string;
+};
+
+export type MessObject = {
+  readed: false;
+  message: string;
+  typeMessage: string;
+  timeSend: string;
+  idSender: number;
+  typeSender: string;
+  messageCode: number;
+  groupMessageCode: number;
+  storeName: string;
+  username: string;
+  storeImage: string;
+  storeCode: number;
+  userCode: number;
+  userImage: string;
+};
+
+export type GroupMessageObject = {
+  storeCode: number;
+  userCode: number;
+  username: string;
+  storeName: string;
+  storeImage: string;
+  userImage: string;
+  groupCode: number;
+};
+
+export type MessageRequestObject = {
+  message: string;
+  typeMessage: string;
+  idSender: number;
+  groupMessageCode: number;
+  typeSender: string;
+  storeCode?: string;
+  userCode?: string;
+};
+
+export type UserCommonObject = {
+  name: string | null;
+  phone: string | null;
+  addressDetail: string | null;
+  address: string | null;
+  image: string | null;
+  bannerImage: string | null;
+  email: string | null;
+  dateOfBirth: string | null;
+  gender: boolean | null;
+  provinceCode: string | null;
+  districtCode: string | null;
+  wardCode: string | null;
+  provinceName: string | null;
+  districtName: string | null;
+  wardName: string | null;
+  createdDate: string | null;
+  friendshipStatus: string | null;
 };

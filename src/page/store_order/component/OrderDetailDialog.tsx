@@ -352,42 +352,42 @@ const OrderDetailDialog = ({
                             </span>
                             <div>
                               <h3 className="font-medium leading-tight mb-1">
-                                Lấy hàng
+                                Giao hàng
                               </h3>
                               <p className="mb-1">
                                 {orderDetail?.confirmPickup
-                                  ? "Đã lấy hàng"
+                                  ? "Đã giao hàng"
                                   : orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
+                                      (item) => item.typeDelivery == "delivery"
                                     ) && (
                                       <span>
                                         {orderDetail.receiveDeliveryList?.find(
                                           (item) =>
-                                            item.typeDelivery == "receive"
+                                            item.typeDelivery == "delivery"
                                         )?.statusDelivery == "taking" &&
-                                          "Đang lấy hàng"}
+                                          "Đang giao hàng"}
                                         {orderDetail.receiveDeliveryList?.find(
                                           (item) =>
-                                            item.typeDelivery == "receive"
+                                            item.typeDelivery == "delivery"
                                         )?.statusDelivery == "appoinment" &&
-                                          "Lấy hàng bị hoãn"}
+                                          "Giao hàng bị hoãn"}
                                         {orderDetail.receiveDeliveryList?.find(
                                           (item) =>
-                                            item.typeDelivery == "receive"
+                                            item.typeDelivery == "delivery"
                                         )?.statusDelivery == "complete" &&
-                                          "Đã lấy hàng"}
+                                          "Đã giao hàng"}
                                       </span>
                                     )}
                               </p>
                               <p className="text-xs">
                                 <span>Ước tính: </span>
                                 {orderDetail.receiveDeliveryList?.find(
-                                  (item) => item.typeDelivery == "receive"
+                                  (item) => item.typeDelivery == "delivery"
                                 )
                                   ? orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
+                                      (item) => item.typeDelivery == "delivery"
                                     )?.deliveryDate
-                                  : "Chưa có ngày lấy hàng"}
+                                  : "Chưa có ngày giao hàng hàng"}
                               </p>
                             </div>
                           </li>
