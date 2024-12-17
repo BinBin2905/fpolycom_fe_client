@@ -306,11 +306,12 @@ export default function SingleProductPage() {
                         alt=""
                         className="object-contain"
                       />
-                      {selected?.percentDecrease != null && (
-                        <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
-                          <span>-{selected.percentDecrease}%</span>
-                        </div>
-                      )}
+                      {selected?.percentDecrease != null &&
+                        selected?.percentDecrease > 0 && (
+                          <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
+                            <span>-{selected.percentDecrease}%</span>
+                          </div>
+                        )}
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       <div
@@ -514,7 +515,7 @@ export default function SingleProductPage() {
                                 <span className="text-sm w-16">
                                   {item.name}
                                 </span>
-                                {item.percentDecrease && (
+                                {item.percentDecrease > 0 && (
                                   <div className="absolute -top-3 bg-red-500 -right-2 text-white rounded-full border border-gray-100 shadow-md size-8 text-[9px] flex items-center justify-center">
                                     -{item.percentDecrease}%
                                   </div>
