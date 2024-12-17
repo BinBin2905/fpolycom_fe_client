@@ -46,6 +46,8 @@ import PaymentSuccessPage from "./page/CheckoutPage/PaymentSuccessPage.js";
 import StoreInformationPage from "./page/store_infomation/StoreInformationPage.js";
 import StoreOrderPage from "./page/store_order/StoreOrderPage.js";
 import StoreWalletPage from "./page/store_wallet/StoreWalletPage.js";
+import InfomationUser from "./page/Infomation_user/InfomationUser.js";
+import SearchPage from "./page/serach/SearchPage.js";
 
 function App() {
   const { currentUser } = useUserStore();
@@ -221,22 +223,10 @@ function App() {
               )
             }
           >
-            <Route path="/" element={<Home />} />
-            <Route path="/all-products" element={<AllProductPage />} />
-            <Route path="/single-product/:id" element={<SingleProductPage />} />
             <Route path="/cart" element={<CardPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/flash-sale" element={<FlashSale />} />
-            <Route path="/saller-page/:id" element={<SallerPage />} />
-            {/* <Route path="/my-Store" element={<MyStore />} /> */}
-            <Route path="/sallers" element={<Sallers />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/blogs/blog" element={<Blog />} />
             <Route path="/tracking-order" element={<TrackingOrder />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<Faq />} />
             <Route path="/profile" element={<Profile />} />
             <Route
               path="/payment-success/:orderCode"
@@ -248,17 +238,35 @@ function App() {
               path="/infomation-store"
               element={
                 currentUser?.storeStatus == "pending" ||
-                currentUser?.storeStatus == "declined" ? (
+                currentUser?.storeStatus == "rejected" ? (
                   <InfomationRegisterStore />
                 ) : (
-                  <Navigate to={"/"}></Navigate>
+                  <Navigate to={"/store"}></Navigate>
                 )
               }
             />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-condition" element={<TermsCondition />} />
             <Route path="/order-detail/:orderCode" element={<OrderDetail />} />
             <Route path="*" element={<FourZeroFour />} />.
+          </Route>
+          <Route element={<AppCommonUser />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/all-products" element={<AllProductPage />} />
+            <Route path="/single-product/:id" element={<SingleProductPage />} />
+            <Route path="/flash-sale" element={<FlashSale />} />
+            <Route path="/saller-page/:id" element={<SallerPage />} />
+            {/* <Route path="/my-Store" element={<MyStore />} /> */}{" "}
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/sallers" element={<Sallers />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blogs/blog" element={<Blog />} />
+            <Route path="/search/:keyword" element={<SearchPage />} />
+            {/* <Route path="/password" element={<PasswordTab />} /> */}
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-condition" element={<TermsCondition />} />
+            <Route path="*" element={<FourZeroFour />} />.
+            <Route path="/user/:id" element={<InfomationUser />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -27,6 +27,7 @@ import {
   OrderListObject,
   OrderObject,
   ProvinceObject,
+  ReceiveDeliveryObject,
   StoreBannerObject,
   VoucherObject,
 } from "@/type/TypeCommon";
@@ -49,8 +50,14 @@ const OrderDetailDialog = ({
   onClose: () => void;
 }) => {
   const { currentStore } = useStoreStore();
-  const [orderDetail, setOrderDetail] = useState<OrderInfoObject | null>(null);
 
+  const [orderDetail, setOrderDetail] = useState<OrderInfoObject | null>(null);
+  const [statusReceive, setStatusReceive] = useState<
+    ReceiveDeliveryObject | null | undefined
+  >(null);
+  const [statusDelivery, setStatusDelivery] = useState<
+    ReceiveDeliveryObject | null | undefined
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   const validationSchema = Yup.object().shape({
@@ -64,6 +71,26 @@ const OrderDetailDialog = ({
   const handleFetchOrder = useMutation({
     mutationFn: (body: number) =>
       postDataStore({ orderCode: body }, "/store/orders/detail"),
+    onSuccess: (data: OrderInfoObject) => {
+      console.log(data);
+      setOrderDetail(data);
+      if (data.receiveDeliveryList) {
+        setStatusReceive(
+          data.receiveDeliveryList
+            ? data.receiveDeliveryList?.find(
+                (item: any) => item.typeDelivery == "receive"
+              )
+            : null
+        );
+        setStatusDelivery(
+          data.receiveDeliveryList
+            ? data.receiveDeliveryList?.find(
+                (item: any) => item.typeDelivery == "delivery"
+              )
+            : null
+        );
+      }
+    },
   });
 
   const handleConfirmOrder = useMutation({
@@ -136,17 +163,8 @@ const OrderDetailDialog = ({
 
   const handleSubmit = async (values: any): Promise<void> => {};
   useEffect(() => {
-    const fetchData = async () => {
-      if (item?.orderCode != null) {
-        const data = await handleFetchOrder.mutateAsync(
-          Number.parseInt(item.orderCode)
-        );
-        console.log(data);
-        setOrderDetail(data);
-      }
-    };
-    if (item != null) {
-      fetchData();
+    if (item?.orderCode != null) {
+      handleFetchOrder.mutateAsync(Number.parseInt(item.orderCode));
     }
   }, [item]);
   return (
@@ -284,12 +302,14 @@ const OrderDetailDialog = ({
                           <li className="mb-10 ms-6">
                             <span
                               className={`absolute flex items-center justify-center w-8 h-8 ${
-                                orderDetail?.confirmPickup
+                                statusReceive?.statusDelivery == "complete"
                                   ? "bg-qyellow"
                                   : "bg-gray-200 border"
                               } rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900`}
                             >
-                              {orderDetail?.confirmPickup ? (
+                              {orderDetail.receiveDeliveryList?.find(
+                                (item) => item.typeDelivery == "receive"
+                              )?.statusDelivery == "complete" ? (
                                 <i className="ri-check-line text-gray-500"></i>
                               ) : (
                                 <i className="ri-instance-line text-gray-500"></i>
@@ -300,38 +320,27 @@ const OrderDetailDialog = ({
                                 Lấy hàng
                               </h3>
                               <p className="mb-1">
-                                {orderDetail?.confirmPickup
-                                  ? "Đã lấy hàng"
-                                  : orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
-                                    ) && (
-                                      <span>
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "taking" &&
-                                          "Đang lấy hàng"}
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "appoinment" &&
-                                          "Lấy hàng bị hoãn"}
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "complete" &&
-                                          "Đã lấy hàng"}
-                                      </span>
-                                    )}
+                                {statusReceive && (
+                                  <span>
+                                    {statusReceive?.statusDelivery ==
+                                      "taking" && "Đang lấy hàng"}
+                                    {statusReceive?.statusDelivery ==
+                                      "appoinment" && "Lấy hàng bị hoãn"}
+                                    {statusReceive?.statusDelivery ==
+                                      "complete" && "Đã lấy hàng"}
+                                  </span>
+                                )}
                               </p>
                               <p className="text-xs">
-                                <span>Ước tính: </span>
-                                {orderDetail.receiveDeliveryList?.find(
-                                  (item) => item.typeDelivery == "receive"
-                                )
-                                  ? orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
-                                    )?.deliveryDate
+                                <span>
+                                  {statusReceive &&
+                                  statusReceive?.statusDelivery == "complete"
+                                    ? "Hoàn thành"
+                                    : "Ước tính"}
+                                  :{" "}
+                                </span>
+                                {statusReceive
+                                  ? statusReceive?.deliveryDate
                                   : "Chưa có ngày lấy hàng"}
                               </p>
                             </div>
@@ -339,12 +348,14 @@ const OrderDetailDialog = ({
                           <li className="ms-6 !border-transparent">
                             <span
                               className={`absolute flex items-center justify-center w-8 h-8 ${
-                                orderDetail?.confirmPickup
+                                statusDelivery?.statusDelivery == "complete"
                                   ? "bg-qyellow"
                                   : "bg-gray-200 border"
                               } rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900`}
                             >
-                              {orderDetail?.confirmPickup ? (
+                              {orderDetail.receiveDeliveryList?.find(
+                                (item) => item.typeDelivery == "delivery"
+                              )?.statusDelivery == "complete" ? (
                                 <i className="ri-check-line text-gray-500"></i>
                               ) : (
                                 <i className="ri-instance-line text-gray-500"></i>
@@ -352,42 +363,32 @@ const OrderDetailDialog = ({
                             </span>
                             <div>
                               <h3 className="font-medium leading-tight mb-1">
-                                Lấy hàng
+                                Giao hàng
                               </h3>
                               <p className="mb-1">
-                                {orderDetail?.confirmPickup
-                                  ? "Đã lấy hàng"
-                                  : orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
-                                    ) && (
-                                      <span>
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "taking" &&
-                                          "Đang lấy hàng"}
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "appoinment" &&
-                                          "Lấy hàng bị hoãn"}
-                                        {orderDetail.receiveDeliveryList?.find(
-                                          (item) =>
-                                            item.typeDelivery == "receive"
-                                        )?.statusDelivery == "complete" &&
-                                          "Đã lấy hàng"}
-                                      </span>
-                                    )}
+                                {statusDelivery && (
+                                  <span>
+                                    {statusDelivery?.statusDelivery ==
+                                      "taking" && "Đang giao hàng"}
+                                    {statusDelivery?.statusDelivery ==
+                                      "appoinment" && "Giao hàng bị hoãn"}
+                                    {statusDelivery?.statusDelivery ==
+                                      "complete" && "Đã giao hàng"}
+                                  </span>
+                                )}
                               </p>
                               <p className="text-xs">
-                                <span>Ước tính: </span>
-                                {orderDetail.receiveDeliveryList?.find(
-                                  (item) => item.typeDelivery == "receive"
-                                )
-                                  ? orderDetail.receiveDeliveryList?.find(
-                                      (item) => item.typeDelivery == "receive"
-                                    )?.deliveryDate
-                                  : "Chưa có ngày lấy hàng"}
+                                <span>
+                                  {" "}
+                                  {statusDelivery &&
+                                  statusDelivery?.statusDelivery == "complete"
+                                    ? "Hoàn thành"
+                                    : "Ước tính"}
+                                  : :{" "}
+                                </span>
+                                {statusDelivery
+                                  ? statusDelivery?.deliveryDate
+                                  : "Chưa có ngày giao hàng hàng"}
                               </p>
                             </div>
                           </li>

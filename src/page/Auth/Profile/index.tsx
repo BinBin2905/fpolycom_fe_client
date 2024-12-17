@@ -31,6 +31,7 @@ import Layout from "@/component_common/Partials/Headers/Layout";
 import StoreFollowTab from "./tabs/StoreFollowTab";
 import VoucherTab from "./tabs/VoucherTab";
 import PaymentTab from "./tabs/PaymentTab";
+import FriendTab from "./tabs/FriendTab";
 
 export default function Profile() {
   // const [switchDashboard, setSwitchDashboard] = useState(false);
@@ -51,8 +52,8 @@ export default function Profile() {
         <div className="w-full my-10">
           <BreadcrumbCom
             paths={[
-              { name: "home", path: "/" },
-              { name: "profile", path: "/profile" },
+              { name: "Trang chủ", path: "/" },
+              { name: "Thông tin cá nhân", path: "/profile" },
             ]}
           />
           <div className="w-full bg-white px-9 lg:px-3">
@@ -81,12 +82,12 @@ export default function Profile() {
                 <div className="flex flex-col space-y-10">
                   <MenuItem
                     to="/profile#dashboard"
-                    Icon={IcoDashboard}
+                    Icon={<i className="ri-bill-line"></i>}
                     text="Tổng quan mua hàng"
                   />
                   <MenuItem
                     to="/profile#profile"
-                    Icon={IcoPeople}
+                    Icon={<i className="ri-file-info-line"></i>}
                     text="Thông tin cá nhân"
                   />
                   {/* <MenuItem to="/profile#payment" Icon={IcoPayment} text="Payment Method" /> */}
@@ -96,37 +97,42 @@ export default function Profile() {
                   {/* <MenuItem to="/profile#review" Icon={IcoReviewHand} text="Đánh giá" /> */}
                   <MenuItem
                     to="/profile#password"
-                    Icon={IcoPassword}
+                    Icon={<i className="ri-lock-line"></i>}
                     text="Đổi mật khẩu"
                   />
                   <MenuItem
+                    to="/profile#friend"
+                    Icon={<i className="ri-team-line"></i>}
+                    text="Bạn bè"
+                  />
+                  <MenuItem
                     to="/profile#support"
-                    Icon={IcoSupport}
+                    Icon={<i className="ri-error-warning-line"></i>}
                     text="Khiếu nại & đóng góp"
                   />
                   <MenuItem
                     to="/profile#wishlist"
-                    Icon={IcoLogout}
+                    Icon={<i className="ri-instance-line"></i>}
                     text="Sản phẩm yêu thích"
                   />
                   <MenuItem
                     to="/profile#store"
-                    Icon={IcoLogout}
+                    Icon={<i className="ri-store-line"></i>}
                     text="Cửa hàng đang theo dõi"
                   />
                   <MenuItem
                     to="/profile#voucher"
-                    Icon={IcoLogout}
+                    Icon={<i className="ri-coupon-3-line"></i>}
                     text="Voucher đã lưu"
                   />{" "}
                   <MenuItem
                     to="/profile#payment"
-                    Icon={IcoLogout}
+                    Icon={<i className="ri-wallet-line"></i>}
                     text="Ví của bạn"
                   />
                   <MenuItem
                     to="/profile#profile"
-                    Icon={IcoLogout}
+                    Icon={<i className="ri-logout-box-line"></i>}
                     text="Đăng xuất"
                   />{" "}
                 </div>
@@ -217,6 +223,10 @@ export default function Profile() {
                   ) : active === "payment" ? (
                     <>
                       <PaymentTab />
+                    </>
+                  ) : active === "friend" ? (
+                    <>
+                      <FriendTab />
                     </>
                   ) : (
                     ""

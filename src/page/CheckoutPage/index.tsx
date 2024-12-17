@@ -31,11 +31,21 @@ import { toast } from "sonner";
 import * as Yup from "yup";
 import axios from "axios";
 import PaymentVietQr from "./PaymentVietQr";
+import { ButtonForm } from "@/component_common";
+
+type PaymentTypeObject = {
+  paymentTypeCode: number;
+  name: string;
+  image: string;
+};
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const [infoVietQR, setInfoVietQR] = useState(null);
   const [successPayment, setSuccessPayment] = useState(false);
+  const [paymentType, setPaymentType] = useState<PaymentTypeObject | null>(
+    null
+  );
   const [user, setUser] = useState<userProfile | null>(null);
   const handleFetchUser = useMutation({
     mutationFn: (body: any) => postData(body, "/user/get"),
@@ -60,7 +70,25 @@ export default function CheckoutPage() {
     queryKey: ["paymentTypes"],
     queryFn: () => fetchDataCommon("/common/payment-type/all"),
   });
+  const {
+    data: dataShippingFee,
+    isSuccess: isSuccessShippingFee,
+    isError: isErrorShippingFee,
+    isFetching: isFetchingShippingFee,
+  } = useQuery({
+    queryKey: ["shippingFees"],
+    queryFn: () => fetchDataCommon("/common/shipping-fee/all"),
+  });
 
+  const {
+    data: dataDeliveryType,
+    isSuccess: isSuccessDeliveryType,
+    isError: isErrorDeliveryType,
+    isFetching: isFetchingDeliveryType,
+  } = useQuery({
+    queryKey: ["deliveryTypes"],
+    queryFn: () => fetchDataCommon("/common/delivery-type/all"),
+  });
   const validationSchema = Yup.object().shape({
     userLogin: Yup.string().required("Không để trống tên đăng nhập!"),
     password: Yup.string().required("Không để trống mật khẩu!"),
@@ -96,25 +124,6 @@ export default function CheckoutPage() {
     districtCode: "",
   });
 
-  const {
-    data: dataShippingFee,
-    isSuccess: isSuccessShippingFee,
-    isError: isErrorShippingFee,
-    isFetching: isFetchingShippingFee,
-  } = useQuery({
-    queryKey: ["shippingFees"],
-    queryFn: () => fetchDataCommon("/common/shipping-fee/all"),
-  });
-
-  const {
-    data: dataDeliveryType,
-    isSuccess: isSuccessDeliveryType,
-    isError: isErrorDeliveryType,
-    isFetching: isFetchingDeliveryType,
-  } = useQuery({
-    queryKey: ["deliveryTypes"],
-    queryFn: () => fetchDataCommon("/common/delivery-type/all"),
-  });
   const [dataFilter, setDataFilter] = useState<OrderObject[]>([]);
   const { currentCart } = useCartStore();
   const { currentUser } = useUserStore();
@@ -226,23 +235,25 @@ export default function CheckoutPage() {
           resultData.push(result);
         } else {
           const findCH = resultData.find((i) => i.storeCode == item.storeCode);
-          findCH?.orderDetailList.push({
-            totalAmount: item.quantity * item.price,
-            totalDiscount:
-              (item.percentDecrease * item.price * item.quantity) / 100,
-            finalTotal:
-              item.quantity * item.price -
-              (item.percentDecrease * item.price * item.quantity) / 100,
-            quantity: item.quantity,
-            productDetailCode: item.productDetailCode,
-            discountCode: item.discountCode,
-            checked: item.checked,
-            image: item.image,
-            productName: item.productName,
-            productDetailName: item.detailName,
-            price: item.price,
-            percentDecrease: item.percentDecrease,
-          });
+          if (findCH?.orderDetailList) {
+            findCH?.orderDetailList.push({
+              totalAmount: item.quantity * item.price,
+              totalDiscount:
+                (item.percentDecrease * item.price * item.quantity) / 100,
+              finalTotal:
+                item.quantity * item.price -
+                (item.percentDecrease * item.price * item.quantity) / 100,
+              quantity: item.quantity,
+              productDetailCode: item.productDetailCode,
+              discountCode: item.discountCode,
+              checked: item.checked,
+              image: item.image,
+              productName: item.productName,
+              productDetailName: item.detailName,
+              price: item.price,
+              percentDecrease: item.percentDecrease,
+            });
+          }
           if (findCH) {
             setDataFilter([
               ...resultData.filter((i) => item.storeCode != i.storeCode),
@@ -256,6 +267,12 @@ export default function CheckoutPage() {
   };
 
   const handlePayment = async () => {
+    if (!paymentType) {
+      toast.warning("Thông báo", {
+        className: "p-3",
+        description: <span>Vui lòng chọn thanh toán!</span>,
+      });
+    }
     const findItem = dataFilter.find((item) => item.deliveryTypeCode == -1);
     const billOrderCode = new Date(Date.now()).getTime();
     if (findItem) {
@@ -271,7 +288,7 @@ export default function CheckoutPage() {
     }
     const body = await dataFilter.map((item) => ({
       ...item,
-      paymentTypeCode: 1,
+      paymentTypeCode: paymentType?.paymentTypeCode,
       userLogin: currentUser?.userLogin ? currentUser.userLogin : null,
       orderBillCode: billOrderCode,
       voucherList: item.voucherList
@@ -286,94 +303,56 @@ export default function CheckoutPage() {
     console.log(body);
     const data = await handlePostOrder.mutateAsync(body);
 
-    if (infoVietQR == null && data) {
-      const body = {
-        orderCode: billOrderCode,
-        amount: 10000,
-        // dataFilter.reduce((accumulator, currentValue) => {
-        //   return (
-        //     accumulator +
-        //     (currentValue.finalTotal ? currentValue.finalTotal : 0)
-        //   );
-        // }, 0),
-        description: "",
-        buyerAddress: "số nhà, đường, phường, tỉnh hoặc thành phố",
-        items: [],
-        cancelUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
-        returnUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
-        expiredAt: Math.floor(
-          (new Date(Date.now()).getTime() + 15 * 60000) / 1000
-        ),
-        template: "info",
-      };
-      const query = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`;
-      const hmac = Base64.stringify(
-        CryptoJs.HmacSHA256(
-          query,
-          "dff2b663051b6bc4d07668b7c4e7a4f7f7365540fb8db84055b26156739a56e6"
-        )
-      );
-      await axios
-        .post(
-          "https://api-merchant.payos.vn/v2/payment-requests",
-          { ...body, signature: hmac },
-          {
-            headers: {
-              "x-client-id": "b8a76f89-11ab-4065-b0d8-bb3df22a7f58",
-              "x-api-key": "57420532-9fb3-4c6f-89f9-d009a4859076",
-            },
-          }
-        )
-        .then((resp) => {
-          setInfoVietQR({ ...resp.data.data });
-          setSuccessPayment(true);
-          return resp.data.data;
-        })
-        .catch((e) => console.log(e));
-    }
-    console.log(body);
-  };
+    // if (infoVietQR == null && data && paymentType?.paymentTypeCode == 1) {
+    //   const body = {
+    //     orderCode: billOrderCode,
+    //     amount: 10000,
+    //     // dataFilter.reduce((accumulator, currentValue) => {
+    //     //   return (
+    //     //     accumulator +
+    //     //     (currentValue.finalTotal ? currentValue.finalTotal : 0)
+    //     //   );
+    //     // }, 0),
+    //     description: "",
+    //     buyerAddress: "số nhà, đường, phường, tỉnh hoặc thành phố",
+    //     items: [],
+    //     cancelUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
+    //     returnUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
+    //     expiredAt: Math.floor(
+    //       (new Date(Date.now()).getTime() + 15 * 60000) / 1000
+    //     ),
+    //     template: "info",
+    //   };
+    //   const query = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`;
+    //   const hmac = Base64.stringify(
+    //     CryptoJs.HmacSHA256(
+    //       query,
+    //       "dff2b663051b6bc4d07668b7c4e7a4f7f7365540fb8db84055b26156739a56e6"
+    //     )
+    //   );
+    //   await axios
+    //     .post(
+    //       "https://api-merchant.payos.vn/v2/payment-requests",
+    //       { ...body, signature: hmac },
+    //       {
+    //         headers: {
+    //           "x-client-id": "b8a76f89-11ab-4065-b0d8-bb3df22a7f58",
+    //           "x-api-key": "57420532-9fb3-4c6f-89f9-d009a4859076",
+    //         },
+    //       }
+    //     )
+    //     .then((resp) => {
+    //       setInfoVietQR({ ...resp.data.data });
 
-  const handleQR = async function (values: any) {
-    if (infoVietQR == null) {
-      const body = {
-        orderCode: new Date(Date.now()).getTime(),
-        amount: 10000,
-        description: "Thanh toan HD",
-        buyerAddress: "số nhà, đường, phường, tỉnh hoặc thành phố",
-        items: [],
-        cancelUrl: "https://web-thuongmai.vercel.app/",
-        returnUrl: "https://web-thuongmai.vercel.app/",
-        expiredAt: Math.floor(
-          (new Date(Date.now()).getTime() + 15 * 60000) / 1000
-        ),
-        template: "info",
-      };
-      const query = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`;
-      const hmac = Base64.stringify(
-        CryptoJs.HmacSHA256(
-          query,
-          "dff2b663051b6bc4d07668b7c4e7a4f7f7365540fb8db84055b26156739a56e6"
-        )
-      );
-      await axios
-        .post(
-          "https://api-merchant.payos.vn/v2/payment-requests",
-          { ...body, signature: hmac },
-          {
-            headers: {
-              "x-client-id": "b8a76f89-11ab-4065-b0d8-bb3df22a7f58",
-              "x-api-key": "57420532-9fb3-4c6f-89f9-d009a4859076",
-            },
-          }
-        )
-        .then((resp) => {
-          setInfoVietQR({ ...resp.data.data });
-          setSuccessPayment(true);
-          return resp.data.data;
-        })
-        .catch((e) => console.log(e));
-    }
+    //       return resp.data.data;
+    //     })
+    //     .catch((e) => console.log(e));
+    // }
+
+    // setSuccessPayment(true);
+
+    navigate("/payment-success/" + body[0].orderBillCode);
+    console.log(body);
   };
 
   useEffect(() => {
@@ -898,13 +877,44 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="mt-[30px]">
-                    <div className=" flex justify-between mb-5">
+                    <div className=" flex justify-between items-center mb-5">
                       <p className="text-[13px] font-medium text-qblack uppercase">
                         Loại thanh toán
                       </p>
-                      <p className="text-[15px] font-medium text-qblack uppercase">
-                        Thanh toán bằng mã QR
-                      </p>
+                      <Select
+                        onValueChange={(item) =>
+                          setPaymentType(
+                            dataPaymentType.find(
+                              (i: PaymentTypeObject) =>
+                                i.paymentTypeCode.toString() == item.toString()
+                            )
+                          )
+                        }
+                      >
+                        <SelectTrigger className="w-56">
+                          <SelectValue placeholder="Loại thanh toán" />
+                        </SelectTrigger>
+                        <SelectContent className="w-72">
+                          <SelectGroup>
+                            {dataPaymentType &&
+                              dataPaymentType.map(
+                                (item: {
+                                  paymentTypeCode: number;
+                                  name: string;
+                                  image: string;
+                                }) => {
+                                  return (
+                                    <SelectItem
+                                      value={item.paymentTypeCode.toString()}
+                                    >
+                                      <img src="" alt="" /> {item.name}
+                                    </SelectItem>
+                                  );
+                                }
+                              )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="mt-[30px]">
@@ -1068,10 +1078,34 @@ export default function CheckoutPage() {
               </div>
             </div> */}
               </div>
-              <PaymentVietQr
-                infoPayemnt={infoVietQR}
-                openPayment={true}
-              ></PaymentVietQr>
+
+              <div>
+                <h5>Bạn đặt hàng thành công</h5>
+                <div className="flex flex-col items-center justify-end">
+                  <div className="flex items-center justify-center gap-x-2 mt-5">
+                    <ButtonForm
+                      type="button"
+                      onClick={() => navigate("/all-products")}
+                      className="!bg-qyellow !text-gray-800 px-3 !py-5 font-medium"
+                      label="Tiếp tục mua sắm"
+                    ></ButtonForm>
+                    <ButtonForm
+                      type="button"
+                      onClick={() => navigate("/profile#dashboard")}
+                      className="!bg-qyellow !text-gray-800 !py-5"
+                      label="Xem đơn hàng"
+                    ></ButtonForm>
+                  </div>
+                </div>
+              </div>
+              {successPayment &&
+                paymentType &&
+                paymentType?.paymentTypeCode == 1 && (
+                  <PaymentVietQr
+                    infoPayemnt={infoVietQR}
+                    openPayment={true}
+                  ></PaymentVietQr>
+                )}
             </div>
           </div>
         </div>

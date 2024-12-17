@@ -1,3 +1,4 @@
+import { postDataStore } from "@/api/commonApi";
 import BarChartCustom from "@/component_common/bar_chart/BarChartCustom";
 import BreadcrumbCustom from "@/component_common/breadcrumb/BreadcrumbCustom";
 import ButtonForm from "@/component_common/commonForm/ButtonForm";
@@ -7,19 +8,85 @@ import PieChartCustom from "@/component_common/pie_chart/PieChartCustom";
 import TableCustom from "@/component_common/table/TableCustom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useStoreStore } from "@/store";
 import { ProductObject } from "@/type/TypeCommon";
+import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const DashboardProductPage = () => {
+  const { currentStore } = useStoreStore();
+  const fetchTotalRevenueYear = useQuery({
+    queryKey: ["totalRevenueYear"],
+    queryFn: () =>
+      postDataStore(
+        {
+          storeCode: currentStore?.storeCode,
+          year: new Date().getFullYear(),
+        },
+        "/store/revenueByYear"
+      ),
+    enabled: currentStore != null,
+  });
+  const fetchTotalRevenueMonth = useQuery({
+    queryKey: ["totalRevenueMonth"],
+    queryFn: () =>
+      postDataStore(
+        {
+          storeCode: currentStore?.storeCode,
+          year: new Date().getFullYear(),
+          month: new Date().getMonth() + 1,
+        },
+        "/store/revenueByMonth"
+      ),
+    enabled: currentStore != null,
+  });
+
+  const fetchTotalRevenueDay = useQuery({
+    queryKey: ["totalRevenueDay"],
+    queryFn: () =>
+      postDataStore(
+        {
+          storeCode: currentStore?.storeCode,
+          date: new Date(),
+        },
+        "/store/search-revenue-by-day"
+      ),
+    enabled: currentStore != null,
+  });
+  const fetchRevenueByYear = useQuery({
+    queryKey: ["revenueByYear"],
+    queryFn: () =>
+      postDataStore(
+        {
+          storeCode: currentStore?.storeCode,
+          startYear: 2022,
+          endYear: 2025,
+        },
+        "/store/revenue-between-year"
+      ),
+    enabled: currentStore != null,
+  });
+  const fetchRevenueByMonth = useQuery({
+    queryKey: ["revenueByMonth"],
+    queryFn: () =>
+      postDataStore(
+        {
+          storeCode: currentStore?.storeCode,
+          year: 2024,
+        },
+        "/store/revenueByMonthInYear"
+      ),
+    enabled: currentStore != null,
+  });
   const navigate = useNavigate();
   const breadBrumb = [
     {
       itemName: "Biểu đồ",
     },
     {
-      itemName: "Sản phẩm",
+      itemName: "Doanh thu",
       itemLink: "/dashboard_product",
     },
   ];
@@ -148,6 +215,7 @@ const DashboardProductPage = () => {
       },
     },
   ];
+  // console.log(value)
   return (
     <div className="flex flex-col gap-y-3">
       <div className="mb-1">
@@ -202,7 +270,9 @@ const DashboardProductPage = () => {
             style: "currency",
             currency: "VND",
             maximumFractionDigits: 9,
-          }).format(80000000)}
+          }).format(
+            fetchTotalRevenueYear.data ? fetchTotalRevenueYear.data.value : 0
+          )}
           rate="3,2"
           totalRate={700000}
           statusRate="low"
@@ -215,41 +285,55 @@ const DashboardProductPage = () => {
             style: "currency",
             currency: "VND",
             maximumFractionDigits: 9,
-          }).format(80000000)}
+          }).format(
+            fetchTotalRevenueMonth.data ? fetchTotalRevenueMonth.data.value : 0
+          )}
           rate="3,5"
           totalRate={700000}
           statusRate="high"
         ></InfomationFrame>
         <InfomationFrame
           backgroundIcon="bg-green-900"
-          title="Doanh thu theo tuần"
+          title="Doanh thu theo ngày"
           icon={<i className="ri-calendar-schedule-line"></i>}
           content={new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
             maximumFractionDigits: 9,
-          }).format(80000000)}
+          }).format(
+            fetchTotalRevenueDay.data ? fetchTotalRevenueDay.data.value : 0
+          )}
           rate="3,5"
-          totalRate={700000}
-          statusRate="high"
-        ></InfomationFrame>
-        <InfomationFrame
-          backgroundIcon="bg-orange-800"
-          title="Tổng doanh thu"
-          icon={<i className="ri-calendar-schedule-fill"></i>}
-          content={new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-            maximumFractionDigits: 9,
-          }).format(80000000)}
-          rate="3,5"
-          totalRate={700000}
-          statusRate="high"
+          totalRate={1000000}
+          statusRate="low"
         ></InfomationFrame>
       </div>
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-md p-6 bg-white border-gray-200 border shadow-md">
-          <BarChartCustom></BarChartCustom>
+          <BarChartCustom
+            list={
+              fetchRevenueByYear.data
+                ? [...fetchRevenueByYear.data].sort(
+                    (a: any, b: any) => b.year - a.year
+                  )
+                : []
+            }
+            itemKeyOne="value"
+            labelKey="year"
+          ></BarChartCustom>
+        </div>
+        <div className="rounded-md p-6 bg-white border-gray-200 border shadow-md">
+          <BarChartCustom
+            list={
+              fetchRevenueByMonth.data
+                ? [...fetchRevenueByMonth.data].sort(
+                    (a: any, b: any) => b.month - a.month
+                  )
+                : []
+            }
+            itemKeyOne="value"
+            labelKey="month"
+          ></BarChartCustom>
         </div>
         <div className="rounded-md p-6 bg-white border-gray-200 border shadow-md">
           <LineChartCustom />
@@ -258,7 +342,7 @@ const DashboardProductPage = () => {
           <PieChartCustom />
         </div>
       </div>
-      <div className="rounded-md p-5 bg-white border-gray-200 border shadow-md">
+      {/* <div className="rounded-md p-5 bg-white border-gray-200 border shadow-md">
         <TableCustom
           data={[]}
           columns={columns}
@@ -269,7 +353,7 @@ const DashboardProductPage = () => {
           ]}
           // isLoading={isFetching}
         ></TableCustom>
-      </div>
+      </div> */}
     </div>
   );
 };

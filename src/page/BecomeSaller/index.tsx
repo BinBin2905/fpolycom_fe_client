@@ -22,6 +22,7 @@ import { Form, Formik } from "formik";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import * as Yup from "yup";
 
 export default function BecomeSaller() {
@@ -61,6 +62,9 @@ export default function BecomeSaller() {
         storeName: data.name,
       });
       navigate("/infomation-store");
+      toast.success("Đăng kí cửa hàng thành công! Đợi xét duyệt", {
+        className: "p-4",
+      });
     },
   });
 

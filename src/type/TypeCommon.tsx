@@ -255,13 +255,19 @@ export type OrderProps = {
   finalTotal: number | 50000.0;
   deliveryType: string | "Ship hang sieu toc";
   paymentSuccess: boolean | false;
+  orderDate?: string;
+  // orderDate?: string;
 };
 
 export type OrderDetailList = {
   totalAmount: number | 100000.0;
   totalDiscount: number | 10000.0;
   finalTotal: number | 9000000.0;
+  productCode?: string;
   quantity: number | 10;
+  productDetailName?: string;
+  productName?: string;
+  image?: string;
   productDetailCode: number | 1;
   discountCode: number | 1;
 };
@@ -322,19 +328,20 @@ export type CommonProductAll = {
 };
 
 export type OrderDetailObject = {
-  totalAmount: number;
-  totalDiscount: number;
-  checked: boolean;
-  finalTotal: number;
-  quantity: number;
-  productDetailCode: number;
-  discountCode: number;
-  productDetailPrice: number;
-  percentDecrease: number;
-  image: string;
-  productName: string;
-  productDetailName: string;
-  price: number;
+  totalAmount?: number;
+  totalDiscount?: number;
+  checked?: boolean;
+  finalTotal?: number | bigint;
+  quantity?: number;
+  productDetailCode?: number;
+  discountCode?: number;
+  productDetailPrice?: number;
+  percentDecrease?: number;
+  image?: string;
+  productName?: string;
+  productCode?: string;
+  productDetailName?: string;
+  price?: number;
 };
 
 export type ReceiveDeliveryObject = {
@@ -349,6 +356,7 @@ export type ReceiveDeliveryObject = {
 };
 
 export type OrderObject = {
+  orderCode?: string;
   userLogin?: string;
   totalAmount?: number;
   totalAmountVoucher?: number;
@@ -377,6 +385,7 @@ export type OrderInfoObject = {
   totalAmount?: number;
   totalAmountVoucher?: number;
   totalAmountShip?: number;
+  isEvaluate?: boolean;
   totalAmountDiscount?: number;
   provinceStoreCode?: string;
   paymentSuccess?: boolean;
@@ -589,4 +598,61 @@ export type UserNotifyObject = {
   linkContent?: string;
   readed?: boolean;
   typeNotifycation?: string;
+};
+
+export type MessObject = {
+  readed: false;
+  message: string;
+  typeMessage: string;
+  timeSend: string;
+  idSender: number;
+  typeSender: string;
+  messageCode: number;
+  groupMessageCode: number;
+  storeName: string;
+  username: string;
+  storeImage: string;
+  storeCode: number;
+  userCode: number;
+  userImage: string;
+};
+
+export type GroupMessageObject = {
+  storeCode: number;
+  userCode: number;
+  username: string;
+  storeName: string;
+  storeImage: string;
+  userImage: string;
+  groupCode: number;
+};
+
+export type MessageRequestObject = {
+  message: string;
+  typeMessage: string;
+  idSender: number;
+  groupMessageCode: number;
+  typeSender: string;
+  storeCode?: string;
+  userCode?: string;
+};
+
+export type UserCommonObject = {
+  name: string | null;
+  phone: string | null;
+  addressDetail: string | null;
+  address: string | null;
+  image: string | null;
+  bannerImage: string | null;
+  email: string | null;
+  dateOfBirth: string | null;
+  gender: boolean | null;
+  provinceCode: string | null;
+  districtCode: string | null;
+  wardCode: string | null;
+  provinceName: string | null;
+  districtName: string | null;
+  wardName: string | null;
+  createdDate: string | null;
+  friendshipStatus: string | null;
 };

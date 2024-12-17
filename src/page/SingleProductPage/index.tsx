@@ -791,7 +791,7 @@ export default function SingleProductPage() {
                                           return (
                                             <img
                                               src={i?.image}
-                                              className="w-28 h-14 object-cover object-top border border-gray-100"
+                                              className="w-28 h-28 object-cover object-top border border-gray-100"
                                               alt=""
                                             />
                                           );

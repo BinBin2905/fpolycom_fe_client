@@ -43,13 +43,13 @@ export default function ProductCardStyleOne({
   //   100;
   return (
     <div
-      className="cursor-pointer"
+      className="cursor-pointer transition-transform hover:-translate-y-2 hover:shadow-lg"
       onClick={() => {
         document.getElementById("appLoginUser")?.scrollTo(0, 0);
         navigate("/single-product/" + (id && item[id] ? item[id] : ""));
       }}
     >
-      <div className="product-card-one w-full h-full bg-white shadow-md border-t relative group overflow-hidden">
+      <div className="product-card-one w-full h-full bg-white border rounded-md relative group overflow-hidden">
         <div className="product-card-img h-[300px] border-b border-slate-100 mb-2 relative flex items-center justify-center overflow-hidden my-auto">
           <img
             src={image ? item[image] : ""}

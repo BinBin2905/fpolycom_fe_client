@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 export type StoreObjectInitial = {
     storeName: string;
     storeImage: string;
-    storeCode: 1;
+    storeCode: number;
     token: string;
     status: string;
 };

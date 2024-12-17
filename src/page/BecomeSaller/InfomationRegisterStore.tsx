@@ -15,7 +15,11 @@ import Layout from "@/component_common/Partials/Headers/Layout";
 import PasswordFormikForm from "@/component_common/commonForm/PasswordFormikForm";
 import { InputOTP, InputOTPGroup } from "@/components/ui/input-otp";
 import { useUserStore } from "@/store";
-import { RegisterObject, RegisterStoreObject } from "@/type/TypeCommon";
+import {
+  DocumentObject,
+  RegisterObject,
+  RegisterStoreObject,
+} from "@/type/TypeCommon";
 import { Item } from "@radix-ui/react-dropdown-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { error } from "console";
@@ -23,10 +27,11 @@ import { Form, Formik } from "formik";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import * as Yup from "yup";
 
 export default function InfomationRegisterStore() {
-  const { currentUser } = useUserStore();
+  const { currentUser, setCurrentUser } = useUserStore();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
   const rememberMe = () => {
@@ -44,8 +49,8 @@ export default function InfomationRegisterStore() {
 
   const handleFetchStore = useMutation({
     mutationFn: (body: any) => postData(body, "/user/store/get-register"),
-    onSuccess: (data: RegisterStoreObject) => {
-      setInitialValue(data);
+    onSuccess: (data: RegisterStoreObject & { reason?: string }) => {
+      setInitialValue({ ...data });
     },
   });
 
@@ -58,9 +63,11 @@ export default function InfomationRegisterStore() {
   });
 
   const handlePost = useMutation({
-    mutationFn: (body: any) => postData(body, "/user/store/register"),
+    mutationFn: (body: any) => postData(body, "/user/store/update-register"),
     onSuccess: () => {
-      navigate("/");
+      toast.success("Cập nhật đăng kí cửa hàng thành công!", {
+        className: "p-4",
+      });
     },
   });
 
@@ -77,15 +84,36 @@ export default function InfomationRegisterStore() {
       body.image = url ? url : "";
     }
 
-    body.documentList.forEach(async (item) => {
-      if (item.newImage) {
-        const url = await uploadImage(item.newImage, "common");
-        item.documentUrl = url ? url : "";
-      }
-    });
+    await Promise.all(
+      body.documentList.map(async (item) => {
+        if (item.newImage) {
+          const url = await uploadImage(item.newImage, "common");
+          item.documentUrl = url ? url : "";
+        }
+      })
+    );
     console.log(body);
     await handlePost.mutateAsync(body);
+    setCurrentUser({ ...currentUser, storeStatus: "pending" });
   };
+
+  const handleRemoveStoreDocument = useMutation({
+    mutationFn: (storeDocumentCode: string) =>
+      postData(
+        { storeDocumentCode: storeDocumentCode },
+        "/user/store/remove-store-document"
+      ),
+    onSuccess: (data: DocumentObject) => {
+      console.log(data);
+      let clone: DocumentObject[] = initialValue.documentList;
+      clone = clone.filter((item) => item.documentCode != data.documentCode);
+      const initialClone = initialValue;
+      console.log(clone, "Clone");
+      initialClone.documentList = clone;
+      console.log(initialClone, "Clone");
+      setInitialValue(initialClone);
+    },
+  });
 
   const [initialValue, setInitialValue] = useState<
     RegisterStoreObject & { confirmPassword?: string; status?: string }
@@ -162,6 +190,7 @@ export default function InfomationRegisterStore() {
     }
     return result;
   };
+  console.log(initialValue);
   useEffect(() => {
     if (currentUser != null) {
       handleFetchStore.mutateAsync({
@@ -202,7 +231,7 @@ export default function InfomationRegisterStore() {
                         <h1 className="text-[22px] font-semibold text-qblack mb-1">
                           Thông tin cửa hàng
                         </h1>
-                        <div className="flex items-center gap-x-2 mb-5">
+                        <div className="flex items-center gap-x-2 mb-1">
                           <div
                             className={`w-2 h-2 rounded-full ${
                               initialValue.status == "pending"
@@ -219,9 +248,20 @@ export default function InfomationRegisterStore() {
                           >
                             {initialValue.status == "pending"
                               ? "Đang xét duyệt"
-                              : "Xét duyệt thất bại"}
+                              : "Từ chối xét duyệt"}
                           </span>
+                          <span></span>
                         </div>
+                        {initialValue.status == "rejected" && (
+                          <p className="text-yellow-600 text-sm">
+                            Lý do:{" "}
+                            <span className="font-medium">
+                              {" "}
+                              {handleFetchStore.data &&
+                                handleFetchStore.data.reason}
+                            </span>
+                          </p>
+                        )}
                         <p className="text-[15px] text-qgraytwo">
                           Điền đầy đủ thông tin. Chúng tôi sẽ duyệt bạn trở
                           thành cửa hàng!
@@ -347,7 +387,7 @@ export default function InfomationRegisterStore() {
                             </span>{" "}
                             <span className="text-red-500">*</span>
                           </label>
-                          <div className="flex gap-x-2">
+                          <div className="grid grid-cols-5 gap-3">
                             <input
                               disabled={initialValue.status == "pending"}
                               type="file"
@@ -357,22 +397,25 @@ export default function InfomationRegisterStore() {
                                 setFieldValue(
                                   "documentList",
                                   e.target.files
-                                    ? Array.from(e.target.files).map(
-                                        (item) => ({
-                                          documentUrl: item.name,
-                                          documentType: item.type,
-                                          documentCode: null,
-                                          newImage: item,
-                                        })
-                                      )
+                                    ? [
+                                        ...values.documentList,
+                                        ...Array.from(e.target.files).map(
+                                          (item) => ({
+                                            documentUrl: item.name,
+                                            documentType: item.type,
+                                            documentCode: null,
+                                            newImage: item,
+                                          })
+                                        ),
+                                      ]
                                     : []
                                 )
                               }
                               className="hidden"
                             />
-                            {values.documentList.map((item) => {
+                            {values.documentList.map((item, index) => {
                               return (
-                                <div className="h-28 w-28">
+                                <div className="h-28 w-full rounded-md border relative">
                                   <img
                                     src={
                                       item.newImage
@@ -382,15 +425,37 @@ export default function InfomationRegisterStore() {
                                     alt=""
                                     className="h-full w-full object-center object-cover"
                                   />
+                                  {initialValue.status == "rejected" && (
+                                    <div
+                                      onClick={() => {
+                                        if (!item.newImage) {
+                                          handleRemoveStoreDocument.mutateAsync(
+                                            item.documentCode.toString()
+                                          );
+                                        } else {
+                                          setFieldValue("documentList", [
+                                            ...values.documentList.filter(
+                                              (_, i) => i != index
+                                            ),
+                                          ]);
+                                        }
+                                      }}
+                                      className="absolute -top-3 cursor-pointer -right-2 text-red-600"
+                                    >
+                                      <i className="ri-close-circle-line text-xl bg-white rounded-full"></i>
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
-                            <label
-                              htmlFor="multiDocument"
-                              className="border border-gray-200 rounded-sm flex items-center justify-center w-28 h-28"
-                            >
-                              <i className="ri-add-line text-xl text-gray-500"></i>
-                            </label>
+                            {initialValue.status == "rejected" && (
+                              <label
+                                htmlFor="multiDocument"
+                                className="border cursor-pointer border-gray-200 rounded-sm flex items-center justify-center w-full h-28"
+                              >
+                                <i className="ri-add-line text-xl text-gray-500"></i>
+                              </label>
+                            )}
                           </div>
                           {errors.documentList && touched.documentList && (
                             <span className="text-xs text-red-500">
@@ -398,48 +463,16 @@ export default function InfomationRegisterStore() {
                             </span>
                           )}
                         </div>
-                        <div className="remember-checkbox mt-5 flex items-center space-x-2.5">
-                          <button
-                            onClick={() => {
-                              if (isValid) {
-                                rememberMe();
-                              }
-                            }}
-                            type="button"
-                            className="w-5 h-5 text-qblack flex justify-center items-center border border-light-gray"
-                          >
-                            {checked && (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </button>
-                          <span
-                            onClick={() => {
-                              if (isValid) {
-                                rememberMe();
-                              }
-                            }}
-                            className="text-base text-black"
-                          >
-                            Tôi đồng ý với các điều khoản
-                          </span>
-                        </div>
-                        <ButtonForm
-                          type="submit"
-                          disabled={!checked}
-                          className="!bg-primary mt-2 disabled:!bg-gray-800"
-                          label="Cập nhật thông tin đăng kí"
-                        ></ButtonForm>
+                        {initialValue.status == "rejected" && (
+                          <>
+                            <ButtonForm
+                              type="submit"
+                              loading={handlePost.isPending}
+                              className="!bg-primary mt-2 disabled:!bg-gray-800"
+                              label="Cập nhật thông tin đăng kí"
+                            ></ButtonForm>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="flex-1 mb-10 xl:mb-0">

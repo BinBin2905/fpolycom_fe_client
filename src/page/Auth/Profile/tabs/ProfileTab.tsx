@@ -19,7 +19,8 @@ import { toast } from "sonner";
 export default function ProfileTab() {
   const queryClient = useQueryClient();
 
-  const { currentUser, currentUserInfo, setCurrentUserInfo } = useUserStore();
+  const { currentUser, setCurrentUser, currentUserInfo, setCurrentUserInfo } =
+    useUserStore();
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
   const [username, setUsername] = useState(currentUser!.userLogin);
   const [fullName, setFullName] = useState("");
@@ -101,6 +102,7 @@ export default function ProfileTab() {
         return ` ${error.message}`;
       },
     });
+    setCurrentUser({ ...currentUser, userImage: profileImg });
   };
 
   // const handleUpdateProfile = useMutation({

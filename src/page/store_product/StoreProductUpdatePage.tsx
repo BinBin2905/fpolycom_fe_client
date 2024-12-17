@@ -401,15 +401,16 @@ const StoreProductUpdatePage = () => {
 
                     <div className="grid grid-cols-3 gap-3">
                       {/* {values.pro} */}
-                      {values.productAttrList.map((i: any, index: number) => {
-                        return (
-                          <InputFormikForm
-                            label={i.typeGoodAttrName}
-                            name={`productAttrList[${index}].attrValue`}
-                            placeholder={`Nhập ${i.typeGoodAttrName.toLowerCase()}...`}
-                          ></InputFormikForm>
-                        );
-                      })}
+                      {values.productAttrList.length > 0 &&
+                        values.productAttrList.map((i: any, indexi: number) => {
+                          return (
+                            <InputFormikForm
+                              label={i.typeGoodAttrName}
+                              name={`productAttrList[${indexi}].attrValue`}
+                              placeholder={`Nhập ${i.typeGoodAttrName.toLowerCase()}...`}
+                            ></InputFormikForm>
+                          );
+                        })}
                     </div>
                   </div>
                   <div className="w-full">

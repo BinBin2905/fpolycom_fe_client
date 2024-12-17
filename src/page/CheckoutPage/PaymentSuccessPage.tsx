@@ -6,29 +6,33 @@ import { OrderObject } from "@/type/TypeCommon";
 import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import FriendGiftDialog from "./component/FriendGiftDialog";
 
 const PaymentSuccessPage = () => {
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selected, setSelected] = useState<string | null>(null);
   const { orderCode } = useParams();
   const navigate = useNavigate();
-  const [dataFilter, setDataFilter] = useState<OrderObject[]>([]);
+  const [dataFilter, setDataFilter] = useState<
+    (OrderObject & { gift?: boolean })[]
+  >([]);
   const hanldeFetchConfirm = useMutation({
     mutationFn: (body: any) =>
       postDataCommon({}, "/order-confirm/" + orderCode),
+    onSuccess: (data: OrderObject[]) => {
+      setDataFilter([...data]);
+    },
+    onError: () => {
+      // navigate("/");
+    },
   });
-  const {checkFalseAll}=useCartStore();
+  const { checkFalseAll } = useCartStore();
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await hanldeFetchConfirm.mutateAsync(orderCode);
-      if (data) {
-        setDataFilter(data);
-        checkFalseAll();
-        
-      }
-    };
     if (orderCode) {
-      fetchData();
+      hanldeFetchConfirm.mutateAsync(orderCode);
     }
   }, [orderCode]);
+  console.log(dataFilter);
   return hanldeFetchConfirm.isPending ? (
     <div className="flex items-center justify-center h-[500px]">
       <SpinnerLoading className="h-10 w-10 fill-qyellow"></SpinnerLoading> Đang
@@ -36,6 +40,16 @@ const PaymentSuccessPage = () => {
     </div>
   ) : (
     <div className="container-x mx-auto">
+      <FriendGiftDialog
+        onGift={(code: string) => {
+          const dataFind = dataFilter.find((item) => item.orderCode == code);
+          if (dataFind) dataFind.gift = true;
+          setOpenDialog(false);
+        }}
+        item={selected}
+        onClose={() => setOpenDialog(false)}
+        open={openDialog}
+      ></FriendGiftDialog>
       <div className="w-full">
         <div className="mb-5">
           <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-1">
@@ -51,7 +65,7 @@ const PaymentSuccessPage = () => {
                 <div className="sub-total mb-6">
                   <div className=" flex justify-between mb-5">
                     <p className="text-[13px] font-medium text-qblack uppercase">
-                      Hóa đơn: {item.storeName}
+                      Hóa đơn: #{item.orderCode}
                     </p>
                     <p className="text-[13px] font-medium text-qblack uppercase">
                       Tạm tính
@@ -147,7 +161,21 @@ const PaymentSuccessPage = () => {
                     </p>
                   </div>
                 </div>
-                <div className="text-sm"></div>
+                <div>
+                  {!item.gift && (
+                    <ButtonForm
+                      type="button"
+                      label="Tặng quà"
+                      onClick={() => {
+                        if (item.orderCode) {
+                          setSelected(item.orderCode);
+                          setOpenDialog(true);
+                        }
+                      }}
+                      className="bg-yellow-500"
+                    ></ButtonForm>
+                  )}
+                </div>
               </div>
             );
           })}
