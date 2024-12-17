@@ -94,14 +94,22 @@ export default function Signup() {
     if (values.addressDetail) {
       result += values.addressDetail;
     }
-    if (values.wardCode) {
+    if (
+      values.wardCode &&
+      fetchWardCode.data &&
+      fetchWardCode.data.length > 0
+    ) {
       result =
         result +
         "," +
         fetchWardCode.data.find((item: any) => item.wardCode == values.wardCode)
           .name;
     }
-    if (values.districtCode) {
+    if (
+      values.districtCode &&
+      fetchDistrict.data &&
+      fetchDistrict.data.length > 0
+    ) {
       result =
         result +
         "," +
@@ -109,7 +117,7 @@ export default function Signup() {
           (item: any) => item.districtCode == values.districtCode
         ).name;
     }
-    if (values.provinceCode) {
+    if (values.provinceCode && dataProvinces && dataProvinces.length > 0) {
       result =
         result +
         "," +
