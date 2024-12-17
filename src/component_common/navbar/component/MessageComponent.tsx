@@ -66,7 +66,7 @@ const MessageComponent = () => {
   useEffect(() => {
     // Thiết lập SockJS connection
     if (currentStore) {
-      const socketUrl = "http://localhost:8080/ws"; // URL tới server WebSocket
+      const socketUrl = import.meta.env.VITE_API_URL + "/ws"; // URL tới server WebSocket
       const socket = new SockJS(socketUrl);
       const stompClient = Stomp.over(socket);
       // Tạo một client STOMP
