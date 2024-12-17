@@ -8,21 +8,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useUserStore } from "@/store";
 import { useMutation } from "@tanstack/react-query";
 import { Form } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const FriendGiftDialog = ({
   open = false,
   item = null,
   onClose,
+  onGift,
 }: {
   open: boolean;
   item: string | null;
   onClose: () => void;
+  onGift: (item: string) => void;
 }) => {
   const [selected, setSelected] = useState<any>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const [currentList, setCurrentList] = useState<any[]>([]);
   const { currentUser } = useUserStore();
   const handlePost = useMutation({
     mutationFn: () => postData({ hello: "hello" }, "fsdf"),
@@ -31,10 +39,72 @@ const FriendGiftDialog = ({
   const fetchFriendAll = useMutation({
     mutationFn: () =>
       postData({ userLogin: currentUser?.userLogin }, "/user/friend/all"),
+    onSuccess: (data: any[]) => {
+      setCurrentList(data);
+    },
   });
+
+  const handlePostGift = useMutation({
+    mutationFn: ({
+      userLogin,
+      userCode,
+      orderCode,
+      content,
+    }: {
+      userLogin: string;
+      userCode: string;
+      orderCode: string;
+      content: string;
+    }) =>
+      postData(
+        {
+          userLogin: userLogin,
+          userCode: userCode,
+          orderCode: orderCode,
+          content: content,
+        },
+        "/user/gift/new"
+      ),
+    onSuccess: () => {
+      toast.warning(
+        "Tặng thành công đơn hàng #" + item + " cho " + selected.username + "!",
+        {
+          className: "p-4",
+        }
+      );
+      if (item) {
+        onGift(item);
+      }
+    },
+  });
+
+  const onClickPostGift = async () => {
+    if (contentRef.current?.value == "") {
+      toast.warning("Vui lòng nhập nội dung tặng quà!", {
+        className: "p-4",
+      });
+      return;
+    }
+    if (selected == null) {
+      toast.warning("Vui lòng chọn bạn để tặng!", {
+        className: "p-4",
+      });
+      return;
+    }
+    if (item && contentRef.current?.value && currentUser?.userLogin) {
+      await handlePostGift.mutateAsync({
+        orderCode: item,
+        content: contentRef.current?.value,
+        userCode: selected.userCode,
+        userLogin: currentUser?.userLogin,
+      });
+    }
+  };
+
   useEffect(() => {
     if (open) fetchFriendAll.mutateAsync();
   }, [open]);
+
   return (
     <Dialog
       open={open}
@@ -53,38 +123,80 @@ const FriendGiftDialog = ({
 
           {!handlePost.isSuccess ? (
             <div className="flex flex-col gap-y-4 px-1">
-              <DialogDescription className="flex flex-col gap-y-3 h-40 overflow-y-scroll custom-scrollbar-wider">
-                <div className="grid grid-cols-2 gap-3">
-                  {fetchFriendAll.data &&
-                    fetchFriendAll.data.map((item: any) => {
-                      return (
-                        <div
-                          onClick={() => {
-                            if (selected && selected.userCode == item.userCode) {
-                              setSelected(null);
-                            } else {
-                              setSelected(item);
-                            }
-                          }}
-                          className={`${
-                            selected && item.userCode == selected.userCode
-                              ? "border-yellow-500"
-                              : "border-gray-400 "
-                          } cursor-pointer flex gap-x-2 items-center rounded-sm border p-2`}
-                        >
-                          <img
-                            src={
-                              item.image
-                                ? item.image
-                                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ00dn9Pydr5-Mv1DIo4Vx0x9gOXSO-kIGYgCTZf4uIWBGCqNju6--rMgEsGm0yQx1Y8cQ&usqp=CAU"
-                            }
-                            className="size-10 object-cover object-top rounded-full"
-                            alt=""
-                          />
-                          <span>{item.username}</span>
-                        </div>
-                      );
-                    })}
+              <DialogDescription className="flex flex-col">
+                <div className="mb-3">
+                  <h5 className="text-sm font-medium mb-1">
+                    Ghi chú tặng quà:
+                  </h5>
+                  <Textarea
+                    placeholder="Nhập nội dung gửi..."
+                    className="mb-2"
+                    ref={contentRef}
+                  />
+                </div>
+                <div>
+                  <h5 className="text-sm font-medium mb-1">Chọn bạn bè:</h5>
+                  <Input
+                    type="text"
+                    placeholder="Tìm kiếm bạn bè..."
+                    className="mb-2"
+                    ref={searchRef}
+                    onChange={() => {
+                      if (searchRef.current?.value == "") {
+                        if (fetchFriendAll.data) {
+                          setCurrentList(fetchFriendAll.data);
+                        }
+                      } else {
+                        if (fetchFriendAll.data) {
+                          setCurrentList(
+                            fetchFriendAll.data.filter(
+                              (item: any) =>
+                                item.username
+                                  .toLowerCase()
+                                  .indexOf(
+                                    searchRef.current?.value.toLowerCase()
+                                  ) >= 0
+                            )
+                          );
+                        }
+                      }
+                    }}
+                  />
+                  <div className="grid grid-cols-2 gap-3 h-52 overflow-y-scroll gap-y-3 custom-scrollbar-wider">
+                    {currentList &&
+                      currentList.map((item: any) => {
+                        return (
+                          <div
+                            onClick={() => {
+                              if (
+                                selected &&
+                                selected.userCode == item.userCode
+                              ) {
+                                setSelected(null);
+                              } else {
+                                setSelected(item);
+                              }
+                            }}
+                            className={`h-fit ${
+                              selected && item.userCode == selected.userCode
+                                ? "border-yellow-500"
+                                : "border-gray-400 "
+                            } cursor-pointer flex gap-x-2  items-center rounded-sm border p-2`}
+                          >
+                            <img
+                              src={
+                                item.image
+                                  ? item.image
+                                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ00dn9Pydr5-Mv1DIo4Vx0x9gOXSO-kIGYgCTZf4uIWBGCqNju6--rMgEsGm0yQx1Y8cQ&usqp=CAU"
+                              }
+                              className="size-10 object-cover object-top rounded-full"
+                              alt=""
+                            />
+                            <span>{item.username}</span>
+                          </div>
+                        );
+                      })}
+                  </div>
                 </div>
               </DialogDescription>
               <DialogFooter>
@@ -93,8 +205,9 @@ const FriendGiftDialog = ({
                     type="submit"
                     className="!w-28 !bg-primary"
                     label="Tặng quà"
-                    //   loading={handlePost.isPending}
-                    // disabled={false}
+                    onClick={() => {
+                      onClickPostGift();
+                    }}
                   ></ButtonForm>
                   <ButtonForm
                     type="button"
@@ -125,10 +238,6 @@ const FriendGiftDialog = ({
                   type="button"
                   className="!w-28 !bg-primary"
                   label="Thêm mới"
-                  onClick={() => {
-                    //   handlePost.reset();
-                    // resetForm();
-                  }}
                 ></ButtonForm>
                 <ButtonForm
                   type="button"

@@ -17,6 +17,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import NotifyUser from "@/component_common/notify/NotifyUser";
 import MessageUser from "./MessageUser";
+import FriendNotify from "./FriendNotify";
 
 export default function Middlebar({ className }: { className?: string }) {
   const { currentUser, currentUserInfo, logoutUser } = useUserStore();
@@ -45,6 +46,7 @@ export default function Middlebar({ className }: { className?: string }) {
                 {/* <div className="fixed left-0 top-0 w-full h-full z-40"></div> */}
                 {/* hidden group-hover:block" */}
                 <Cart />
+                <FriendNotify></FriendNotify>
                 <NotifyUser></NotifyUser>
                 <MessageUser></MessageUser>
               </div>
@@ -112,7 +114,10 @@ export default function Middlebar({ className }: { className?: string }) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 ) : (
-                  <div className="cursor-pointer py-4" onClick={() => navigate("/login")}>
+                  <div
+                    className="cursor-pointer py-4"
+                    onClick={() => navigate("/login")}
+                  >
                     <ThinPeople />
                   </div>
                 )}

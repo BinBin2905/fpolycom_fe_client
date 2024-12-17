@@ -26,7 +26,14 @@ const InfomationUser = () => {
         "/common/user"
       ),
     onSuccess: (data: UserCommonObject) => {
-      setUserInfomation(data);
+      if (data) {
+        setUserInfomation(data);
+      } else {
+        navigate("/");
+      }
+    },
+    onError: () => {
+      navigate("/");
     },
   });
 

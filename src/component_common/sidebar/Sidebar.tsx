@@ -23,26 +23,6 @@ const menu: any[] = [
           // },
         ],
       },
-      {
-        itemName: "Người dùng",
-        itemIcon: <i className="ri-shape-2-line"></i>,
-        itemList: [
-          {
-            itemName: "Danh sách sản phẩm",
-            itemIcon: <i className="ri-instance-line"></i>,
-          },
-          {
-            itemName: "Tạo mới",
-            itemIcon: <i className="ri-file-add-line"></i>,
-            link: "/store/create_product",
-          },
-        ],
-      },
-      {
-        itemName: "Loại hàng",
-        link: "/account",
-        itemIcon: <i className="ri-command-line"></i>,
-      },
     ],
   },
   {
@@ -72,11 +52,6 @@ const menu: any[] = [
         itemName: "Ví cửa hàng",
         itemIcon: <i className="ri-ticket-2-line"></i>,
         link: "/store/wallet",
-      },
-      {
-        itemName: "Tin nhắn",
-        itemIcon: <i className="ri-advertisement-line"></i>,
-        link: "/messages",
       },
     ],
   },

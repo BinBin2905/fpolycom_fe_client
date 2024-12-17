@@ -32,8 +32,7 @@ const PaymentSuccessPage = () => {
       hanldeFetchConfirm.mutateAsync(orderCode);
     }
   }, [orderCode]);
-
-  const handleGift = () => {};
+  console.log(dataFilter);
   return hanldeFetchConfirm.isPending ? (
     <div className="flex items-center justify-center h-[500px]">
       <SpinnerLoading className="h-10 w-10 fill-qyellow"></SpinnerLoading> Đang
@@ -42,6 +41,11 @@ const PaymentSuccessPage = () => {
   ) : (
     <div className="container-x mx-auto">
       <FriendGiftDialog
+        onGift={(code: string) => {
+          const dataFind = dataFilter.find((item) => item.orderCode == code);
+          if (dataFind) dataFind.gift = true;
+          setOpenDialog(false);
+        }}
         item={selected}
         onClose={() => setOpenDialog(false)}
         open={openDialog}
@@ -61,7 +65,7 @@ const PaymentSuccessPage = () => {
                 <div className="sub-total mb-6">
                   <div className=" flex justify-between mb-5">
                     <p className="text-[13px] font-medium text-qblack uppercase">
-                      Hóa đơn: {item.storeName}
+                      Hóa đơn: #{item.orderCode}
                     </p>
                     <p className="text-[13px] font-medium text-qblack uppercase">
                       Tạm tính
@@ -158,17 +162,19 @@ const PaymentSuccessPage = () => {
                   </div>
                 </div>
                 <div>
-                  <ButtonForm
-                    type="button"
-                    label="Tặng quà"
-                    onClick={() => {
-                      if (item.orderCode) {
-                        setSelected(item.orderCode);
-                        setOpenDialog(true);
-                      }
-                    }}
-                    className="bg-yellow-500"
-                  ></ButtonForm>
+                  {!item.gift && (
+                    <ButtonForm
+                      type="button"
+                      label="Tặng quà"
+                      onClick={() => {
+                        if (item.orderCode) {
+                          setSelected(item.orderCode);
+                          setOpenDialog(true);
+                        }
+                      }}
+                      className="bg-yellow-500"
+                    ></ButtonForm>
+                  )}
                 </div>
               </div>
             );

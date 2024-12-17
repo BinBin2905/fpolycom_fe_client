@@ -42,19 +42,19 @@ const ComponentFrameMessageUser = () => {
     }
     setOpen(false);
   };
-  useEffect(() => {
-    if (fetchGroup.isSuccess && fetchGroup.data) {
-      setMessages([
-        ...fetchGroup.data.map((item: GroupMessageObject) => ({
-          id: item.groupCode,
-          name: item.storeName,
-          image: item.storeImage,
-          idReceive: item.storeCode,
-          minimizeFrame: false,
-        })),
-      ]);
-    }
-  }, [fetchGroup.isSuccess]);
+  // useEffect(() => {
+  //   if (fetchGroup.isSuccess && fetchGroup.data) {
+  //     setMessages([
+  //       ...fetchGroup.data.map((item: GroupMessageObject) => ({
+  //         id: item.groupCode,
+  //         name: item.storeName,
+  //         image: item.storeImage,
+  //         idReceive: item.storeCode,
+  //         minimizeFrame: false,
+  //       })),
+  //     ]);
+  //   }
+  // }, [fetchGroup.isSuccess]);
   return (
     <div className="fixed bottom-0 right-0 z-50 flex items-end">
       <div className="flex gap-x-2 items-end">
@@ -76,25 +76,28 @@ const ComponentFrameMessageUser = () => {
       </div>
       <div className="px-8 pb-10 flex flex-col gap-y-3 h-fit">
         {messages &&
-          messages
-            .filter((item) => !item.minimizeFrame)
-            .map((item: MessageObject) => {
-              return (
-                <div
-                  className="relative cursor-pointer group:"
-                  onClick={() => openFrameMessage(item.id)}
-                >
-                  {/* <div className="absolute -top-1 right-0 z-20 border border-white">
+          messages.map((item: MessageObject) => {
+            return (
+              <div
+                className={`relative cursor-pointer ${
+                  item.minimizeFrame ? "opacity-0 hidden" : "opacity-100 block"
+                }`}
+                onClick={() => {
+                  openFrameMessage(item.id);
+                  // addFrameMessage({id:item.id,image:item.image,minimizeFrame:false,name,})
+                }}
+              >
+                {/* <div className="absolute -top-1 right-0 z-20 border border-white">
                 <i className="ri-close-line text-gray-600"></i>
               </div> */}
-                  <div className="absolute -top-1 right-0 z-10 h-4 w-4 rounded-full bg-green-500 border border-white"></div>
-                  <Avatar className="size-12 border border-slate-400 bg-white">
-                    <AvatarImage src={item.image} alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </div>
-              );
-            })}
+                <div className="absolute -top-1 right-0 z-10 h-4 w-4 rounded-full bg-green-500 border border-white"></div>
+                <Avatar className="size-12 border border-slate-400 bg-white">
+                  <AvatarImage src={item.image} alt="@shadcn" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </div>
+            );
+          })}
 
         <Popover open={open} onOpenChange={() => setOpen(!open)}>
           <PopoverTrigger asChild onClick={() => setOpen(true)}>

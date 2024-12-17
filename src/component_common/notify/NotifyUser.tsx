@@ -167,6 +167,8 @@ const NotifyUser = () => {
                               ? "/order-detail/" + item.linkContent
                               : item.typeNotifycation == "store"
                               ? "/infomation-store"
+                              : item.typeNotifycation == "friend"
+                              ? "/user/"+ item.linkContent
                               : "/"
                           );
                         }

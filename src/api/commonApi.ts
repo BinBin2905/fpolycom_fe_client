@@ -356,7 +356,7 @@ export const fetchDataCommon = async (enpoint: string) => {
 };
 
 //order
-export async function getUserOrders(body: { userLogin: string }) {
+export async function getUserOrders(body: { userLogin: string | null }) {
   console.log(body);
   const response = await axios.post(
     import.meta.env.VITE_API_URL + "/user/orders/all",

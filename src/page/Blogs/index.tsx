@@ -6,7 +6,7 @@ import BlogCard from "@/component_common/Helpers/Cards/BlogCard";
 
 export default function Blogs() {
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
       <div className="blogs-wrapper w-full-width">
         <div className="title-bar">
           <PageTitle
@@ -42,6 +42,6 @@ export default function Blogs() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

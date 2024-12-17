@@ -81,12 +81,19 @@ const ComponentFrameMessage = () => {
             .map((item: MessageObject) => {
               return (
                 <div
-                  className="relative cursor-pointer group:"
-                  onClick={() => openFrameMessage(item.id)}
+                  className={`relative cursor-pointer ${
+                    item.minimizeFrame
+                      ? "opacity-0 hidden"
+                      : "opacity-100 block"
+                  }`}
+                  onClick={() => {
+                    openFrameMessage(item.id);
+                    // addFrameMessage({id:item.id,image:item.image,minimizeFrame:false,name,})
+                  }}
                 >
                   {/* <div className="absolute -top-1 right-0 z-20 border border-white">
-                <i className="ri-close-line text-gray-600"></i>
-              </div> */}
+                  <i className="ri-close-line text-gray-600"></i>
+                </div> */}
                   <div className="absolute -top-1 right-0 z-10 h-4 w-4 rounded-full bg-green-500 border border-white"></div>
                   <Avatar className="size-12 border border-slate-400 bg-white">
                     <AvatarImage src={item.image} alt="@shadcn" />

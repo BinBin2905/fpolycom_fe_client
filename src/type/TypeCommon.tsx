@@ -255,13 +255,19 @@ export type OrderProps = {
   finalTotal: number | 50000.0;
   deliveryType: string | "Ship hang sieu toc";
   paymentSuccess: boolean | false;
+  orderDate?: string;
+  // orderDate?: string;
 };
 
 export type OrderDetailList = {
   totalAmount: number | 100000.0;
   totalDiscount: number | 10000.0;
   finalTotal: number | 9000000.0;
+  productCode?: string;
   quantity: number | 10;
+  productDetailName?: string;
+  productName?: string;
+  image?: string;
   productDetailCode: number | 1;
   discountCode: number | 1;
 };
@@ -325,7 +331,7 @@ export type OrderDetailObject = {
   totalAmount?: number;
   totalDiscount?: number;
   checked?: boolean;
-  finalTotal?: number;
+  finalTotal?: number | bigint;
   quantity?: number;
   productDetailCode?: number;
   discountCode?: number;
@@ -333,6 +339,7 @@ export type OrderDetailObject = {
   percentDecrease?: number;
   image?: string;
   productName?: string;
+  productCode?: string;
   productDetailName?: string;
   price?: number;
 };
@@ -378,6 +385,7 @@ export type OrderInfoObject = {
   totalAmount?: number;
   totalAmountVoucher?: number;
   totalAmountShip?: number;
+  isEvaluate?: boolean;
   totalAmountDiscount?: number;
   provinceStoreCode?: string;
   paymentSuccess?: boolean;
