@@ -58,7 +58,10 @@ export default function CheckoutPage() {
 
   const handlePostOrder = useMutation({
     mutationFn: (body: any) => postData(body, "/user/orders/new"),
-    onSuccess: (data, variables) => {},
+    onSuccess: (data, variables) => {
+      navigate("/payment-success/" + variables[0].orderBillCode);
+      // console.log(body);
+    },
   });
 
   const {
@@ -350,9 +353,6 @@ export default function CheckoutPage() {
     // }
 
     // setSuccessPayment(true);
-
-    navigate("/payment-success/" + body[0].orderBillCode);
-    console.log(body);
   };
 
   useEffect(() => {

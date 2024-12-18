@@ -42,14 +42,16 @@ export default function Middlebar({ className }: { className?: string }) {
               <SearchBox className="search-com" />
             </div>
             <div className="flex space-x-6 items-center">
-              <div className="cart-wrapper relative py-4 items-center flex gap-x-4">
-                {/* <div className="fixed left-0 top-0 w-full h-full z-40"></div> */}
-                {/* hidden group-hover:block" */}
-                <Cart />
-                <FriendNotify></FriendNotify>
-                <NotifyUser></NotifyUser>
-                <MessageUser></MessageUser>
-              </div>
+              {currentUser && (
+                <div className="cart-wrapper relative py-4 items-center flex gap-x-4">
+                  {/* <div className="fixed left-0 top-0 w-full h-full z-40"></div> */}
+                  {/* hidden group-hover:block" */}
+                  <Cart />
+                  <FriendNotify></FriendNotify>
+                  <NotifyUser></NotifyUser>
+                  <MessageUser></MessageUser>
+                </div>
+              )}
               <div>
                 {currentUser ? (
                   <DropdownMenu>
@@ -115,10 +117,11 @@ export default function Middlebar({ className }: { className?: string }) {
                   </DropdownMenu>
                 ) : (
                   <div
-                    className="cursor-pointer py-4"
+                    className="cursor-pointer gap-x-2 py-4 flex items-center"
                     onClick={() => navigate("/login")}
                   >
                     <ThinPeople />
+                    <span className="text-sm mt-1">Đăng nhập</span>
                   </div>
                 )}
 
