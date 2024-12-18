@@ -59,7 +59,7 @@ export default function CheckoutPage() {
   const handlePostOrder = useMutation({
     mutationFn: (body: any) => postData(body, "/user/orders/new"),
     onSuccess: (data, variables) => {
-      navigate("/payment-success/" + variables[0].orderBillCode);
+      // navigate("/payment-success/" + variables[0].orderBillCode);
       // console.log(body);
     },
   });
@@ -306,53 +306,53 @@ export default function CheckoutPage() {
     console.log(body);
     const data = await handlePostOrder.mutateAsync(body);
 
-    // if (infoVietQR == null && data && paymentType?.paymentTypeCode == 1) {
-    //   const body = {
-    //     orderCode: billOrderCode,
-    //     amount: 10000,
-    //     // dataFilter.reduce((accumulator, currentValue) => {
-    //     //   return (
-    //     //     accumulator +
-    //     //     (currentValue.finalTotal ? currentValue.finalTotal : 0)
-    //     //   );
-    //     // }, 0),
-    //     description: "",
-    //     buyerAddress: "số nhà, đường, phường, tỉnh hoặc thành phố",
-    //     items: [],
-    //     cancelUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
-    //     returnUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
-    //     expiredAt: Math.floor(
-    //       (new Date(Date.now()).getTime() + 15 * 60000) / 1000
-    //     ),
-    //     template: "info",
-    //   };
-    //   const query = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`;
-    //   const hmac = Base64.stringify(
-    //     CryptoJs.HmacSHA256(
-    //       query,
-    //       "dff2b663051b6bc4d07668b7c4e7a4f7f7365540fb8db84055b26156739a56e6"
-    //     )
-    //   );
-    //   await axios
-    //     .post(
-    //       "https://api-merchant.payos.vn/v2/payment-requests",
-    //       { ...body, signature: hmac },
-    //       {
-    //         headers: {
-    //           "x-client-id": "b8a76f89-11ab-4065-b0d8-bb3df22a7f58",
-    //           "x-api-key": "57420532-9fb3-4c6f-89f9-d009a4859076",
-    //         },
-    //       }
-    //     )
-    //     .then((resp) => {
-    //       setInfoVietQR({ ...resp.data.data });
+    if (infoVietQR == null && data && paymentType?.paymentTypeCode == 1) {
+      const body = {
+        orderCode: billOrderCode,
+        amount: 10000,
+        // dataFilter.reduce((accumulator, currentValue) => {
+        //   return (
+        //     accumulator +
+        //     (currentValue.finalTotal ? currentValue.finalTotal : 0)
+        //   );
+        // }, 0),
+        description: "",
+        buyerAddress: "số nhà, đường, phường, tỉnh hoặc thành phố",
+        items: [],
+        cancelUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
+        returnUrl: `http://localhost:5173/payment-success/${billOrderCode}`,
+        expiredAt: Math.floor(
+          (new Date(Date.now()).getTime() + 15 * 60000) / 1000
+        ),
+        template: "info",
+      };
+      const query = `amount=${body.amount}&cancelUrl=${body.cancelUrl}&description=${body.description}&orderCode=${body.orderCode}&returnUrl=${body.returnUrl}`;
+      const hmac = Base64.stringify(
+        CryptoJs.HmacSHA256(
+          query,
+          "dff2b663051b6bc4d07668b7c4e7a4f7f7365540fb8db84055b26156739a56e6"
+        )
+      );
+      await axios
+        .post(
+          "https://api-merchant.payos.vn/v2/payment-requests",
+          { ...body, signature: hmac },
+          {
+            headers: {
+              "x-client-id": "b8a76f89-11ab-4065-b0d8-bb3df22a7f58",
+              "x-api-key": "57420532-9fb3-4c6f-89f9-d009a4859076",
+            },
+          }
+        )
+        .then((resp) => {
+          setInfoVietQR({ ...resp.data.data });
 
-    //       return resp.data.data;
-    //     })
-    //     .catch((e) => console.log(e));
-    // }
+          return resp.data.data;
+        })
+        .catch((e) => console.log(e));
+    }
 
-    // setSuccessPayment(true);
+    setSuccessPayment(true);
   };
 
   useEffect(() => {
@@ -1079,25 +1079,29 @@ export default function CheckoutPage() {
             </div> */}
               </div>
 
-              <div>
-                <h5>Bạn đặt hàng thành công</h5>
-                <div className="flex flex-col items-center justify-end">
-                  <div className="flex items-center justify-center gap-x-2 mt-5">
-                    <ButtonForm
-                      type="button"
-                      onClick={() => navigate("/all-products")}
-                      className="!bg-qyellow !text-gray-800 px-3 !py-5 font-medium"
-                      label="Tiếp tục mua sắm"
-                    ></ButtonForm>
-                    <ButtonForm
-                      type="button"
-                      onClick={() => navigate("/profile#dashboard")}
-                      className="!bg-qyellow !text-gray-800 !py-5"
-                      label="Xem đơn hàng"
-                    ></ButtonForm>
+              {successPayment &&
+                paymentType &&
+                paymentType?.paymentTypeCode == 2 && (
+                  <div>
+                    <h5>Bạn đặt hàng thành công</h5>
+                    <div className="flex flex-col items-center justify-end">
+                      <div className="flex items-center justify-center gap-x-2 mt-5">
+                        <ButtonForm
+                          type="button"
+                          onClick={() => navigate("/all-products")}
+                          className="!bg-qyellow !text-gray-800 px-3 !py-5 font-medium"
+                          label="Tiếp tục mua sắm"
+                        ></ButtonForm>
+                        <ButtonForm
+                          type="button"
+                          onClick={() => navigate("/profile#dashboard")}
+                          className="!bg-qyellow !text-gray-800 !py-5"
+                          label="Xem đơn hàng"
+                        ></ButtonForm>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
               {successPayment &&
                 paymentType &&
                 paymentType?.paymentTypeCode == 1 && (
