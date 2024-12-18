@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchDataCommon, postData, postDataCommon } from "@/api/commonApi";
 import { useUserStore } from "@/store";
 import {
+  BannerObject,
   GroupMessageObject,
   StoreDetailObject,
   StoreFollowObject,
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import VoucherComponent from "@/component_common/voucher/VoucherComponent";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MessageObject, useMessageUserStore } from "@/store/messageUserStore";
+import BannerComponent from "@/component_common/banner/BannerComponent";
 
 type FilterState = {
   [key: string]: boolean;
@@ -516,20 +518,17 @@ export default function SallerPage() {
                     })}
               </div>
               {handleFetchBanner.data &&
-                handleFetchBanner.data
-                  .filter((item: any) => item.bannerPosition == "top")
-                  .slice(0, 1)
-                  .map((item: any) => {
-                    return (
-                      <NavLink to={`/single-product/` + item.productCode}>
-                        <img
-                          src={item.image}
-                          className="h-44 w-full object-cover object-top"
-                          alt=""
-                        />
-                      </NavLink>
-                    );
-                  })}
+                handleFetchBanner.data.slice(0, 1).map((item: BannerObject) => {
+                  return (
+                    <BannerComponent
+                      typeGood={item.typeGoodName ? item.typeGoodName : ""}
+                      className="w-full h-[500px]"
+                      link={"/single-product/" + item.productCode}
+                      title={item.title ? item.title : ""}
+                      url={item.image ? item.image : ""}
+                    ></BannerComponent>
+                  );
+                })}
             </div>
           </div>
 

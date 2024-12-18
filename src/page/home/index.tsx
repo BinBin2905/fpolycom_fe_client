@@ -15,9 +15,17 @@ import {
   SectionStyleThree,
   SectionStyleFour,
 } from "@/component_common";
-import { fetchDataCommon } from "@/api/commonApi";
+import { fetchDataCommon, postDataCommon } from "@/api/commonApi";
 import { useQuery } from "@tanstack/react-query";
 import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardStyleOne";
+import BannerComponent from "@/component_common/banner/BannerComponent";
+import { BannerObject } from "@/type/TypeCommon";
+import { useEffect, useState } from "react";
+
+type ListObject = {
+  typeGoodCode?: string;
+  data?: any[];
+};
 
 export default function Home() {
   const { products } = datas;
@@ -26,6 +34,7 @@ export default function Home() {
   products.forEach((product) => {
     brands.push(product.brand);
   });
+  const [dataFilter, setDataFilter] = useState<ListObject[]>([]);
 
   const {
     data: dataProducts,
@@ -35,6 +44,26 @@ export default function Home() {
   } = useQuery({
     queryKey: ["products"],
     queryFn: () => fetchDataCommon("/common/product/all"),
+  });
+
+  useEffect(() => {
+    if (isSuccessProducts && dataProducts && dataProducts.length > 0) {
+      let newDataList: ListObject[] = [];
+      dataProducts?.forEach((item: any) => {
+        if (newDataList.find((i) => i.typeGoodCode == item.typeGoodCode)) {
+          newDataList
+            .find((i) => i.typeGoodCode == item.typeGoodCode)
+            ?.data?.push(item);
+        } else {
+          newDataList.push({ typeGoodCode: item.typeGoodCode, data: [item] });
+        }
+      });
+      setDataFilter(newDataList);
+    }
+  }, [isSuccessProducts, dataProducts]);
+  const handleFetchBanner = useQuery({
+    queryKey: ["bannerAll"],
+    queryFn: () => fetchDataCommon("/common/all-banner"),
   });
 
   // const setUser = actors.
@@ -51,16 +80,49 @@ export default function Home() {
     <>
       {/* {ads && <Ads handler={adsHandle} />} */}
       <div className="btn w-5 h-5 "></div>
-      <Banner className="banner-wrapper mb-[60px]" />
+      <div className="mx-auto container-x relative grid grid-cols-[3fr_2fr] gap-3 mb-10 w-full">
+        {handleFetchBanner.data &&
+          handleFetchBanner.data.slice(0, 1).map((item: BannerObject) => {
+            return (
+              <BannerComponent
+                typeGood={item.typeGoodName ? item.typeGoodName : ""}
+                className="w-full h-[500px]"
+                link={"/single-product/" + item.productCode}
+                title={item.title ? item.title : ""}
+                url={item.image ? item.image : ""}
+              ></BannerComponent>
+            );
+          })}
+        <div className="grid grid-rows-2 gap-3 h-[500px]">
+          {handleFetchBanner.data &&
+            handleFetchBanner.data.slice(1, 3).map((item: BannerObject) => {
+              return (
+                <BannerComponent
+                  typeGood={item.typeGoodName ? item.typeGoodName : ""}
+                  className="w-full h-full"
+                  link={"/single-product/" + item.productCode}
+                  title={item.title ? item.title : ""}
+                  url={item.image ? item.image : ""}
+                ></BannerComponent>
+              );
+            })}
+        </div>
+      </div>
 
-      <SectionStyleOne
-        products={dataProducts}
-        categoryTitle="Mobile & Tablet"
-        sectionTitle="Laptop"
-        seeMoreUrl="/all-products"
-        className="category-products mb-[60px]"
-      />
-      <BrandSection
+      {dataFilter &&
+        dataFilter.length > 0 &&
+        dataFilter.map((item) => {
+          return (
+            <SectionStyleOne
+              products={item.data ? item.data : []}
+              categoryTitle="Mobile & Tablet"
+              sectionTitle={item.data ? item.data[0].typeGoodName : ""}
+              seeMoreUrl="/all-products"
+              className="category-products mb-[60px]"
+            />
+          );
+        })}
+      {/* <BrandSection
         sectionTitle="Shop by Brand"
         className="brand-section-wrapper mb-[60px]"
         categoryTitle={null}
@@ -89,7 +151,7 @@ export default function Home() {
         ads={[`/assets/images/ads-1.png`, `/assets/images/ads-2.png`]}
         sectionHeight="sm:h-[295px] h-full"
         className="products-ads-section mb-[60px]"
-      />
+      /> */}
       {/* <SectionStyleOne
         categoryBackground={`/assets/images/BannerDrinks.png`}
         products={products.slice(4, products.length)}
@@ -99,7 +161,7 @@ export default function Home() {
         seeMoreUrl="/all-products"
         className="category-products mb-[60px]"
       /> */}
-      <ProductsAds
+      {/* <ProductsAds
         ads={[`/assets/images/ads-3.png`]}
         className="products-ads-section mb-[60px]"
       />
@@ -123,7 +185,7 @@ export default function Home() {
         className="category-products mb-[60px]"
         categoryTitle={null}
         categoryBackground={null}
-      />
+      /> */}
     </>
   );
 }

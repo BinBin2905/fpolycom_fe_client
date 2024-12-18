@@ -65,8 +65,8 @@ const ProductPage = () => {
   const handleDelete = useMutation({
     mutationFn: (body: { [key: string]: any }) => deleteData(body),
     onSuccess: async (data: ProductObject[], body) => {
-      if (queryClient.getQueryData(["products"])) {
-        queryClient.setQueryData(["products"], (oldData: ProductObject[]) => {
+      if (queryClient.getQueryData(["store_products"])) {
+        queryClient.setQueryData(["store_products"], (oldData: ProductObject[]) => {
           if (!oldData) return [];
           console.log(data);
           console.log(body);

@@ -18,7 +18,7 @@ export default function ViewMoreTitle({
       <div className="container-x mx-auto">
         <div className=" section-title flex justify-between items-center mb-5">
           <div>
-            <h1 className="sm:text-3xl text-xl font-600 text-slate-700 leading-none">
+            <h1 className="sm:text-3xl text-xl font-600 text-slate-600 border-b-4 px-2 pb-2 border-slate-600 leading-none">
               {categoryTitle}
             </h1>
           </div>

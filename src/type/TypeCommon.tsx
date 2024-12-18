@@ -355,6 +355,19 @@ export type ReceiveDeliveryObject = {
   ordersCode?: number;
 };
 
+export type BannerObject = {
+  storeBannerCode?: string;
+  image?: string;
+  title?: string;
+  status?: boolean;
+  productCode?: string;
+  typeGoodName?: string;
+  productName?: string;
+  storeCode?: string;
+  storeName?: string;
+  bannerPosition?: string;
+};
+
 export type OrderObject = {
   orderCode?: string;
   userLogin?: string;

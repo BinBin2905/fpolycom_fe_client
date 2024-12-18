@@ -8,6 +8,8 @@ import ProductCardStyleOne from "@/component_common/Helpers/Cards/ProductCardSty
 import { useQuery } from "@tanstack/react-query";
 import { fetchDataCommon } from "@/api/commonApi";
 import { PageTitle } from "@/component_common";
+import { BannerObject } from "@/type/TypeCommon";
+import BannerComponent from "@/component_common/banner/BannerComponent";
 
 type FilterState = {
   [key: string]: boolean;
@@ -65,6 +67,11 @@ export default function AllProductPage() {
     setStorage(value);
   };
   const [filterToggle, setToggle] = useState(false);
+
+  const handleFetchBanner = useQuery({
+    queryKey: ["bannerAll"],
+    queryFn: () => fetchDataCommon("/common/all-banner"),
+  });
 
   const { products } = productDatas;
 
@@ -174,12 +181,21 @@ export default function AllProductPage() {
                     );
                   })}
               </div>
-              <div className="w-full h-[164px] overflow-hidden mb-[40px]">
-                <img
-                  src={`/assets/images/ads-6.png`}
-                  alt=""
-                  className="w-full h-full object-contain"
-                />
+              <div className="py-2 grid grid-cols-2 gap-3">
+                {handleFetchBanner.data &&
+                  handleFetchBanner.data
+                    .slice(0, 4)
+                    .map((item: BannerObject) => {
+                      return (
+                        <BannerComponent
+                          typeGood={item.typeGoodName ? item.typeGoodName : ""}
+                          className="w-full h-[200px]"
+                          link={"/single-product/" + item.productCode}
+                          title={item.title ? item.title : ""}
+                          url={item.image ? item.image : ""}
+                        ></BannerComponent>
+                      );
+                    })}
               </div>
               <div className="grid grid-cols-3 gap-[30px]">
                 {dataProducts &&
